@@ -23,6 +23,7 @@ export const productsKeys = {
   list: (filter: ProductFilter) => [...productsKeys.all, 'list', filter] as const,
   count: (filter: ProductFilter) => [...productsKeys.all, 'count', filter] as const,
   detail: (id: string) => [...productsKeys.all, id] as const,
+  byIds: (ids: number[]) => [...productsKeys.all, 'by-ids', ids] as const,
   timeline: () => [...productsKeys.all, 'timeline'] as const,
   timelinePage: (pageSize: number) => [...productsKeys.all, 'timeline', 'page', pageSize] as const,
 }
@@ -163,6 +164,24 @@ export const productsApi = {
 
     const { data } = await api.get<PublicProductDto>(`/public/products/${id}/`)
     return mapProduct(data)
+  },
+
+  // Yangilik yoki aksiyaga bog'langan mahsulotlar, ids tartibida. Backend filters'dagi id'ni e'tiborsiz qoldiradi
+  // (tekshirilgan), shuning uchun har biri alohida olinadi. Tokensiz so'rov views'ni oshirmaydi (tekshirilgan).
+  // O'chirilgan yoki yashirilgan mahsulot (404) ro'yxatdan tushib qoladi, hammasi xato bo'lsa xato qaytadi
+  getByIds: async (ids: number[]): Promise<Product[]> => {
+    if (env.useMock) {
+      return ids.flatMap((id) => {
+        const product = productsMock.find((item) => item.id === id)
+        return product ? [mapProduct(product)] : []
+      })
+    }
+
+    const results = await Promise.allSettled(ids.map((id) => api.get<PublicProductDto>(`/public/products/${id}/`)))
+    const products = results.flatMap((result) => (result.status === 'fulfilled' ? [mapProduct(result.value.data)] : []))
+    const firstError = results.find((result) => result.status === 'rejected')
+    if (products.length === 0 && firstError) throw firstError.reason
+    return products
   },
 
   getList: async ({ page, pageSize, ...filter }: ProductListParams): Promise<ProductListResponse> => {

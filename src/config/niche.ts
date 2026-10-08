@@ -125,4 +125,4 @@ export const NICHES = {
 } satisfies Record<string, Niche>
 
 // Nishani almashtirish uchun faqat shu qator o'zgaradi
-export const NICHE: Niche = NICHES.blue
+export const NICHE: Niche = NICHES.bridal

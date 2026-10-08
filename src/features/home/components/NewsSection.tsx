@@ -38,10 +38,12 @@ export function NewsSection({ news }: NewsSectionProps) {
       <PostSheet
         post={
           selected && {
+            id: selected.id,
             title: selected.title,
             meta: formatDate(selected.startsAt),
             body: selected.description,
             cover: selected.image?.large ?? null,
+            productCount: selected.productIds.length,
           }
         }
         onClose={close}

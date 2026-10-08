@@ -9,6 +9,7 @@ import type { News, PublicStoreNewsDto } from './news.types'
 export const newsKeys = {
   all: ['news'] as const,
   list: () => [...newsKeys.all, 'list'] as const,
+  detail: (id: number) => [...newsKeys.all, id] as const,
 }
 
 function mapNews(dto: PublicStoreNewsDto): News {
@@ -39,4 +40,14 @@ async function fetchPage(page: number): Promise<Paginated<PublicStoreNewsDto>> {
 
 export const newsApi = {
   getAll: async (): Promise<News[]> => (await fetchAllPages(fetchPage)).map(mapNews),
+
+  // Muddati tugagan yoki faol bo'lmagan yangilik uchun backend 404 qaytaradi (public faqat hozir amaldagilarni beradi).
+  // Boshqa do'konning yangiligi ham topilmadi hisoblanadi
+  getById: async (id: number): Promise<News> => {
+    const dto = env.useMock
+      ? newsMock.find((item) => item.id === id)
+      : (await api.get<PublicStoreNewsDto>(`/public/news/${id}/`)).data
+    if (!dto || (!env.useMock && dto.store !== env.storeId)) throw new Error('Yangilik topilmadi')
+    return mapNews(dto)
+  },
 }

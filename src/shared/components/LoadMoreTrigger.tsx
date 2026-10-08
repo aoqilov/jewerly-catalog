@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { appScrollElement } from '@/lib/appScroll'
 
 type LoadMoreTriggerProps = {
   onLoadMore: () => void
@@ -13,11 +14,14 @@ export function LoadMoreTrigger({ onLoadMore, isLoading }: LoadMoreTriggerProps)
     const element = ref.current
     if (!element || isLoading) return
 
+    // root — #root: sahifa viewport emas, shu konteyner ichida suriladi. Viewport'ga qarasa, #root trigger'ni
+    // kesib qo'yadi va rootMargin ishlamaydi: yuklash faqat trigger ko'ringanda boshlanib, spinner har safar chiqadi.
+    // 100%: bir ekran oldin yuklanadi (pastga va "Yangi" lentasida yuqoriga ham)
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) onLoadMore()
       },
-      { rootMargin: '400px' },
+      { root: appScrollElement(), rootMargin: '100% 0px' },
     )
     observer.observe(element)
     return () => observer.disconnect()

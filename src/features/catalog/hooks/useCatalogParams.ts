@@ -5,7 +5,8 @@ import type { CatalogStep, GridColumns } from '../types'
 
 // Katalog holati URL'da: ?step=results&cat=1,3&sub=102&cols=2
 // Shunda "orqaga" tugmasi ishlaydi, sahifa yangilanganda tanlov saqlanadi, havolani ulashish mumkin.
-// config/routes.ts'dagi ROUTES.catalogByCategory ham shu formatda
+// news=<id>: kategoriya tanlovi o'rniga yangilik/aksiyaga bog'langan mahsulotlar. Kategoriya tanlashga o'tilganda tushib qoladi.
+// config/routes.ts'dagi ROUTES.catalogByCategory va ROUTES.catalogByNews ham shu formatda
 const COLUMNS_STORAGE_KEY = 'catalog-columns'
 const DEFAULT_COLUMNS: GridColumns = 3
 
@@ -43,6 +44,7 @@ type CatalogState = {
   step: CatalogStep
   selection: ProductFilter
   columns: GridColumns
+  newsId: number | null
 }
 
 export function useCatalogParams() {
@@ -55,12 +57,14 @@ export function useCatalogParams() {
       subcategoryIds: parseIds(params.get('sub')),
     },
     columns: parseColumns(params.get('cols')) ?? readStoredColumns() ?? DEFAULT_COLUMNS,
+    newsId: parseIds(params.get('news'))[0] ?? null,
   }
 
   const write = (next: CatalogState, options: { replace?: boolean } = {}) => {
     const search = new URLSearchParams({ step: next.step, cols: String(next.columns) })
     if (next.selection.categoryIds.length) search.set('cat', next.selection.categoryIds.join(','))
     if (next.selection.subcategoryIds.length) search.set('sub', next.selection.subcategoryIds.join(','))
+    if (next.newsId !== null) search.set('news', String(next.newsId))
 
     setParams(search, { replace: options.replace })
     if (next.step !== state.step) appScrollElement().scrollTo({ top: 0 })
@@ -69,8 +73,8 @@ export function useCatalogParams() {
   return {
     ...state,
     // Tanlovni qo'llab natijalarni ko'rsatish
-    apply: (selection: ProductFilter) => write({ ...state, step: 'results', selection }),
-    showPicker: () => write({ ...state, step: 'picker' }),
+    apply: (selection: ProductFilter) => write({ ...state, step: 'results', selection, newsId: null }),
+    showPicker: () => write({ ...state, step: 'picker', newsId: null }),
     showResults: () => write({ ...state, step: 'results' }),
     setColumns: (columns: GridColumns) => {
       storeColumns(columns)

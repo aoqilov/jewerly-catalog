@@ -40,10 +40,12 @@ export function PromotionsSection({ promotions }: PromotionsSectionProps) {
       <PostSheet
         post={
           selected && {
+            id: selected.id,
             title: selected.title,
             meta: `Aksiya ${untilLabel(selected.endsAt)} amal qiladi`,
             body: selected.description,
             cover: selected.image?.large ?? null,
+            productCount: selected.productIds.length,
           }
         }
         onClose={close}

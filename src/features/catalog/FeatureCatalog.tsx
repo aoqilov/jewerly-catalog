@@ -3,12 +3,14 @@ import { CatalogToolbar } from './components/CatalogToolbar'
 import { CategoryPicker } from './components/picker/CategoryPicker'
 import { PickerSkeleton } from './components/picker/PickerSkeleton'
 import { CatalogResults } from './components/results/CatalogResults'
+import { NewsResults } from './components/results/NewsResults'
 import { useCatalogParams } from './hooks/useCatalogParams'
 
 // Katalog: kategoriya/subkategoriyalarni belgilash → "Ko'rsatish" → mahsulotlar.
+// Yangilik oynasidan kelinsa (?news=<id>) o'sha yangilikka bog'langan mahsulotlar ko'rsatiladi.
 // Holat URL query'da (useCatalogParams), shuning uchun sahifa props bermaydi
 export function FeatureCatalog() {
-  const { step, selection, columns, apply, showPicker, showResults, setColumns } = useCatalogParams()
+  const { step, selection, columns, newsId, apply, showPicker, showResults, setColumns } = useCatalogParams()
   const categories = useGetCategories()
   const isPicker = step === 'picker'
 
@@ -38,6 +40,8 @@ export function FeatureCatalog() {
               />
             )}
           </>
+        ) : newsId !== null ? (
+          <NewsResults newsId={newsId} columns={columns} onOpenPicker={showPicker} />
         ) : (
           <CatalogResults selection={selection} columns={columns} onOpenPicker={showPicker} />
         )}
