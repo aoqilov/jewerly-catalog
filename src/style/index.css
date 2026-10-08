@@ -23,6 +23,8 @@
   --radius-md: var(--r-md);
   --radius-pill: var(--r-pill);
 
+  --shadow-sheet: var(--sheet-shadow);
+
   --font-sans: var(--font-ui);
   --font-logo: var(--font-wordmark);
 }

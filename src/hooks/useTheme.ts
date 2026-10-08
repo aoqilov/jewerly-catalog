@@ -28,6 +28,10 @@ function subscribe(listener: () => void) {
 
 function applyTheme(theme: Theme) {
   document.documentElement.dataset.theme = theme
+  // Brauzer paneli rangi (index.html'dagi theme-color meta'lari, ranglar data-light / data-dark'da)
+  document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach((meta) => {
+    meta.content = meta.dataset[theme] ?? meta.content
+  })
   try {
     localStorage.setItem(STORAGE_KEY, theme)
   } catch {

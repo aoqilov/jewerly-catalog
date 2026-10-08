@@ -56,8 +56,8 @@ export function CusRightSheet({ isOpen, onClose, title, width = 'half', children
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`relative flex h-dvh min-w-60 animate-slide-in-right flex-col border-l border-line bg-fill group-data-[state=closed]:animate-slide-out-right ${
-          width === 'full' ? '' : 'rounded-l-md shadow-xl'
+        className={`relative flex h-dvh min-w-60 animate-slide-in-right flex-col border-l border-line bg-fill shadow-sheet group-data-[state=closed]:animate-slide-out-right ${
+          width === 'full' ? '' : 'rounded-l-md'
         } ${widthClass[width]}`}
       >
         <div className="flex items-center justify-between gap-3 py-2 pr-2 pl-4">

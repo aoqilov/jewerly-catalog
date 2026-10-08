@@ -1,11 +1,9 @@
 import { mockImage } from '@/lib/mockImage'
+import { APP } from './app'
 
-// Vaqtinchalik qiymatlar: haqiqiy ma'lumotlar bilan almashtiriladi
+// Vaqtinchalik qiymatlar: haqiqiy ma'lumotlar bilan almashtiriladi. Nom va tavsif config/app.ts'da
 export const SITE = {
-  name: 'Icatalog by **',
-  // Matn ichida ishlatiladigan qisqa nom (masalan, sotuvchiga yoziladigan xabarda)
-  shortName: 'iCatalog',
-  description: 'Sayt haqida qisqa tavsif shu yerga yoziladi.',
+  ...APP,
   phone: {
     label: '+998 00 000 00 00',
     href: 'tel:+998000000000',

@@ -74,8 +74,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         onOpen={setViewerIndex}
       />
 
-      {/* Rasm ustiga chiqib turadigan panel (scroll'da rasmni yopadi), tepadagi chiziqcha faqat bezak */}
-      <div className="relative z-10 -mt-5 rounded-t-pill bg-bg px-4 pt-2 pb-6">
+      {/* Rasm ustiga chiqib turadigan panel (scroll'da rasmni yopadi), tepadagi chiziqcha faqat bezak.
+          shadow-sheet: oq fonli rasm ustida ham panel cheti ajralib tursin */}
+      <div className="relative z-10 -mt-5 rounded-t-pill bg-bg px-4 pt-2 pb-6 shadow-sheet">
         <div aria-hidden="true" className="mx-auto h-1 w-10 rounded-full bg-line" />
 
         <div className="mt-3 flex flex-col gap-6">

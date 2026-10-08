@@ -93,7 +93,7 @@ export function CusBottomSheet({ isOpen, onClose, title, children }: CusBottomSh
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative flex max-h-[85dvh] min-h-[50dvh] w-full max-w-md animate-slide-in-up flex-col rounded-t-pill border border-b-0 border-line bg-fill pb-[env(safe-area-inset-bottom)] shadow-xl transition-transform duration-200 ease-out group-data-[state=closed]:animate-slide-out-down"
+        className="relative flex max-h-[85dvh] min-h-[50dvh] w-full max-w-md animate-slide-in-up flex-col rounded-t-pill border border-b-0 border-line bg-fill pb-[env(safe-area-inset-bottom)] shadow-sheet transition-transform duration-200 ease-out group-data-[state=closed]:animate-slide-out-down"
       >
         {/* Faqat shu tutqich orqali suriladi: ichkaridagi kontent scroll'i bilan to'qnashmasligi uchun */}
         <div

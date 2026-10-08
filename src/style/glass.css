@@ -65,6 +65,8 @@
   --glass-border: rgba(255, 255, 255, 0.78);
   --glass-highlight: rgba(255, 255, 255, 0.90);
   --glass-shadow: 0 8px 24px rgba(60, 48, 12, 0.10);
+  /* sheet / dialog paneli: hamma tomonga (pastki panelda tepaga, o'ng panelda chapga ko'rinadi), oq rasmlar ustida ham ajralsin */
+  --sheet-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 0 32px rgba(40, 32, 8, 0.28);
   --glass-blur: 18px;
   --glass-bar-bg: rgba(253, 251, 246, 0.85);
   --glass-bar-blur: 22px;
@@ -114,6 +116,7 @@
   --glass-border: rgba(255, 255, 255, 0.10);
   --glass-highlight: rgba(255, 255, 255, 0.14);
   --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --sheet-shadow: 0 0 32px rgba(0, 0, 0, 0.6);
   --glass-bar-bg: color-mix(in oklab, var(--bg) 94%, transparent);
 
   /* Bo'sh sahifalarda (masalan Profil) fon dog'lari asosiy manba, shuning uchun juda xira */
@@ -137,6 +140,7 @@
     --line-soft: color-mix(in oklab, var(--brand-text-dark) 12%, transparent);
     --glass-bg: rgba(255,255,255,0.04); --glass-border: rgba(255,255,255,0.10);
     --glass-highlight: rgba(255,255,255,0.14); --glass-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    --sheet-shadow: 0 0 32px rgba(0,0,0,0.6);
     --glass-bar-bg: color-mix(in oklab, var(--bg) 94%, transparent);
     --blobs:
       radial-gradient(420px 320px at 10% 16%, color-mix(in oklab, var(--brand) 6%, transparent), transparent 70%),

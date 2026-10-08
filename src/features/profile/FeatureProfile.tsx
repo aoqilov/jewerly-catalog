@@ -6,6 +6,7 @@ import { useLogout } from './api-hooks/useLogout'
 import { AccountPanel } from './components/AccountPanel'
 import { FavoritesSection } from './components/FavoritesSection'
 import { FavoritesSheet } from './components/FavoritesSheet'
+import { InstallAppSection } from './components/InstallAppSection'
 import { LoginSheet } from './components/LoginSheet'
 import { SettingsSection } from './components/SettingsSection'
 import type { FavoritesKind } from './types'
@@ -35,6 +36,8 @@ export function FeatureProfile() {
           isLoggingOut={logout.isPending}
         />
       )}
+
+      <InstallAppSection />
 
       <SettingsSection />
 

@@ -4,7 +4,7 @@ Foydalanuvchi bilan o'zbek tilida (lotin yozuvida) yoziladi. Kod, fayl nomlari v
 
 ## Stack
 
-React 19 · TypeScript 6 · Vite 8 · Tailwind CSS 4 · axios · TanStack Query 5 · React Router 7 · react-icons · react-zoom-pan-pinch (mahsulot rasmini kattalashtirish) · oxlint
+React 19 · TypeScript 6 · Vite 8 · Tailwind CSS 4 · axios · TanStack Query 5 · React Router 7 · react-icons · react-zoom-pan-pinch (mahsulot rasmini kattalashtirish) · vite-plugin-pwa · oxlint
 
 ## Buyruqlar
 
@@ -12,6 +12,7 @@ React 19 · TypeScript 6 · Vite 8 · Tailwind CSS 4 · axios · TanStack Query 
 npm run dev      # dev server
 npm run build    # tsc + production build
 npm run lint     # oxlint
+npm run pwa:icons  # PWA ikonkalari va favicon'ni NICHE rangidan qayta yasash (public/ ga)
 ```
 
 Har bir o'zgarishdan keyin `npm run build` va `npm run lint` xato va ogohlantirishsiz o'tishi shart.
@@ -67,7 +68,7 @@ src/
 │   ├── ui/                        # oddiy UI elementlar: Button, Input, Modal
 │   └── components/                # bir nechta feature ishlatadigan komponentlar
 ├── assets/                        # rasm, shrift, ikonkalar
-├── config/                        # env.ts, routes.ts, navigation.ts, site.ts, niche.ts, ui.ts (umumiy klass konstantalari), konstantalar
+├── config/                        # app.ts (nom, tavsif, mavzu fon ranglari), env.ts, routes.ts, navigation.ts, site.ts, niche.ts, ui.ts (umumiy klass konstantalari), konstantalar
 ├── types/                         # API'dan tashqari umumiy tiplar
 ├── hooks/                         # hamma joyda ishlatiladigan hook'lar
 └── lib/                           # applyNiche.ts, yordamchi funksiyalar
@@ -91,7 +92,14 @@ src/
 
 ### Layout
 - `layouts/MainLayout.tsx` Header, sahifa (`Outlet`) va BottomNav'ni yig'adi. Ularning qismlari `layouts/components/`da turadi.
-- Sayt nomi, telefon, email va ijtimoiy tarmoqlar faqat `config/site.ts`dagi `SITE`dan olinadi (hozircha vaqtinchalik qiymatlar).
+- Sayt nomi, telefon, email va ijtimoiy tarmoqlar faqat `config/site.ts`dagi `SITE`dan olinadi (hozircha vaqtinchalik qiymatlar). Nom, qisqa nom va tavsifning manbasi `config/app.ts`dagi `APP` (`SITE` uni yoyib oladi): uni `vite.config.ts` ham o'qiydi, shuning uchun `app.ts`da import bo'lmaydi.
+
+### PWA
+- `vite-plugin-pwa` (`vite.config.ts`): manifest (`APP`dan nom/tavsif, `THEME_COLORS`dan ranglar) va service worker. SW faqat build'da yaratiladi (`npm run build && npm run preview` bilan tekshiriladi), dev'da yo'q. Yangi versiya o'zi o'rnatiladi (`autoUpdate`).
+- SW ilova fayllari, rasmlar (`CacheFirst`) va Google Fonts'ni keshlaydi. API so'rovlari keshlanmaydi.
+- Ikonkalar (`public/favicon.svg`, `pwa-*.png`, `maskable-icon-512x512.png`, `apple-touch-icon-180x180.png`) `scripts/generate-pwa-icons.ts` bilan `NICHE` ranglaridan yasaladi. Nisha almashtirilganda `npm run pwa:icons` ishga tushiriladi, PNG'lar qo'lda tahrirlanmaydi.
+- O'rnatish (Profil → "Ilova"): `lib/pwaInstall` `beforeinstallprompt`ni `main.tsx`da render'dan oldin ushlab qoladi, komponentlar `hooks/usePwaInstall` orqali o'qiydi. Brauzer oynasi bo'lsa (Android Chrome) shu ochiladi, bo'lmasa (iOS, Firefox) Android / iPhone yo'riqnomasi (`InstallGuideSheet`). Bosh ekrandan ochilganda "Ilova o'rnatilgan" ko'rinadi.
+- `index.html`dagi `%APP_NAME%` kabi o'rinbosarlarni `vite.config.ts`dagi `appMetaPlugin` to'ldiradi. `theme-color` meta'lari mavzu bilan birga almashadi (`index.html` skripti va `useTheme`).
 - Header: chapda logo, o'ngda mavzu tugmasi va sevimlilar (❤). Mobilda menyu tugmasi yo'q, navigatsiya faqat BottomNav orqali. `md`dan kattada Header ichida `NAV_LINKS` ko'rinadi.
 - Modal oynalar `shared/ui/CusBottomSheet` orqali: fon yoki Escape bosilganda yopiladi, ochiq paytda sahifa scroll'i bloklanadi (`hooks/useLockBodyScroll`).
 - Sahifaning o'z sticky toolbar'i bo'lsa, route'ga `handle: { hideHeaderOnMobile: true }` qo'shiladi (tip: `types/router.ts`), `MainLayout` mobilda Header'ni yashiradi. Toolbar mobilda `top-0`, `md`dan kattada Header ostida (`md:top-[65px]`) turadi.

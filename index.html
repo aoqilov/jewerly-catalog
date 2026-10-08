@@ -2,8 +2,18 @@
 <html lang="uz">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="%APP_DESCRIPTION%" />
+    <!-- Ikonkalar: npm run pwa:icons. Manifest va service worker vite-plugin-pwa'dan -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/pwa-64x64.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
+    <meta name="apple-mobile-web-app-title" content="%APP_SHORT_NAME%" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!-- Brauzer paneli rangi: OS mavzusiga qarab. Saytda mavzu qo'lda tanlansa, quyidagi skript va useTheme ikkalasini ham shu rangga qo'yadi -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="%THEME_COLOR_LIGHT%" data-light="%THEME_COLOR_LIGHT%" data-dark="%THEME_COLOR_DARK%" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="%THEME_COLOR_DARK%" data-light="%THEME_COLOR_LIGHT%" data-dark="%THEME_COLOR_DARK%" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -14,10 +24,15 @@
       // Tanlangan mavzuni React yuklanishidan oldin qo'yadi (miltillash bo'lmasligi uchun)
       try {
         var theme = localStorage.getItem('theme')
-        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.dataset.theme = theme
+          document.querySelectorAll('meta[name="theme-color"]').forEach(function (meta) {
+            meta.content = meta.dataset[theme]
+          })
+        }
       } catch (e) {}
     </script>
-    <title>bridal-org</title>
+    <title>%APP_NAME%</title>
   </head>
   <body>
     <div id="root"></div>
