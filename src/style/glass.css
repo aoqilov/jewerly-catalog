@@ -1,0 +1,236 @@
+/* =====================================================================
+   Glass design system — tokens + recipes
+   style/index.css ichidan `layer(components)` bilan import qilinadi,
+   shuning uchun Tailwind utility klasslari recipe'larni ustidan yoza oladi.
+   Theme switch: <html data-theme="light|dark">  (falls back to OS setting)
+   Niche:        lib/applyNiche.ts --brand* va --blob-* ni :root'ga yozadi,
+                 <html data-brand-tone="light|dark"> qo'yadi (config/niche.ts)
+   ===================================================================== */
+
+/* ---------- 1. Niche: xom ranglar (standart: bridal, applyNiche ustidan yozadi) ---------- */
+:root {
+  --brand: #D8B238;
+  --brand-ink: #1F2A1C;          /* text on brand — contrast ≥ 4.5:1 */
+  --brand-text-light: #7B6520;
+  --brand-text-dark: #D8B238;
+  --blob-a: #136207;
+  --blob-b: #E89AAE;
+  --dark-tint: 0%;               /* qorong'i fon, kartochka va panellarga qo'shiladigan brand ulushi */
+
+  /* brand glass recipe: och brand (oltin) — shaffofroq, to'q matn */
+  --brand-lift: 35%;             /* gradient tepasiga qo'shiladigan oq */
+  --brand-top-alpha: 80%;
+  --brand-bottom-alpha: 60%;
+  --brand-border-lift: 70%;
+  --brand-highlight: rgba(255, 255, 255, 0.75);
+}
+/* to'q brand (yashil, qizil): och matn o'qilishi uchun zichroq, deyarli oqartirilmagan */
+:root[data-brand-tone="dark"] {
+  --brand-lift: 8%;
+  --brand-top-alpha: 94%;
+  --brand-bottom-alpha: 90%;
+  --brand-border-lift: 30%;
+  --brand-highlight: rgba(255, 255, 255, 0.30);
+}
+
+/* ---------- 2. Tokens: light (default) ---------- */
+:root {
+  /* brand — mavzuga bog'liq emas */
+  --brand-top: color-mix(in oklab, var(--brand), white var(--brand-lift));
+  --glass-brand-bg: linear-gradient(180deg,
+    color-mix(in oklab, var(--brand-top) var(--brand-top-alpha), transparent),
+    color-mix(in oklab, var(--brand) var(--brand-bottom-alpha), transparent));
+  --glass-brand-border: color-mix(in oklab, color-mix(in oklab, var(--brand), white var(--brand-border-lift)) 90%, transparent);
+  --glass-brand-shadow: 0 8px 22px color-mix(in oklab, var(--brand) 30%, transparent);
+
+  /* badge "НОВИНКА" (solid, not glass) — doim och fon */
+  --badge-bg: color-mix(in oklab, var(--brand) 16%, white);
+  --badge-border: var(--brand);
+  --badge-text: var(--brand-text-light);
+
+  /* surfaces & text */
+  --bg: #FDFBF6;
+  --fill: #F4F2EC;
+  --tile: #FFFFFF;
+  --text: #1F2A1C;
+  --muted: #6F6F6A;
+  --image-placeholder: #2B2A26;  /* surat yuklanmaguncha / demo uchun to'q fon */
+  --primary-text: var(--brand-text-light);   /* links / active labels */
+  --brand-mark: var(--brand);    /* nuqta, chiziqcha, fokus halqasi */
+  --line: color-mix(in oklab, var(--brand) 35%, transparent);
+  --line-soft: color-mix(in oklab, var(--brand) 15%, transparent);
+
+  /* glass */
+  --glass-bg: rgba(255, 255, 255, 0.42);
+  --glass-border: rgba(255, 255, 255, 0.78);
+  --glass-highlight: rgba(255, 255, 255, 0.90);
+  --glass-shadow: 0 8px 24px rgba(60, 48, 12, 0.10);
+  --glass-blur: 18px;
+  --glass-bar-bg: rgba(253, 251, 246, 0.85);
+  --glass-bar-blur: 22px;
+
+  --glass-img-bg: rgba(255, 255, 255, 0.20);
+  --glass-img-border: rgba(255, 255, 255, 0.45);
+
+  /* backdrop blobs — glass needs something behind it */
+  --blobs:
+    radial-gradient(420px 320px at 10% 16%, color-mix(in oklab, var(--brand) 30%, transparent), transparent 70%),
+    radial-gradient(380px 300px at 95% 40%, color-mix(in oklab, var(--blob-a) 12%, transparent), transparent 70%),
+    radial-gradient(420px 340px at 15% 72%, color-mix(in oklab, var(--blob-b) 22%, transparent), transparent 70%),
+    radial-gradient(380px 320px at 90% 94%, color-mix(in oklab, var(--brand) 24%, transparent), transparent 70%);
+
+  /* shape & rhythm */
+  --r-tile: 4px;      /* image tiles */
+  --r-sm: 9px;        /* inner tabs */
+  --r-md: 12px;       /* buttons, cards, inputs */
+  --r-pill: 20px;     /* pills, segmented containers */
+  --gutter: 16px;
+  --tap: 44px;        /* min touch target */
+  --nav-h: 64px;
+
+  --font-ui: 'Onest', system-ui, sans-serif;
+  --font-wordmark: 'Sora', system-ui, sans-serif;   /* faqat logo: geometrik sans, vazn 600 */
+
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --dur: 180ms;
+
+  color-scheme: light;
+}
+
+/* ---------- 3. Tokens: dark ---------- */
+:root[data-theme="dark"] {
+  /* neytral sof qora + nisha rangidan --dark-tint ulush (0% bo'lsa sof neytral) */
+  --bg: color-mix(in oklab, var(--brand) var(--dark-tint), #050504);
+  --fill: color-mix(in oklab, var(--brand) var(--dark-tint), #161614);
+  --tile: color-mix(in oklab, var(--brand) var(--dark-tint), #101010);
+  --text: #F5F4EE;
+  --muted: color-mix(in oklab, var(--brand-text-dark) var(--dark-tint), #A8A69E);
+  --primary-text: var(--brand-text-dark);
+  --brand-mark: var(--brand-text-dark);
+  --line: color-mix(in oklab, var(--brand-text-dark) 30%, transparent);
+  --line-soft: color-mix(in oklab, var(--brand-text-dark) 12%, transparent);
+
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-highlight: rgba(255, 255, 255, 0.14);
+  --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --glass-bar-bg: color-mix(in oklab, var(--bg) 94%, transparent);
+
+  /* Bo'sh sahifalarda (masalan Profil) fon dog'lari asosiy manba, shuning uchun juda xira */
+  --blobs:
+    radial-gradient(420px 320px at 10% 16%, color-mix(in oklab, var(--brand) 6%, transparent), transparent 70%),
+    radial-gradient(380px 300px at 95% 40%, color-mix(in oklab, var(--blob-a) 8%, transparent), transparent 70%),
+    radial-gradient(420px 340px at 15% 72%, color-mix(in oklab, var(--blob-b) 4%, transparent), transparent 70%),
+    radial-gradient(380px 320px at 90% 94%, color-mix(in oklab, var(--brand) 5%, transparent), transparent 70%);
+
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: color-mix(in oklab, var(--brand) var(--dark-tint), #050504);
+    --fill: color-mix(in oklab, var(--brand) var(--dark-tint), #161614);
+    --tile: color-mix(in oklab, var(--brand) var(--dark-tint), #101010);
+    --text: #F5F4EE;
+    --muted: color-mix(in oklab, var(--brand-text-dark) var(--dark-tint), #A8A69E);
+    --primary-text: var(--brand-text-dark); --brand-mark: var(--brand-text-dark);
+    --line: color-mix(in oklab, var(--brand-text-dark) 30%, transparent);
+    --line-soft: color-mix(in oklab, var(--brand-text-dark) 12%, transparent);
+    --glass-bg: rgba(255,255,255,0.04); --glass-border: rgba(255,255,255,0.10);
+    --glass-highlight: rgba(255,255,255,0.14); --glass-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    --glass-bar-bg: color-mix(in oklab, var(--bg) 94%, transparent);
+    --blobs:
+      radial-gradient(420px 320px at 10% 16%, color-mix(in oklab, var(--brand) 6%, transparent), transparent 70%),
+      radial-gradient(380px 300px at 95% 40%, color-mix(in oklab, var(--blob-a) 8%, transparent), transparent 70%),
+      radial-gradient(420px 340px at 15% 72%, color-mix(in oklab, var(--blob-b) 4%, transparent), transparent 70%),
+      radial-gradient(380px 320px at 90% 94%, color-mix(in oklab, var(--brand) 5%, transparent), transparent 70%);
+    color-scheme: dark;
+  }
+}
+
+/* ---------- 4. Base ---------- */
+/* body emas, #root suriladi: body har doim joyida qotib turadi (bounce/rezinka effekti bo'lmaydi) */
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font-ui); }
+#root { height: 100%; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+* { scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
+
+.app-bg {                     /* put on the screen root */
+  background-color: var(--bg);
+  background-image: var(--blobs);
+  background-attachment: local;
+  min-height: 100dvh;
+}
+
+.gline {                      /* brand hairline divider */
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line) 15%, var(--line) 85%, transparent);
+}
+
+/* ---------- 5. Glass recipes ---------- */
+.glass {                      /* neutral surface: secondary buttons, segmented tracks, chips, tile frames */
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(170%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(170%);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
+}
+
+.glass-brand {                /* primary CTA + every "selected/active" state */
+  background: var(--glass-brand-bg);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid var(--glass-brand-border);
+  box-shadow: inset 0 1px 0 var(--brand-highlight), var(--glass-brand-shadow);
+  color: var(--brand-ink);
+}
+
+.glass-on-image {             /* buttons & badges that sit on photos */
+  background: var(--glass-img-bg);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid var(--glass-img-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 6px 18px rgba(0, 0, 0, 0.18);
+  color: #FFFFFF;
+}
+
+.glass-bar {                  /* bottom nav, sticky action bar, sticky headers */
+  background: var(--glass-bar-bg);
+  -webkit-backdrop-filter: blur(var(--glass-bar-blur)) saturate(180%);
+  backdrop-filter: blur(var(--glass-bar-blur)) saturate(180%);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+}
+
+/* interaction */
+.glass, .glass-brand, .glass-on-image { transition: transform var(--dur) var(--ease), filter var(--dur) var(--ease); }
+.glass:hover { filter: brightness(1.03); }
+.glass-brand:hover { filter: brightness(1.05); }
+.glass:active, .glass-brand:active, .glass-on-image:active { transform: translateY(1px) scale(.99); }
+:is(.glass, .glass-brand, .glass-on-image):focus-visible {
+  outline: 2px solid var(--brand-mark);
+  outline-offset: 2px;
+}
+
+/* ---------- 6. Fallbacks ---------- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: var(--tile); }
+  .glass-bar { background: var(--bg); }
+  .glass-on-image { background: rgba(0, 0, 0, 0.45); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass { background: var(--tile); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .glass-bar { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .glass-brand { background: linear-gradient(180deg, var(--brand-top), var(--brand)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glass, .glass-brand, .glass-on-image { transition: none; }
+}
+
+/* ---------- 7. Solid badge (kept solid on purpose for legibility) ---------- */
+.badge-new {
+  height: 18px; padding: 0 7px; box-sizing: border-box;
+  display: inline-flex; align-items: center;
+  border-radius: 9px; border: 1px solid var(--badge-border);
+  background: var(--badge-bg); color: var(--badge-text);
+  font-size: 9px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}

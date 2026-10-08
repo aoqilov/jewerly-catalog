@@ -1,0 +1,28 @@
+@import "tailwindcss";
+/* glass recipe'lari components layer'ida: Tailwind utility klasslari ularni ustidan yoza oladi */
+@import "./glass.css" layer(components);
+@import "./motion.css";
+
+/* glass.css tokenlarini Tailwind klasslariga ulash (qiymatlar faqat glass.css'da turadi) */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fill: var(--fill);
+  --color-tile: var(--tile);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--primary-text);
+  --color-line: var(--line);
+  --color-brand: var(--brand-mark);
+  --color-brand-ink: var(--brand-ink);
+  --color-placeholder: var(--image-placeholder);
+  /* rasm yoki to'q qoplama ustidagi aksent: mavzudan qat'i nazar och variant */
+  --color-accent-on-image: var(--brand-text-dark);
+
+  --radius-tile: var(--r-tile);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-pill: var(--r-pill);
+
+  --font-sans: var(--font-ui);
+  --font-logo: var(--font-wordmark);
+}

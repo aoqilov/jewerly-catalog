@@ -1,0 +1,52 @@
+/* Animatsiyalar: Tailwind'da animate-<nom> klasslari sifatida ishlatiladi.
+   Chiqish (*-out) animatsiyalari data-[state=closed]: bilan beriladi, elementni hooks/usePresence ushlab turadi */
+@theme {
+  --animate-fade-in: fade-in 200ms ease-out;
+  --animate-fade-out: fade-out 200ms ease-in forwards;
+  --animate-slide-in-up: slide-in-up 300ms ease-out;
+  --animate-slide-out-down: slide-out-down 250ms ease-in forwards;
+  --animate-slide-in-right: slide-in-right 300ms ease-out;
+  --animate-slide-out-right: slide-out-right 250ms ease-in forwards;
+  /* Ichkariga kirish / orqaga qaytish: --switch-dir = 1 (o'ngdan kiradi) yoki -1 (chapdan) */
+  --animate-slide-switch: slide-switch 220ms ease-out;
+  /* Bir joyda kontent almashishi */
+  --animate-fade-swap: fade-swap 180ms ease-out;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+  }
+  @keyframes fade-out {
+    to { opacity: 0; }
+  }
+  @keyframes slide-in-up {
+    from { transform: translateY(100%); }
+  }
+  /* from yo'q: drag'dan keyin panel turgan joyidan pastga ketadi */
+  @keyframes slide-out-down {
+    to { transform: translateY(100%); }
+  }
+  @keyframes slide-in-right {
+    from { transform: translateX(100%); }
+  }
+  @keyframes slide-out-right {
+    to { transform: translateX(100%); }
+  }
+  @keyframes slide-switch {
+    from { opacity: 0; transform: translateX(calc(var(--switch-dir, 1) * 48px)); }
+  }
+  @keyframes fade-swap {
+    from { opacity: 0; transform: translateY(8px); }
+  }
+}
+
+/* OS'da "harakatni kamaytirish" yoqilgan bo'lsa, barcha animatsiya va transition'lar bir zumda tugaydi */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
