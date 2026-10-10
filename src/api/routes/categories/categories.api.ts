@@ -1,4 +1,5 @@
 import { env } from '@/config/env'
+import { requireStoreId } from '@/lib/selectedStore'
 import { api } from '../../api-config/axios'
 import { fetchAllPages, MAX_PAGE_SIZE, paginate } from '../../api-config/backend'
 import type { Paginated } from '../../api-config/backend'
@@ -28,7 +29,7 @@ async function fetchPage(page: number): Promise<Paginated<PublicStoreCategoryDto
   if (env.useMock) return paginate(categoriesMock, { page, pageSize: MAX_PAGE_SIZE })
 
   const { data } = await api.post<Paginated<PublicStoreCategoryDto>>(
-    `/public/stores/${env.storeId}/categories/get-all/`,
+    `/public/stores/${requireStoreId()}/categories/get-all/`,
     { page, pageSize: MAX_PAGE_SIZE },
   )
   return data

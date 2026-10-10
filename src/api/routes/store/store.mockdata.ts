@@ -101,3 +101,24 @@ export const storeMock: PublicStoreDetailDto = {
   total_categories: categoriesMock.filter((item) => item.parent === null).length,
   total_subcategories: categoriesMock.filter((item) => item.parent !== null).length,
 }
+
+// Do'kon tanlash ro'yxati (POST /public/stores/get-all/); get(id) mock rejimda shu ro'yxatdan topadi
+export const storesMock: PublicStoreDetailDto[] = [
+  storeMock,
+  {
+    ...storeMock,
+    id: 2,
+    name: 'Jewerly',
+    description: "Oltin va kumush taqinchoqlar: uzuk, sirg'a, marjon va to'plamlar.",
+    phone: '+998 90 111 22 33',
+    email: 'info@jewerly.uz',
+  },
+  {
+    ...storeMock,
+    id: 3,
+    name: 'Zarafshon Gold',
+    description: "Samarqanddagi zargarlik uyi: nikoh to'plamlari va buyurtma asosida ishlash.",
+    phone: '+998 93 444 55 66',
+    email: '',
+  },
+]

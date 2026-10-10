@@ -19,7 +19,7 @@ Har bir o'zgarishdan keyin `npm run build` va `npm run lint` xato va ogohlantiri
 
 ## Backend
 
-Sayt real backend'ga ulangan: `https://birid.silently.watch/api/v1` (hujjat: `/api/v1/docs/`, schema: `/api/v1/schema/`), do'kon `VITE_STORE_ID=4` ("Jewerly").
+Sayt real backend'ga ulangan: `https://birid.silently.watch/api/v1` (hujjat: `/api/v1/docs/`, schema: `/api/v1/schema/`), do'kon id'si `lib/selectedStore`dan olinadi: foydalanuvchi birinchi kirishda `/stores` sahifasida (`POST /public/stores/get-all/`, nom bo'yicha qidiruv) tanlaydi, tanlov `localStorage`ning `store-id` kalitida turadi va Profil → "Do'konni almashtirish" bilan o'zgaradi. `VITE_STORE_ID` ixtiyoriy standart qiymat (berilsa tanlash sahifasi o'tkazib yuboriladi, foydalanuvchi tanlovi undan ustun). `MainLayout` do'kon bo'lmasa `/stores`ga yo'naltiradi. `/stores/store` admin endpoint'i, xaridor saytida ishlatilmaydi.
 - `.env`da `VITE_USE_MOCK=false` turadi. Mock rejim (`true`) backend'siz ishlash uchun saqlanadi, foydalanuvchi aytmaguncha almashtirilmaydi.
 - Backend shartnomasi: ildizdagi `api.yaml` (live `/api/v1/schema/` bilan bir xil bo'lishi kerak). Endpoint, so'rov va javob shakllari faqat shundan olinadi.
 - Har bir yangi so'rov uchun `<resurs>.mockdata.ts`da ham mock ma'lumot yoziladi. U backend javobi shaklida (`<resurs>.types.ts`dagi `*Dto` tiplariga to'liq mos) bo'ladi.
@@ -120,7 +120,7 @@ src/
   - `<resurs>.types.ts`: backend tiplari (`*Dto`, api.yaml'dagidek snake_case, narxlar decimal satr) va ilova tiplari (camelCase, raqamlar);
   - `<resurs>.mockdata.ts`: mock ma'lumotlar, `*Dto` shaklida.
 - Backend javobi ilovaga to'g'ridan-to'g'ri berilmaydi: `<resurs>.api.ts`dagi `map<Nom>` funksiyasi `*Dto`ni ilova tipiga o'giradi. Komponentlar faqat ilova tiplarini ishlatadi.
-- Ro'yxatlar `POST .../get-all/` (`{ page, pageSize ≤ 100, filters }`) bilan olinadi, javob `Paginated<T>` (`{ items, page, totalPages, total }`). Ro'yxat to'liq kerak bo'lsa `fetchAllPages`. Mahsulot, kategoriya va yangilik so'rovlari `env.storeId` (`VITE_STORE_ID`) bilan filtrlanadi.
+- Ro'yxatlar `POST .../get-all/` (`{ page, pageSize ≤ 100, filters }`) bilan olinadi, javob `Paginated<T>` (`{ items, page, totalPages, total }`). Ro'yxat to'liq kerak bo'lsa `fetchAllPages`. Mahsulot, kategoriya va yangilik so'rovlari `requireStoreId()` (`lib/selectedStore`) bilan filtrlanadi; `env.storeId` yo'q. Do'kon almashganda `useSelectStore` query keshini tozalaydi.
 - Xaridor tokenlari faqat `lib/authTokens` orqali saqlanadi. `api` instance ularni o'zi qo'shadi va 401'da yangilaydi, api funksiyalarida token bilan ishlanmaydi (`authApi.login` / `logout` bundan mustasno).
 - axios faqat `<resurs>.api.ts` fayllarida, `api-config/axios.ts`dagi `api` instance orqali ishlatiladi.
 - `.env`da `VITE_USE_MOCK=true` bo'lsa, api funksiyalari backend'ga so'rov yubormaydi va mock ma'lumot qaytaradi. Har bir yangi api funksiyasi mock rejimni ham qo'llab-quvvatlashi shart (namuna: `api/routes/products/products.api.ts`).
@@ -160,13 +160,15 @@ src/
 
 ### Nisha (rang palitrasi)
 - Saytning ranglari `config/niche.ts`dagi `NICHE`dan olinadi. Nishani almashtirish uchun faqat `export const NICHE = NICHES.<id>` qatori o'zgartiriladi.
-- Nisha 6 ta xom rang, `tone` va `darkTint` beradi: `brand`, `brandInk`, `textLight`, `textDark`, `blobA`, `blobB`. `tone: 'light'` och brand uchun (oltin, ustida to'q matn), `'dark'` to'q brand uchun (yashil, qizil, ustida och matn): glass-brand zichroq bo'ladi.
+- Nisha 6 ta xom rang, `tone`, `lightTint` va `darkTint` beradi: `brand`, `brandInk`, `textLight`, `textDark`, `blobA`, `blobB`. `tone: 'light'` och brand uchun (oltin, ustida to'q matn), `'dark'` to'q brand uchun (yashil, qizil, ustida och matn): glass-brand zichroq bo'ladi.
+- Foydalanuvchi Profil → "Rang"da nishani almashtira oladi: tanlov `localStorage`ning `niche` kalitida (`lib/activeNiche`, o'qish `hooks/useNiche`), yo'q bo'lsa `NICHE`. PWA ikonkalari va manifest ranglari esa `NICHE`da qoladi.
 - `main.tsx`da render'dan oldin `lib/applyNiche` ranglarni `:root`ga `--brand*` / `--blob-*` sifatida yozadi va `data-niche`, `data-brand-tone` atributlarini qo'yadi.
+- `textLight`, `textDark` va `blobA` / `blobB` brand rangi bilan bir xil tusda tanlanadi (bir rangli nisha): qorong'i mavzuda chegara, chiziq, nuqta va aksent matni `textDark`dan keladi, boshqa tusda bo'lsa tugma (`brand`) bilan qolgan UI turli rangda chiqadi. Istisno: `bridal` (yashil va pushti dog'lar ataylab).
 - Chiziqlar, glass gradient, soyalar, badge va fon dog'lari `glass.css`da `color-mix()` bilan shu ranglardan hisoblanadi. Mavzuga bog'liq tokenlar (`--primary-text`, `--brand-mark`, `--line`) `textLight` yoki `textDark`ni tanlaydi. Bu qiymatlar qo'lda qayta yozilmaydi.
-- Yorug' mavzuda neytral ranglar (`bg`, `fill`, `tile`, `text`, `muted`) nishaga bog'liq emas. Qorong'i mavzuda esa `bg`, `fill`, `tile` va `muted` neytral qoraga nishaning `darkTint` foizicha brand rangini aralashtirib hisoblanadi (`--dark-tint`, 0 bo'lsa sof neytral).
+- Yorug' mavzuda `bg`, `fill`, `tile` neytral krem/oqqa nishaning `lightTint` foizicha brand rangini aralashtirib hisoblanadi (`--light-tint`, 0 bo'lsa sof neytral), `muted` shunga qarab to'qlashadi; `text` nishaga bog'liq emas. Qorong'i mavzuda esa `bg`, `fill`, `tile` va `muted` neytral qoraga `darkTint` foizicha brand rangini aralashtirib hisoblanadi (`--dark-tint`).
 - Yangi nisha qo'shishda kontrast tekshiriladi: `brandInk` glass-brand ustida va `textLight` / `textDark` fon ustida kamida 4.5:1, ikkala mavzuda.
 - Mobile-first: avval mobil uchun klasslar yoziladi, katta ekranlar uchun `sm:` / `md:` / `lg:` qo'shiladi. Har bir komponent 360px kenglikda ham to'g'ri ko'rinishi shart.
-- Animatsiya kutubxonasi yo'q, hammasi CSS bilan. Keyframe'lar `style/motion.css`dagi `@theme`da turadi va `animate-<nom>` klasslari sifatida ishlatiladi: `fade-in` / `fade-out`, `slide-in-up` / `slide-out-down`, `slide-in-right` / `slide-out-right`, `slide-switch`, `fade-swap`.
+- Animatsiya kutubxonasi yo'q, hammasi CSS bilan. Keyframe'lar `style/motion.css`dagi `@theme`da turadi va `animate-<nom>` klasslari sifatida ishlatiladi: `fade-in` / `fade-out`, `slide-in-up` / `slide-out-down`, `slide-in-right` / `slide-out-right`, `slide-in-left` / `slide-out-left`, `slide-switch`, `fade-swap`.
 - Ochilib-yopiladigan oyna (sheet, viewer) `hooks/usePresence(isOpen, exitMs)` bilan: u yopilgandan keyin `exitMs` davomida elementni `data-state="closed"` bilan DOM'da ushlab turadi, chiqish animatsiyasi `data-[state=closed]:animate-*` (ichki elementlarga `group-data-[state=closed]:`) bilan beriladi. `exitMs` `motion.css`dagi chiqish davomiyligiga teng bo'ladi.
 - Balandligi `auto` bo'lgan blokni ochish-yopish (accordion, qidiruv paneli): `grid` + `grid-rows-[0fr]` ↔ `grid-rows-[1fr]` transition, ichida `overflow-hidden` o'rovchi. Yopiq blokka `inert` qo'yiladi.
 - Ichkariga kirish / orqaga qaytish uchun `animate-slide-switch` (`[--switch-dir:1]` yoki `[--switch-dir:-1]`), bir joyda kontent almashishi uchun `animate-fade-swap` ishlatiladi. Ikkalasi faqat kirish animatsiyasi: element `key` o'zgarganda qayta mount bo'lib o'ynaydi. Sahifaga birinchi kirishda o'ynamasligi uchun klass faqat birinchi almashishdan keyin qo'yiladi (`hasSwitched` / `hasSwapped` state).

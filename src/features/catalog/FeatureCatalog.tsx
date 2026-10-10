@@ -5,14 +5,22 @@ import { PickerSkeleton } from './components/picker/PickerSkeleton'
 import { CatalogResults } from './components/results/CatalogResults'
 import { NewsResults } from './components/results/NewsResults'
 import { useCatalogParams } from './hooks/useCatalogParams'
+import { useScopeSubcategories } from './hooks/useScopeSubcategories'
 
 // Katalog: kategoriya/subkategoriyalarni belgilash → "Ko'rsatish" → mahsulotlar.
 // Yangilik oynasidan kelinsa (?news=<id>) o'sha yangilikka bog'langan mahsulotlar ko'rsatiladi.
 // Holat URL query'da (useCatalogParams), shuning uchun sahifa props bermaydi
 export function FeatureCatalog() {
-  const { step, selection, columns, newsId, apply, showPicker, showResults, setColumns } = useCatalogParams()
+  const { step, selection, columns, newsId, activeSubIds, apply, showPicker, showResults, setActiveSubs, setColumns } =
+    useCatalogParams()
   const categories = useGetCategories()
   const isPicker = step === 'picker'
+
+  // Tasma faqat kategoriya natijalarida; tanlov doirasidan tashqaridagi active e'tiborsiz qoldiriladi
+  const { subcategories: scope, groups } = useScopeSubcategories(categories.data, selection)
+  const showChips = !isPicker && newsId === null
+  const activeChips = activeSubIds.filter((id) => scope.some((item) => item.id === id))
+  const resultsSelection = activeChips.length === 0 ? selection : { categoryIds: [], subcategoryIds: activeChips }
 
   return (
     <>
@@ -22,6 +30,10 @@ export function FeatureCatalog() {
         selectedCount={selection.categoryIds.length + selection.subcategoryIds.length}
         columns={isPicker ? undefined : columns}
         onColumnsChange={setColumns}
+        chips={showChips ? scope : undefined}
+        groups={groups}
+        activeChips={activeChips}
+        onChipsChange={setActiveSubs}
       />
 
       {/* Picker'da pastki padding yo'q: tasma harakatlar paneligacha cho'ziladi, ortiqcha scroll chiqmasin */}
@@ -43,7 +55,7 @@ export function FeatureCatalog() {
         ) : newsId !== null ? (
           <NewsResults newsId={newsId} columns={columns} onOpenPicker={showPicker} />
         ) : (
-          <CatalogResults selection={selection} columns={columns} onOpenPicker={showPicker} />
+          <CatalogResults selection={resultsSelection} columns={columns} onOpenPicker={showPicker} />
         )}
       </div>
     </>

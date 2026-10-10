@@ -1,4 +1,5 @@
 import { env } from '@/config/env'
+import { requireStoreId } from '@/lib/selectedStore'
 import { api } from '../../api-config/axios'
 import { fetchAllPages, mapPage, MAX_PAGE_SIZE, paginate, toNumberOrNull } from '../../api-config/backend'
 import type { GetAllRequest, Paginated } from '../../api-config/backend'
@@ -100,7 +101,7 @@ const byNewest = (a: PublicProductDto, b: PublicProductDto) => b.created_at.loca
 
 // Har bir so'rov faqat shu saytning do'koni bo'yicha
 function toFilters(filter?: ProductFilter) {
-  const filters: Record<string, unknown> = { store: env.storeId }
+  const filters: Record<string, unknown> = { store: requireStoreId() }
   if (filter?.categoryIds.length) filters.category = filter.categoryIds
   if (filter?.subcategoryIds.length) filters.subcategory = filter.subcategoryIds
   return filters

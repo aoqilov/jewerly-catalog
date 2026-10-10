@@ -5,6 +5,8 @@ export type Niche = {
   name: string
   // light: och brand, ustida to'q matn (oltin). dark: to'q brand, ustida och matn (yashil, qizil)
   tone: 'light' | 'dark'
+  // Yorug' mavzuda fon, kartochka va panellar qancha brand rangiga bo'yaladi (0–12, foiz). 0: sof neytral krem/oq
+  lightTint: number
   // Qorong'i mavzuda fon, kartochka va panellar qancha brand rangiga bo'yaladi (0–20, foiz). 0: sof neytral qora
   darkTint: number
   colors: {
@@ -22,7 +24,8 @@ export const NICHES = {
     id: 'bridal',
     name: 'Kelinlik liboslari',
     tone: 'light',
-    darkTint: 3,
+    lightTint: 5,
+    darkTint: 6,
     colors: {
       brand: '#D8B238',
       brandInk: '#1F2A1C',
@@ -32,34 +35,36 @@ export const NICHES = {
       blobB: '#E89AAE',
     },
   },
-  // Rolex uslubi: zumrad yashil + shampan oltin
+  // Rolex uslubi: zumrad yashil, bir rangli (chegara va aksentlar ham yashil tusda)
   emerald: {
     id: 'emerald',
     name: 'Hashamatli klassika',
     tone: 'dark',
-    darkTint: 4,
+    lightTint: 9,
+    darkTint: 14,
     colors: {
       brand: '#006039',
       brandInk: '#F4EBD0',
       textLight: '#006039',
-      textDark: '#CBA85C',
-      blobA: '#B8923A',
+      textDark: '#4FBF8B',
+      blobA: '#1F9E6A',
       blobB: '#0E3B2A',
     },
   },
-  // Eron gilami uslubi: ro'yan qizili + lojuvard ko'k + za'faron
+  // Eron gilami uslubi: ro'yan qizili, bir rangli (chegara va aksentlar ham qizil tusda)
   persian: {
     id: 'persian',
     name: 'Sharqona naqsh',
     tone: 'dark',
-    darkTint: 3,
+    lightTint: 8,
+    darkTint: 14,
     colors: {
       brand: '#9B1B30',
       brandInk: '#F7E9CC',
       textLight: '#8A1C2B',
-      textDark: '#E3B574',
-      blobA: '#1E3A6E',
-      blobB: '#D9A441',
+      textDark: '#E8707F',
+      blobA: '#C0364C',
+      blobB: '#5A0F1C',
     },
   },
   // Ko'k: sapfir ko'k + osmon ko'k + kumush-kulrang
@@ -67,7 +72,8 @@ export const NICHES = {
     id: 'blue',
     name: 'Sapfir',
     tone: 'dark',
-    darkTint: 4,
+    lightTint: 8,
+    darkTint: 14,
     colors: {
       brand: '#1F4E9C',
       brandInk: '#F2F5FB',
@@ -82,13 +88,14 @@ export const NICHES = {
     id: 'pink',
     name: 'Atirgul',
     tone: 'dark',
-    darkTint: 3,
+    lightTint: 8,
+    darkTint: 12,
     colors: {
       brand: '#B3164F',
       brandInk: '#FFF1F5',
       textLight: '#AD1457',
       textDark: '#F48FB1',
-      blobA: '#9B8BD9',
+      blobA: '#D6457F',
       blobB: '#F6A5C0',
     },
   },
@@ -97,6 +104,7 @@ export const NICHES = {
     id: 'instagram',
     name: 'Instagram',
     tone: 'dark',
+    lightTint: 0,
     darkTint: 0,
     colors: {
       brand: '#171717',
@@ -112,7 +120,8 @@ export const NICHES = {
     id: 'instagram2',
     name: 'Instagram 2',
     tone: 'dark',
-    darkTint: 2,
+    lightTint: 9,
+    darkTint: 10,
     colors: {
       brand: '#5B5F44',
       brandInk: '#ECE1D3',

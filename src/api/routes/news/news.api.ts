@@ -1,4 +1,5 @@
 import { env } from '@/config/env'
+import { requireStoreId } from '@/lib/selectedStore'
 import { api } from '../../api-config/axios'
 import { fetchAllPages, MAX_PAGE_SIZE, paginate } from '../../api-config/backend'
 import type { Paginated } from '../../api-config/backend'
@@ -33,7 +34,7 @@ async function fetchPage(page: number): Promise<Paginated<PublicStoreNewsDto>> {
   const { data } = await api.post<Paginated<PublicStoreNewsDto>>('/public/news/get-all/', {
     page,
     pageSize: MAX_PAGE_SIZE,
-    filters: { store: env.storeId },
+    filters: { store: requireStoreId() },
   })
   return data
 }
@@ -47,7 +48,7 @@ export const newsApi = {
     const dto = env.useMock
       ? newsMock.find((item) => item.id === id)
       : (await api.get<PublicStoreNewsDto>(`/public/news/${id}/`)).data
-    if (!dto || (!env.useMock && dto.store !== env.storeId)) throw new Error('Yangilik topilmadi')
+    if (!dto || (!env.useMock && dto.store !== requireStoreId())) throw new Error('Yangilik topilmadi')
     return mapNews(dto)
   },
 }

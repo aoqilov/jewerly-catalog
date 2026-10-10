@@ -9,6 +9,8 @@ export const ROUTES = {
   newArrivals: '/new',
   wardrobe: '/wardrobe',
   profile: '/profile',
+  // do'kon tanlash: birinchi kirishda MainLayout shu yerga yo'naltiradi, Profil'dan almashtirish ham
+  stores: '/stores',
   // dizayn-tizim komponentlarini ko'rish uchun, menyuda yo'q
   playground: '/playground',
 }

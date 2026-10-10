@@ -1,12 +1,18 @@
-import { Outlet, useMatches } from 'react-router'
+import { Navigate, Outlet, useMatches } from 'react-router'
+import { ROUTES } from '@/config/routes'
+import { useStoreId } from '@/hooks/useStoreId'
 import type { RouteHandle } from '@/types/router'
 import { BottomNav } from './components/BottomNav'
 import { Header } from './components/Header'
 
 export function MainLayout() {
+  const storeId = useStoreId()
   const handles = useMatches().map((match) => match.handle as RouteHandle | undefined)
   const hideHeaderOnMobile = handles.some((handle) => handle?.hideHeaderOnMobile)
   const hideBottomNavOnMobile = handles.some((handle) => handle?.hideBottomNavOnMobile)
+
+  // Do'kon hali tanlanmagan (birinchi kirish): so'rovlar do'kon id'sisiz ketmasligi uchun tanlash sahifasiga
+  if (storeId === null) return <Navigate to={ROUTES.stores} replace />
 
   return (
     // app-bg: glass sirtlar ortidagi dog'lar, har bir sahifa shu fon ustida turadi.

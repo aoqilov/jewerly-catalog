@@ -1,7 +1,9 @@
 import { useTheme } from '@/hooks/useTheme'
 import { ThemeToggle } from '@/shared/components/ThemeToggle'
+import { ChipBarDemo } from './components/ChipBarDemo'
 import { ButtonsDemo } from './components/ButtonsDemo'
 import { InputDemo } from './components/InputDemo'
+import { LeftSheetDemo } from './components/LeftSheetDemo'
 import { NicheDemo } from './components/NicheDemo'
 import { PlaygroundSection } from './components/PlaygroundSection'
 import { RightSheetDemo } from './components/RightSheetDemo'
@@ -27,8 +29,10 @@ export function FeaturePlayground() {
       <NicheDemo />
       <ButtonsDemo />
       <SegmentedDemo />
+      <ChipBarDemo />
       <InputDemo />
       <RightSheetDemo />
+      <LeftSheetDemo />
 
       <PlaygroundSection title="BottomNav">
         <p className="text-sm text-muted">

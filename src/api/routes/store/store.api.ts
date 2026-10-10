@@ -1,10 +1,19 @@
 import { env } from '@/config/env'
+import { requireStoreId } from '@/lib/selectedStore'
 import { api } from '../../api-config/axios'
-import { storeMock } from './store.mockdata'
-import type { PublicStoreDetailDto, Store } from './store.types'
+import { mapPage, paginate } from '../../api-config/backend'
+import type { Paginated } from '../../api-config/backend'
+import { storeMock, storesMock } from './store.mockdata'
+import type { PublicStoreDetailDto, PublicStoreDto, Store, StoreSummary } from './store.types'
 
 export const storeKeys = {
   all: ['store'] as const,
+  // Do'kon tanlash ro'yxati (qidiruv bo'yicha)
+  search: (name: string) => [...storeKeys.all, 'search', name] as const,
+}
+
+function mapStoreSummary(dto: PublicStoreDto): StoreSummary {
+  return { id: dto.id, name: dto.name, description: dto.description, phone: dto.phone }
 }
 
 function mapStore(dto: PublicStoreDetailDto): Store {
@@ -52,9 +61,26 @@ function mapStore(dto: PublicStoreDetailDto): Store {
 
 export const storeApi = {
   get: async (): Promise<Store> => {
-    if (env.useMock) return mapStore(storeMock)
+    if (env.useMock) return mapStore(storesMock.find((item) => item.id === requireStoreId()) ?? storeMock)
 
-    const { data } = await api.get<PublicStoreDetailDto>(`/public/stores/${env.storeId}/`)
+    const { data } = await api.get<PublicStoreDetailDto>(`/public/stores/${requireStoreId()}/`)
     return mapStore(data)
+  },
+
+  // Do'kon tanlash: faqat aktiv do'konlar, nom bo'yicha qidiruv (bo'sh bo'lsa hammasi)
+  search: async (request: { name: string; page: number; pageSize: number }): Promise<Paginated<StoreSummary>> => {
+    const { name, page, pageSize } = request
+    if (env.useMock) {
+      const query = name.trim().toLowerCase()
+      const found = storesMock.filter((item) => item.name.toLowerCase().includes(query))
+      return mapPage(paginate(found, { page, pageSize }), mapStoreSummary)
+    }
+
+    const { data } = await api.post<Paginated<PublicStoreDto>>('/public/stores/get-all/', {
+      page,
+      pageSize,
+      filters: name.trim() ? { name: name.trim() } : {},
+    })
+    return mapPage(data, mapStoreSummary)
   },
 }

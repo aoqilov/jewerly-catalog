@@ -7,6 +7,8 @@
   --animate-slide-out-down: slide-out-down 250ms ease-in forwards;
   --animate-slide-in-right: slide-in-right 300ms ease-out;
   --animate-slide-out-right: slide-out-right 250ms ease-in forwards;
+  --animate-slide-in-left: slide-in-left 300ms ease-out;
+  --animate-slide-out-left: slide-out-left 250ms ease-in forwards;
   /* Ichkariga kirish / orqaga qaytish: --switch-dir = 1 (o'ngdan kiradi) yoki -1 (chapdan) */
   --animate-slide-switch: slide-switch 220ms ease-out;
   /* Bir joyda kontent almashishi */
@@ -30,6 +32,12 @@
   }
   @keyframes slide-out-right {
     to { transform: translateX(100%); }
+  }
+  @keyframes slide-in-left {
+    from { transform: translateX(-100%); }
+  }
+  @keyframes slide-out-left {
+    to { transform: translateX(-100%); }
   }
   @keyframes slide-switch {
     from { opacity: 0; transform: translateX(calc(var(--switch-dir, 1) * 48px)); }

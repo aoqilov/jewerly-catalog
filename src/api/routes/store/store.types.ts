@@ -1,4 +1,4 @@
-// api.yaml: PublicStoreDetail (GET /public/stores/{id}/), id .env'dagi VITE_STORE_ID.
+// api.yaml: PublicStoreDetail (GET /public/stores/{id}/), id foydalanuvchi tanlovidan (lib/selectedStore) yoki .env'dagi VITE_STORE_ID.
 // social_links/addresses/contacts/services shu javob ichida keladi (mustaqil public endpoint'lari yo'q).
 // social_links va services faqat visible=true bo'lganlari keladi. Logo va muqova maydoni yo'q: ular config/site.ts'da
 
@@ -69,7 +69,18 @@ export type PublicStoreDetailDto = {
   total_subcategories: number
 }
 
+// POST /public/stores/get-all/ elementi (PublicStore): tafsilot javobidan total_* hisoblagichlarsiz
+export type PublicStoreDto = Omit<PublicStoreDetailDto, 'total_products' | 'total_categories' | 'total_subcategories'>
+
 // --- Ilova ---
+
+// Do'kon tanlash ro'yxati uchun qisqa ko'rinish
+export type StoreSummary = {
+  id: number
+  name: string
+  description: string
+  phone: string
+}
 
 export type StoreSocial = {
   id: number

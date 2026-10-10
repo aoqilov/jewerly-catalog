@@ -5,6 +5,7 @@ import type { CatalogStep, GridColumns } from '../types'
 
 // Katalog holati URL'da: ?step=results&cat=1,3&sub=102&cols=2
 // Shunda "orqaga" tugmasi ishlaydi, sahifa yangilanganda tanlov saqlanadi, havolani ulashish mumkin.
+// active=1,2: natijalar tasmasidan tanlangan subkategoriyalar (tanlov doirasida torayadi, tanlovning o'zi o'zgarmaydi).
 // news=<id>: kategoriya tanlovi o'rniga yangilik/aksiyaga bog'langan mahsulotlar. Kategoriya tanlashga o'tilganda tushib qoladi.
 // config/routes.ts'dagi ROUTES.catalogByCategory va ROUTES.catalogByNews ham shu formatda
 const COLUMNS_STORAGE_KEY = 'catalog-columns'
@@ -45,6 +46,8 @@ type CatalogState = {
   selection: ProductFilter
   columns: GridColumns
   newsId: number | null
+  // Natijalar tasmasida tanlangan subkategoriyalar (bo'sh: hammasi)
+  activeSubIds: number[]
 }
 
 export function useCatalogParams() {
@@ -58,6 +61,7 @@ export function useCatalogParams() {
     },
     columns: parseColumns(params.get('cols')) ?? readStoredColumns() ?? DEFAULT_COLUMNS,
     newsId: parseIds(params.get('news'))[0] ?? null,
+    activeSubIds: parseIds(params.get('active')),
   }
 
   const write = (next: CatalogState, options: { replace?: boolean } = {}) => {
@@ -65,6 +69,7 @@ export function useCatalogParams() {
     if (next.selection.categoryIds.length) search.set('cat', next.selection.categoryIds.join(','))
     if (next.selection.subcategoryIds.length) search.set('sub', next.selection.subcategoryIds.join(','))
     if (next.newsId !== null) search.set('news', String(next.newsId))
+    if (next.activeSubIds.length) search.set('active', next.activeSubIds.join(','))
 
     setParams(search, { replace: options.replace })
     if (next.step !== state.step) appScrollElement().scrollTo({ top: 0 })
@@ -73,9 +78,14 @@ export function useCatalogParams() {
   return {
     ...state,
     // Tanlovni qo'llab natijalarni ko'rsatish
-    apply: (selection: ProductFilter) => write({ ...state, step: 'results', selection, newsId: null }),
-    showPicker: () => write({ ...state, step: 'picker', newsId: null }),
+    apply: (selection: ProductFilter) => write({ ...state, step: 'results', selection, newsId: null, activeSubIds: [] }),
+    showPicker: () => write({ ...state, step: 'picker', newsId: null, activeSubIds: [] }),
     showResults: () => write({ ...state, step: 'results' }),
+    // Natijalar tasmasi: subkategoriyalar bo'yicha toraytirish (bo'sh: hammasi)
+    setActiveSubs: (activeSubIds: number[]) => {
+      write({ ...state, activeSubIds }, { replace: true })
+      appScrollElement().scrollTo({ top: 0 })
+    },
     setColumns: (columns: GridColumns) => {
       storeColumns(columns)
       write({ ...state, columns }, { replace: true })

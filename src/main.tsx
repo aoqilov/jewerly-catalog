@@ -1,13 +1,13 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './style/index.css'
-import { NICHE } from '@/config/niche'
+import { getActiveNiche } from '@/lib/activeNiche'
 import { applyNiche } from '@/lib/applyNiche'
 import { initPwaInstall } from '@/lib/pwaInstall'
 import { App } from './App'
 
-// Rang palitrasi config/niche.ts'dagi NICHE'dan olinadi
-applyNiche(NICHE)
+// Rang palitrasi: foydalanuvchi tanlovi (localStorage) yoki config/niche.ts'dagi NICHE
+applyNiche(getActiveNiche())
 // O'rnatish hodisasi sahifa ochilishi bilan keladi: Profil sahifasi ochilmasdan oldin ushlab qolinadi
 initPwaInstall()
 

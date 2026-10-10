@@ -15,6 +15,7 @@
   --brand-text-dark: #D8B238;
   --blob-a: #136207;
   --blob-b: #E89AAE;
+  --light-tint: 0%;              /* yorug' fon, kartochka va panellarga qo'shiladigan brand ulushi */
   --dark-tint: 0%;               /* qorong'i fon, kartochka va panellarga qo'shiladigan brand ulushi */
 
   /* brand glass recipe: och brand (oltin) — shaffofroq, to'q matn */
@@ -49,11 +50,12 @@
   --badge-text: var(--brand-text-light);
 
   /* surfaces & text */
-  --bg: #FDFBF6;
-  --fill: #F4F2EC;
-  --tile: #FFFFFF;
+  /* neytral krem/oq + nisha rangidan --light-tint ulush. muted tintga qarab to'qlashadi: kontrast 4.5:1 saqlansin */
+  --bg: color-mix(in oklab, var(--brand) var(--light-tint), #FDFBF6);
+  --fill: color-mix(in oklab, var(--brand) calc(var(--light-tint) * 1.4), #F4F2EC);
+  --tile: color-mix(in oklab, var(--brand) calc(var(--light-tint) * 0.5), #FFFFFF);
   --text: #1F2A1C;
-  --muted: #6F6F6A;
+  --muted: color-mix(in oklab, var(--brand-text-light) calc(var(--light-tint) * 8), #6F6F6A);
   --image-placeholder: #2B2A26;  /* surat yuklanmaguncha / demo uchun to'q fon */
   --primary-text: var(--brand-text-light);   /* links / active labels */
   --brand-mark: var(--brand);    /* nuqta, chiziqcha, fokus halqasi */
@@ -68,7 +70,7 @@
   /* sheet / dialog paneli: hamma tomonga (pastki panelda tepaga, o'ng panelda chapga ko'rinadi), oq rasmlar ustida ham ajralsin */
   --sheet-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 0 32px rgba(40, 32, 8, 0.28);
   --glass-blur: 18px;
-  --glass-bar-bg: rgba(253, 251, 246, 0.85);
+  --glass-bar-bg: color-mix(in oklab, var(--bg) 85%, transparent);
   --glass-bar-blur: 22px;
 
   --glass-img-bg: rgba(255, 255, 255, 0.20);

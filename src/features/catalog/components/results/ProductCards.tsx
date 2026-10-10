@@ -16,8 +16,8 @@ const linkClass = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-
 // 3 ustun: faqat rasm, tez ko'zdan kechirish uchun
 export function ProductTileCompact({ product }: ProductCardProps) {
   return (
-    <Link to={ROUTES.product(product.id)} aria-label={product.name} className={`block rounded-tile ${linkClass}`}>
-      <ProductImage product={product} className="aspect-3/4 rounded-tile" />
+    <Link to={ROUTES.product(product.id)} aria-label={product.name} className={`block ${linkClass}`}>
+      <ProductImage product={product} className="aspect-3/4" />
     </Link>
   )
 }

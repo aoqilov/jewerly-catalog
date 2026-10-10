@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { LuGrid2X2, LuGrid3X3, LuSearch, LuShapes, LuSlidersHorizontal, LuSquare } from 'react-icons/lu'
+import { LuChevronDown, LuGrid2X2, LuGrid3X3, LuSearch, LuShapes, LuSlidersHorizontal, LuSquare } from 'react-icons/lu'
 import { CusButton } from '@/shared/ui/CusButton'
+import { CusChipBar } from '@/shared/ui/CusChipBar'
 import { CusRightSheet } from '@/shared/ui/CusRightSheet'
 import { CusMenuList } from '@/shared/ui/CusMenuList'
 import type { GridColumns } from '../types'
+import type { Subcategory } from '@/api/routes/categories/categories.types'
+import type { SubcategoryGroup } from '../hooks/useScopeSubcategories'
+import { SubcategorySheet } from './SubcategorySheet'
 
 type CatalogToolbarProps = {
   isPickerOpen: boolean
@@ -13,7 +17,16 @@ type CatalogToolbarProps = {
   // Faqat natijalarda beriladi
   columns?: GridColumns
   onColumnsChange: (columns: GridColumns) => void
+  // Natijalar tasmasi: subkategoriyalar (2 tadan kam bo'lsa tasma ko'rinmaydi), faollari (bo'sh: hammasi)
+  chips?: Subcategory[]
+  // Shu chip'lar kategoriya bo'yicha bo'lingan (chap paneldagi ro'yxat uchun)
+  groups?: SubcategoryGroup[]
+  activeChips?: number[]
+  onChipsChange?: (ids: number[]) => void
 }
+
+// "Hammasi" chip'ining qiymati (subkategoriya id'lari musbat)
+const ALL_CHIP = 0
 
 const COLUMN_OPTIONS = [
   { value: 3 as const, icon: <LuGrid3X3 aria-hidden className="size-4.5" />, label: '3 ustun' },
@@ -28,15 +41,29 @@ export function CatalogToolbar({
   selectedCount,
   columns,
   onColumnsChange,
+  chips = [],
+  groups = [],
+  activeChips = [],
+  onChipsChange,
 }: CatalogToolbarProps) {
   const [isSearchOpen, setSearchOpen] = useState(false)
   const [isFilterOpen, setFilterOpen] = useState(false)
+  const [isChipsOpen, setChipsOpen] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Qidiruv maydoni doim DOM'da turadi, shuning uchun autoFocus o'rniga ochilganda fokus beriladi
   useEffect(() => {
     if (isSearchOpen) searchInputRef.current?.focus()
   }, [isSearchOpen])
+
+  const chipOptions = [{ value: ALL_CHIP, label: 'Hammasi' }, ...chips.map((chip) => ({ value: chip.id, label: chip.name }))]
+  // Tasmada hech narsa tanlanmagan bo'lsa "Hammasi" yonib turadi
+  const chipSelected = activeChips.length === 0 ? [ALL_CHIP] : activeChips
+  // "Hammasi" tanlovni tozalaydi, qolganlari qo'shiladi / olinadi
+  const toggleChip = (value: number) => {
+    if (value === ALL_CHIP) return onChipsChange?.([])
+    onChipsChange?.(activeChips.includes(value) ? activeChips.filter((id) => id !== value) : [...activeChips, value])
+  }
 
   return (
     <div className="glass-bar sticky top-0 z-30 md:top-[65px]">
@@ -108,7 +135,37 @@ export function CatalogToolbar({
         </div>
       </div>
 
+      {/* Subkategoriya tasmasi: bitta subkategoriyaga toraytirish. Faqat natijalarda va 2+ ta bo'lsa */}
+      {chips.length > 1 && (
+        <div className="mx-auto flex max-w-2xl items-center gap-2 px-4 pb-1">
+          {/* Hammasini ro'yxat qilib ochadi: tasmani ko'p surmasdan tanlash uchun */}
+          <button
+            type="button"
+            onClick={() => setChipsOpen(true)}
+            aria-label="Barcha subkategoriyalar"
+            className="flex size-11 shrink-0 items-center justify-center rounded-[10px] border border-line text-text hover:bg-fill focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand"
+          >
+            <LuChevronDown aria-hidden className="size-5" />
+          </button>
+          <CusChipBar
+            aria-label="Subkategoriya"
+            options={chipOptions}
+            selected={chipSelected}
+            onSelect={toggleChip}
+            className="min-w-0 flex-1"
+          />
+        </div>
+      )}
+
       <div className="gline" />
+
+      <SubcategorySheet
+        isOpen={isChipsOpen}
+        onClose={() => setChipsOpen(false)}
+        groups={groups}
+        selectedIds={activeChips}
+        onApply={(ids) => onChipsChange?.(ids)}
+      />
 
       {/* Filtr mazmuni hozircha funksiyasiz — keyinroq narx/rang/brend bo'yicha boshqaruvlar ulanadi */}
       <CusRightSheet isOpen={isFilterOpen} onClose={() => setFilterOpen(false)} title="Filtr" width="full">
