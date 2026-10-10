@@ -1,36 +1,26 @@
 import type { PhotoQuality, Product } from '@/api/routes/products/products.types'
 
-export type OfferType = 'rent' | 'sale' | 'tailoring'
-
-export const OFFER_LABELS: Record<OfferType, string> = {
-  rent: 'Ijara',
-  sale: 'Sotuv',
-  tailoring: 'Tikish',
-}
-
-export type Offer = {
-  type: OfferType
+export type ProductPriceInfo = {
+  // To'lanadigan narx (chegirma bo'lsa chegirmadan keyingisi)
   price: number
+  // Chegirmadan oldingi narx va foizi, chegirma bo'lmasa null
+  oldPrice: number | null
+  percent: number | null
 }
 
-// Mahsulotning mavjud takliflari tartib bilan: ijara, sotuv, tikish
-export function productOffers(product: Product): Offer[] {
-  const offers: Offer[] = []
-  if (product.isRentable && product.priceRental != null) {
-    offers.push({ type: 'rent', price: product.priceRental })
-  }
-  if (product.isSellable && product.priceSale != null) {
-    offers.push({ type: 'sale', price: product.priceSale })
-  }
-  if (product.priceTailoring != null) {
-    offers.push({ type: 'tailoring', price: product.priceTailoring })
-  }
-  return offers
-}
+// Faqat sotuv narxi (price_sale). Chegirma: mahsulotga hozir amal qilayotgan chegirmalardan eng arzon narx beradigani
+// (chegirmalar bir-biriga qo'shilmaydi). Taxminiy: api.yaml qaysi biri qo'llanishini aniq aytmaydi
+export function productPrice(product: Product): ProductPriceInfo | null {
+  const base = product.priceSale
+  if (base == null) return null
 
-// Kartada ko'rsatiladigan asosiy taklif: ijara bo'lsa ijara, bo'lmasa sotuv, bo'lmasa tikish
-export function primaryOffer(product: Product): Offer {
-  return productOffers(product)[0] ?? { type: 'sale', price: 0 }
+  const discounted = product.discounts.map((discount) =>
+    Math.max(0, discount.discountType === 'percentage' ? base * (1 - discount.value / 100) : base - discount.value),
+  )
+  const best = Math.min(base, ...discounted)
+  if (best >= base) return { price: base, oldPrice: null, percent: null }
+
+  return { price: best, oldPrice: base, percent: Math.round((1 - best / base) * 100) }
 }
 
 // Barcha variantlardagi jami rasm soni

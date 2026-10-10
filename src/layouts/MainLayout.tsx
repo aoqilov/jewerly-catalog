@@ -4,6 +4,7 @@ import { useStoreId } from '@/hooks/useStoreId'
 import type { RouteHandle } from '@/types/router'
 import { BottomNav } from './components/BottomNav'
 import { Header } from './components/Header'
+import { PullToRefresh } from './components/PullToRefresh'
 
 export function MainLayout() {
   const storeId = useStoreId()
@@ -22,6 +23,7 @@ export function MainLayout() {
         hideBottomNavOnMobile ? '[--bottom-nav-h:0px]' : '[--bottom-nav-h:calc(4rem+env(safe-area-inset-bottom))]'
       }`}
     >
+      <PullToRefresh />
       <Header hideOnMobile={hideHeaderOnMobile} />
       <main className="flex-1">
         <Outlet />

@@ -1,9 +1,13 @@
 import { LuArrowLeft, LuHeart, LuPhone } from 'react-icons/lu'
 import { TbBrandTelegram } from 'react-icons/tb'
+import type { Product } from '@/api/routes/products/products.types'
+import { ProductPrice } from '@/shared/components/ProductPrice'
 import { CusButton } from '@/shared/ui/CusButton'
 import { CusStickyActionBar } from '@/shared/ui/CusStickyActionBar'
 
 type ProductActionBarProps = {
+  // Narxi tugmalar ustida bir qatorda ko'rinadi (chegirma bo'lsa eski narx va foiz bilan)
+  product: Product
   isFavorite: boolean
   onToggleFavorite: () => void
   onBack: () => void
@@ -15,7 +19,7 @@ type ProductActionBarProps = {
 const iconButtonClass =
   'flex size-11 shrink-0 items-center justify-center rounded-md border border-line transition-colors hover:bg-fill focus-visible:outline-2 focus-visible:outline-brand'
 
-export function ProductActionBar({ isFavorite, onToggleFavorite, onBack, phone, telegramUrl }: ProductActionBarProps) {
+export function ProductActionBar({ product, isFavorite, onToggleFavorite, onBack, phone, telegramUrl }: ProductActionBarProps) {
   const telegramIcon = <TbBrandTelegram aria-hidden className="size-5" />
   // 420px'dan tor ekranda to'liq matn uchta ikonka yonida sig'maydi
   const telegramLabel = (
@@ -26,7 +30,15 @@ export function ProductActionBar({ isFavorite, onToggleFavorite, onBack, phone, 
   )
 
   return (
-    <CusStickyActionBar>
+    <CusStickyActionBar
+      header={
+        // Chapda "Narxi", o'ngda summa (chegirma bo'lsa eski narx va foiz bilan)
+        <div className="flex items-center justify-between gap-3">
+          <span className="shrink-0 text-sm text-muted">Narxi</span>
+          <ProductPrice product={product} size="lg" showBadge className="justify-end" />
+        </div>
+      }
+    >
       <button type="button" onClick={onBack} aria-label="Orqaga" className={`${iconButtonClass} text-text`}>
         <LuArrowLeft aria-hidden className="size-5" />
       </button>

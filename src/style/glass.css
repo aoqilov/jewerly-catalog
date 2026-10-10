@@ -156,7 +156,8 @@
 /* ---------- 4. Base ---------- */
 /* body emas, #root suriladi: body har doim joyida qotib turadi (bounce/rezinka effekti bo'lmaydi) */
 html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font-ui); }
-#root { height: 100%; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+/* overscroll-behavior: brauzerning o'z "tortib yangilash"i o'chadi, o'rniga layouts/components/PullToRefresh */
+#root { height: 100%; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
 * { scrollbar-width: none; }
 *::-webkit-scrollbar { display: none; }
 

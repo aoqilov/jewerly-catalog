@@ -3,7 +3,6 @@ import { Link } from 'react-router'
 import type { FavoriteProduct, FavoriteStore } from '@/api/routes/favorites/favorites.types'
 import { ROUTES } from '@/config/routes'
 import { formatPrice } from '@/lib/formatPrice'
-import { OFFER_LABELS } from '@/lib/productDisplay'
 import { CusRightSheet } from '@/shared/ui/CusRightSheet'
 import type { FavoritesKind } from '../types'
 
@@ -28,15 +27,9 @@ const rowClass =
   'flex min-h-16 items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-fill focus-visible:outline-2 focus-visible:outline-brand'
 const iconClass = 'flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-fill text-accent'
 
-// Kartadagi narx: ijara bo'lsa ijara, bo'lmasa sotuv (productDisplay.primaryOffer bilan bir xil tartib)
+// Kartadagi narx: faqat sotuv narxi
 function priceLine(product: FavoriteProduct) {
-  if (product.isRentable && product.priceRental != null) {
-    return `${OFFER_LABELS.rent}: ${formatPrice(product.priceRental)}`
-  }
-  if (product.isSellable && product.priceSale != null) {
-    return `${OFFER_LABELS.sale}: ${formatPrice(product.priceSale)}`
-  }
-  return null
+  return product.priceSale != null ? formatPrice(product.priceSale) : null
 }
 
 export function FavoritesSheet({ kind, products, stores, onClose }: FavoritesSheetProps) {

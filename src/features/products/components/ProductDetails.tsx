@@ -3,16 +3,14 @@ import { useLocation, useNavigate } from 'react-router'
 import type { Product } from '@/api/routes/products/products.types'
 import { ROUTES } from '@/config/routes'
 import { SITE } from '@/config/site'
-import { primaryOffer, productOffers } from '@/lib/productDisplay'
-import type { OfferType } from '@/lib/productDisplay'
 import { useGetMaterials } from '../api-hooks/useGetMaterials'
 import { useGetStore } from '../api-hooks/useGetStore'
 import { useFavoriteToggle } from '../hooks/useFavoriteToggle'
 import { useProductGallery } from '../hooks/useProductGallery'
 import { ProductActionBar } from './ProductActionBar'
+import { ProductDescription } from './ProductDescription'
 import { ProductHero } from './ProductHero'
 import { ProductImageViewer } from './ProductImageViewer'
-import { ProductOffers } from './ProductOffers'
 import { ProductSizes } from './ProductSizes'
 import { ProductSpecs } from './ProductSpecs'
 import { ProductThumbnails } from './ProductThumbnails'
@@ -34,14 +32,11 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const favorite = useFavoriteToggle(product.id)
   const materials = useGetMaterials()
   const store = useGetStore()
-  const [offerType, setOfferType] = useState<OfferType>(() => primaryOffer(product).type)
   const [variantIndex, setVariantIndex] = useState(0)
   const [viewerIndex, setViewerIndex] = useState<number | null>(null)
   const closeViewer = useCallback(() => setViewerIndex(null), [])
 
   const photos = product.variants[variantIndex]?.photos ?? []
-  const offers = productOffers(product)
-  const offer = offers.find((item) => item.type === offerType) ?? primaryOffer(product)
   const materialNames = product.materialIds
     .map((id) => materials.data?.find((material) => material.id === id)?.name)
     .filter((name): name is string => Boolean(name))
@@ -92,13 +87,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
           {product.sizes.length > 0 && <ProductSizes sizes={product.sizes} />}
 
-          {offers.length > 0 && <ProductOffers offers={offers} offer={offer} onChange={setOfferType} />}
-
-          <section aria-labelledby="product-description" className="flex flex-col gap-2">
-            <h2 id="product-description" className="text-[17px] font-bold text-text">
-              Tavsif
-            </h2>
-            <p className="text-[15px] leading-relaxed text-muted">{product.description}</p>
+          <section aria-label="Tavsif">
+            <ProductDescription text={product.description} />
           </section>
 
           <ProductSpecs manufacture={product.manufacture} brand={product.brand} materials={materialNames} />
@@ -106,6 +96,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       </div>
 
       <ProductActionBar
+        product={product}
         isFavorite={favorite.isFavorite}
         onToggleFavorite={favorite.toggle}
         onBack={goBack}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { LuChevronDown, LuGrid2X2, LuGrid3X3, LuSearch, LuShapes, LuSlidersHorizontal, LuSquare } from 'react-icons/lu'
+import { LuArrowLeft, LuChevronDown, LuGrid2X2, LuGrid3X3, LuSearch, LuShapes, LuSlidersHorizontal, LuSquare } from 'react-icons/lu'
 import { CusButton } from '@/shared/ui/CusButton'
 import { CusChipBar } from '@/shared/ui/CusChipBar'
 import { CusRightSheet } from '@/shared/ui/CusRightSheet'
@@ -76,7 +76,8 @@ export function CatalogToolbar({
             isPickerOpen ? 'glass-brand' : 'border border-line text-text hover:bg-fill'
           }`}
         >
-          <LuShapes aria-hidden className="size-4.5" />
+          {/* Natijalarda tugma kategoriya tanlashga qaytaradi: orqaga strelka. Tanlash ochiqligida kategoriyalar belgisi */}
+          {isPickerOpen ? <LuShapes aria-hidden className="size-4.5" /> : <LuArrowLeft aria-hidden className="size-4.5" />}
           Kategoriyalar
           {!isPickerOpen && selectedCount > 0 && (
             <span className="glass-brand absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-bold">

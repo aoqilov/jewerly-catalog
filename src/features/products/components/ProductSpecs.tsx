@@ -26,15 +26,19 @@ function SpecItem({ icon: Icon, label, value, wide = false }: SpecItemProps) {
   )
 }
 
+// Ma'lumot yo'q bo'lsa (hamma maydon bo'sh) sarlavha ham chiqmaydi
 export function ProductSpecs({ manufacture, brand, materials }: ProductSpecsProps) {
+  const hasSpecs = manufacture.trim() !== '' || brand.trim() !== '' || materials.length > 0
+  if (!hasSpecs) return null
+
   return (
     <section aria-labelledby="product-specs" className="flex flex-col gap-3">
       <h2 id="product-specs" className="text-[17px] font-bold text-text">
         Xususiyatlari
       </h2>
       <dl className="grid grid-cols-2 gap-2">
-        {manufacture && <SpecItem icon={LuMapPin} label="Ishlab chiqarilgan" value={manufacture} />}
-        {brand && <SpecItem icon={LuTag} label="Brend" value={brand} />}
+        {manufacture.trim() && <SpecItem icon={LuMapPin} label="Ishlab chiqarilgan" value={manufacture} />}
+        {brand.trim() && <SpecItem icon={LuTag} label="Brend" value={brand} />}
         {materials.length > 0 && <SpecItem icon={LuLayers} label="Material" value={materials.join(', ')} wide />}
       </dl>
     </section>

@@ -27,13 +27,6 @@ export function ProductSkeleton() {
               <div className={`h-6 w-1/2 ${barClass}`} />
             </div>
 
-            {/* Narx kartasi (ProductOffers): turi, narx, izoh */}
-            <div className="flex flex-col gap-2.5 rounded-md border border-line bg-tile p-4">
-              <div className={`h-3 w-14 ${barClass}`} />
-              <div className={`h-8 w-40 ${barClass}`} />
-              <div className={`h-4 w-52 max-w-full ${barClass}`} />
-            </div>
-
             <div className="flex flex-col gap-3">
               <div className={`h-5 w-20 ${barClass}`} />
               <div className={`h-4 w-full ${barClass}`} />
@@ -45,7 +38,7 @@ export function ProductSkeleton() {
       </div>
 
       {/* ProductActionBar shakli: orqaga, sevimlilar, qo'ng'iroq va "Yozish" */}
-      <CusStickyActionBar>
+      <CusStickyActionBar header={<div aria-hidden="true" className={`h-7 w-40 animate-pulse ${barClass}`} />}>
         <div aria-hidden="true" className="flex flex-1 animate-pulse items-center gap-2">
           {Array.from({ length: 3 }, (_, index) => (
             <div key={index} className="size-11 shrink-0 rounded-md border border-line" />

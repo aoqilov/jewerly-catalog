@@ -4,8 +4,7 @@ import type { Product } from '@/api/routes/products/products.types'
 import { ROUTES } from '@/config/routes'
 import { appScrollElement } from '@/lib/appScroll'
 import { dayKey } from '@/lib/dayKey'
-import { formatPrice } from '@/lib/formatPrice'
-import { OFFER_LABELS, primaryOffer } from '@/lib/productDisplay'
+import { ProductPrice } from '@/shared/components/ProductPrice'
 import { LoadMoreTrigger } from '@/shared/components/LoadMoreTrigger'
 import type { FeedColumns } from '../types'
 import { DayDivider } from './DayDivider'
@@ -51,8 +50,6 @@ type ProductCardProps = {
 // 2 ustun: katalog kartasi bilan bir xil — bosh rasm, ostida nom, taklif turi va narx.
 // Kartalar glass emas (bg-tile): uzun ro'yxatda blur ishlatilmaydi
 function ProductCard({ product }: ProductCardProps) {
-  const offer = primaryOffer(product)
-
   return (
     <Link
       to={ROUTES.product(product.id)}
@@ -61,8 +58,7 @@ function ProductCard({ product }: ProductCardProps) {
       <ProductPhoto product={product} className="aspect-3/4" />
       <div className="flex flex-col gap-0.5 p-2.5">
         <span className="truncate text-[15px] font-bold text-text">{product.name}</span>
-        <span className="text-xs text-muted">{OFFER_LABELS[offer.type]}</span>
-        <span className="text-[15px] font-bold text-text">{formatPrice(offer.price)}</span>
+        <ProductPrice product={product} />
       </div>
     </Link>
   )
@@ -74,17 +70,12 @@ type ProductPostProps = {
 
 // "Post" ko'rinishi: bosh rasm, ostida taklif turi va narx, nom, qisqa tavsif
 function ProductPost({ product }: ProductPostProps) {
-  const offer = primaryOffer(product)
-
   return (
     <Link to={ROUTES.product(product.id)} className={`flex flex-col gap-3 ${linkClass}`}>
       <ProductPhoto product={product} className="-mx-3.5 aspect-4/5" />
       <div className="flex flex-col gap-1">
-        <div className="flex items-baseline justify-between gap-2">
-          <span className="text-xs text-muted">{OFFER_LABELS[offer.type]}</span>
-          <span className="text-[17px] font-bold text-text">{formatPrice(offer.price)}</span>
-        </div>
         <span className="text-[17px] font-bold text-text">{product.name}</span>
+        <ProductPrice product={product} showBadge />
         <p className="line-clamp-2 text-sm text-muted">{product.description}</p>
       </div>
     </Link>

@@ -2,6 +2,8 @@ import { useLayoutEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 
 type CusStickyActionBarProps = {
+  // Tugmalar qatori ustidagi bir qatorli ma'lumot (masalan, narx)
+  header?: ReactNode
   children: ReactNode
 }
 
@@ -10,7 +12,7 @@ type CusStickyActionBarProps = {
 // Balandligi o'lchanib :root'dagi --action-bar-h'ga yoziladi: joyidagi bo'sh blok (sahifa oxiri panel ostida
 // qolmasligi uchun) va panelgacha cho'ziladigan bloklar (katalog tasmasi) shundan foydalanadi.
 // Ichidagi ikkinchi darajali tugma glass emas (blur ichida blur bo'lmaydi)
-export function CusStickyActionBar({ children }: CusStickyActionBarProps) {
+export function CusStickyActionBar({ header, children }: CusStickyActionBarProps) {
   const barRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
@@ -36,7 +38,10 @@ export function CusStickyActionBar({ children }: CusStickyActionBarProps) {
         className="glass-bar fixed inset-x-0 bottom-(--bottom-nav-h) z-30 pb-[max(0px,calc(env(safe-area-inset-bottom)-var(--bottom-nav-h)))]"
       >
         <div className="gline" />
-        <div className="mx-auto flex max-w-2xl items-center gap-2 px-4 py-3">{children}</div>
+        <div className="mx-auto flex max-w-2xl flex-col gap-2 px-4 py-3">
+          {header}
+          <div className="flex items-center gap-2">{children}</div>
+        </div>
       </div>
     </>
   )
