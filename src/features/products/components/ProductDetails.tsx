@@ -25,6 +25,12 @@ function withTelegramText(url: string, text: string) {
   return `${url}${url.includes('?') ? '&' : '?'}text=${encodeURIComponent(text)}`
 }
 
+// "@username" yoki "username" → t.me havolasi (bo'sh bo'lsa undefined)
+function telegramLink(username: string | undefined) {
+  const name = username?.trim().replace(/^@/, '')
+  return name ? `https://t.me/${name}` : undefined
+}
+
 export function ProductDetails({ product }: ProductDetailsProps) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -40,7 +46,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const materialNames = product.materialIds
     .map((id) => materials.data?.find((material) => material.id === id)?.name)
     .filter((name): name is string => Boolean(name))
-  const telegramUrl = store.data?.socials.find((social) => social.platform === 'telegram')?.url
+  // Do'konning Telegram'i: ijtimoiy tarmoq, bo'lmasa Telegram'i bor birinchi kontakt, bo'lmasa SITE'dagi zaxira.
+  // Do'kon yuklanguncha havola yo'q: zaxiraga yozib yuborilmasin
+  const telegramUrl =
+    store.data &&
+    (store.data.socials.find((social) => social.platform === 'telegram')?.url ??
+      telegramLink(store.data.contacts.find((contact) => contact.hasTelegram)?.telegram) ??
+      telegramLink(SITE.sellerTelegram))
 
   // Havola sotuvchiga qaysi mahsulot ekanini bildiradi (backend og-teglarni bersa, rasmi ham chiqadi)
   const productUrl = `${window.location.origin}${ROUTES.product(product.id)}`

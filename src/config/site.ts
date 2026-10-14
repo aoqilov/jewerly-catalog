@@ -1,4 +1,3 @@
-import { mockImage } from '@/lib/mockImage'
 import { APP } from './app'
 
 // Vaqtinchalik qiymatlar: haqiqiy ma'lumotlar bilan almashtiriladi. Nom va tavsif config/app.ts'da
@@ -13,8 +12,11 @@ export const SITE = {
     { label: 'Telegram', url: 'https://t.me/' },
     { label: 'Instagram', url: 'https://www.instagram.com/' },
   ],
-  // Do'kon logosi va muqovasi: api.yaml'da bunday maydon yo'q, shuning uchun statik rasm.
-  // Hozircha mock rasm, haqiqiysi src/assets'ga qo'yilib shu yerda import qilinadi. null: joy egasi ko'rinadi
-  storeLogo: mockImage('store-avatar', 300, 300) as string | null,
-  storeCover: mockImage('store-cover', 1200, 480) as string | null,
+  // "Sotuvchiga yozish" uchun zaxira Telegram username (@siz): do'konning ijtimoiy tarmoqlarida ham,
+  // kontaktlarida ham Telegram bo'lmasa shunga yoziladi. Bo'sh bo'lsa tugma o'chiq turadi
+  sellerTelegram: '',
+  // Do'kon logosi va muqovasi: api.yaml'da bunday maydon yo'q, shuning uchun public/logo-banner'dagi statik rasm,
+  // nomi do'kon id'si bilan (logo4.jpg, banner4.jpg). Fayl bo'lmasa StoreHero joy egasini ko'rsatadi
+  storeLogo: (storeId: number) => `/logo-banner/logo${storeId}.jpg`,
+  storeCover: (storeId: number) => `/logo-banner/banner${storeId}.jpg`,
 }

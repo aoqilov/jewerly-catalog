@@ -14,7 +14,7 @@ export function DayDivider({ dayKey, date }: DayDividerProps) {
       <div aria-hidden="true" className="gline flex-1" />
       <h2
         id={`day-${dayKey}`}
-        className="flex shrink-0 scroll-mt-20 items-center gap-1.5 rounded-pill border border-line bg-tile px-3 py-1 text-[11px] font-semibold tracking-wide text-muted uppercase md:scroll-mt-36"
+        className="flex shrink-0 scroll-mt-20 items-center gap-1.5 rounded-pill border border-line bg-tile px-3 py-1 text-[11px] font-semibold tracking-wide text-muted uppercase md:scroll-mt-30"
       >
         <LuCalendar aria-hidden className="size-3.5 text-accent" />
         {formatDate(date, { year: false })}

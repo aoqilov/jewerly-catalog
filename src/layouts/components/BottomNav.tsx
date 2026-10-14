@@ -15,20 +15,27 @@ export function BottomNav() {
             <NavLink
               to={to}
               className={({ isActive }) =>
-                `flex h-full flex-col items-center justify-center gap-0.5 text-[11px] transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand ${
+                `relative isolate flex h-full flex-col items-center justify-center gap-1 text-[11px] transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand ${
                   isActive ? 'font-semibold text-accent' : 'font-medium text-muted'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <Icon aria-hidden className="size-6.5" strokeWidth={isActive ? 2.3 : 1.6} />
+                  {/* Faol band: tepada chiziq va undan pastga so'nib boradigan brand tusi */}
                   <span
                     aria-hidden="true"
-                    className={`size-1 rounded-full bg-brand transition-[opacity,scale] duration-200 ease-out ${
-                      isActive ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
+                    className={`absolute inset-0 -z-10 bg-linear-to-b from-brand/15 to-transparent transition-opacity duration-200 ease-out ${
+                      isActive ? 'opacity-100' : 'opacity-0'
                     }`}
                   />
+                  <span
+                    aria-hidden="true"
+                    className={`absolute inset-x-3 top-0 h-0.75 rounded-b-full bg-brand transition-[opacity,scale] duration-200 ease-out ${
+                      isActive ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'
+                    }`}
+                  />
+                  <Icon aria-hidden className="size-6.5" strokeWidth={isActive ? 2.3 : 1.6} />
                   <span className="max-w-full truncate px-1">{label}</span>
                 </>
               )}

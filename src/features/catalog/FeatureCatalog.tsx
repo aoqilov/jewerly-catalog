@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useGetCategories } from './api-hooks/useGetCategories'
 import { CatalogToolbar } from './components/CatalogToolbar'
+import { FilterSheet } from './components/FilterSheet'
 import { CategoryPicker } from './components/picker/CategoryPicker'
 import { PickerSkeleton } from './components/picker/PickerSkeleton'
 import { CatalogResults } from './components/results/CatalogResults'
@@ -9,18 +11,45 @@ import { useScopeSubcategories } from './hooks/useScopeSubcategories'
 
 // Katalog: kategoriya/subkategoriyalarni belgilash → "Ko'rsatish" → mahsulotlar.
 // Yangilik oynasidan kelinsa (?news=<id>) o'sha yangilikka bog'langan mahsulotlar ko'rsatiladi.
+// Filtr oynasi (kategoriya + rang) va qidiruv tanlovni toraytiradi.
 // Holat URL query'da (useCatalogParams), shuning uchun sahifa props bermaydi
 export function FeatureCatalog() {
-  const { step, selection, columns, newsId, activeSubIds, apply, showPicker, showResults, setActiveSubs, setColumns } =
-    useCatalogParams()
+  const {
+    step,
+    selection,
+    columns,
+    newsId,
+    activeSubIds,
+    colorIds,
+    search,
+    apply,
+    applyFilters,
+    showPicker,
+    showResults,
+    setActiveSubs,
+    setSearch,
+    setColumns,
+  } = useCatalogParams()
   const categories = useGetCategories()
   const isPicker = step === 'picker'
+  const [isFilterOpen, setFilterOpen] = useState(false)
+  // Har ochilishda yangi key: filtr qoralamasi joriy tanlovdan boshlanadi
+  const [filterKey, setFilterKey] = useState(0)
 
   // Tasma faqat kategoriya natijalarida; tanlov doirasidan tashqaridagi active e'tiborsiz qoldiriladi
   const { subcategories: scope, groups } = useScopeSubcategories(categories.data, selection)
   const showChips = !isPicker && newsId === null
   const activeChips = activeSubIds.filter((id) => scope.some((item) => item.id === id))
-  const resultsSelection = activeChips.length === 0 ? selection : { categoryIds: [], subcategoryIds: activeChips }
+  const narrowing = { colorIds, search }
+  const resultsSelection =
+    activeChips.length === 0
+      ? { ...selection, ...narrowing }
+      : { categoryIds: [], subcategoryIds: activeChips, ...narrowing }
+
+  const openFilter = () => {
+    setFilterKey((key) => key + 1)
+    setFilterOpen(true)
+  }
 
   return (
     <>
@@ -34,6 +63,10 @@ export function FeatureCatalog() {
         groups={groups}
         activeChips={activeChips}
         onChipsChange={setActiveSubs}
+        search={search}
+        onSearchChange={setSearch}
+        filterCount={colorIds.length}
+        onOpenFilter={openFilter}
       />
 
       {/* Picker'da pastki padding yo'q: tasma harakatlar paneligacha cho'ziladi, ortiqcha scroll chiqmasin */}
@@ -48,6 +81,7 @@ export function FeatureCatalog() {
               <CategoryPicker
                 categories={categories.data}
                 initialSelection={selection}
+                narrowing={narrowing}
                 onApply={apply}
               />
             )}
@@ -58,6 +92,17 @@ export function FeatureCatalog() {
           <CatalogResults selection={resultsSelection} columns={columns} onOpenPicker={showPicker} />
         )}
       </div>
+
+      <FilterSheet
+        key={filterKey}
+        isOpen={isFilterOpen}
+        onClose={() => setFilterOpen(false)}
+        categories={categories.data ?? []}
+        selection={selection}
+        colorIds={colorIds}
+        search={search}
+        onApply={applyFilters}
+      />
     </>
   )
 }

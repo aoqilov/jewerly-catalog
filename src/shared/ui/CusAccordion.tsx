@@ -5,6 +5,8 @@ import { LuChevronDown } from 'react-icons/lu'
 type AccordionItem = {
   id: string | number
   title: string
+  // Sarlavha ostidagi qisqa izoh: band yopiq bo'lsa ham ko'rinadi
+  subtitle?: string
   icon?: ReactNode
   content: ReactNode
 }
@@ -36,7 +38,7 @@ export function CusAccordion({ items, defaultOpenId }: CusAccordionProps) {
                 aria-expanded={isOpen}
                 aria-controls={panelId}
                 onClick={() => setOpenId(isOpen ? undefined : item.id)}
-                className="flex min-h-14 w-full items-center gap-3 px-3 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand"
+                className="flex min-h-14 w-full items-center gap-3 px-3 py-2 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand"
               >
                 {item.icon && (
                   <span
@@ -47,7 +49,10 @@ export function CusAccordion({ items, defaultOpenId }: CusAccordionProps) {
                     {item.icon}
                   </span>
                 )}
-                <span className="flex-1 text-[15px] font-semibold text-text">{item.title}</span>
+                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <span className="text-[15px] font-semibold text-text">{item.title}</span>
+                  {item.subtitle && <span className="text-[13px] text-muted">{item.subtitle}</span>}
+                </span>
                 <LuChevronDown
                   aria-hidden
                   className={`size-5 shrink-0 text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}

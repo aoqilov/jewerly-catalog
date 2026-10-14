@@ -141,10 +141,14 @@ export type Product = {
 }
 
 // Katalog filtri: to'liq tanlangan kategoriyalar va alohida tanlangan subkategoriyalar.
-// Ikkalasi bo'sh bo'lsa, barcha mahsulotlar
+// Ikkalasi bo'sh bo'lsa, barcha mahsulotlar. Rang va qidiruv kategoriya tanlovi ustidan toraytiradi (VA)
 export type ProductFilter = {
   categoryIds: number[]
   subcategoryIds: number[]
+  // Shu ranglardan biri (bo'sh yoki yo'q: hammasi)
+  colorIds?: number[]
+  // Nom bo'yicha qidiruv: backend katta-kichik harfni farqlamay qism bo'yicha qidiradi (tekshirilgan)
+  search?: string
 }
 
 export type ProductListParams = ProductFilter & {

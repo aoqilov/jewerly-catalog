@@ -16,6 +16,8 @@ type CusRightSheetProps = {
   title: string
   // full: 100%, half: 50%, quarter: 25%
   width?: CusRightSheetWidth
+  // Pastda qotib turadigan harakatlar (Tozalash / Ko'rsatish): mazmun uning ustida suriladi
+  footer?: ReactNode
   children: ReactNode
 }
 
@@ -26,7 +28,7 @@ const widthClass: Record<CusRightSheetWidth, string> = {
 }
 
 // O'ngdan chiqadigan panel: fon yoki Escape bosilganda yopiladi, ochiq paytda sahifa scroll'i bloklanadi
-export function CusRightSheet({ isOpen, onClose, title, width = 'half', children }: CusRightSheetProps) {
+export function CusRightSheet({ isOpen, onClose, title, width = 'half', footer, children }: CusRightSheetProps) {
   const titleId = useId()
   const { isMounted, state } = usePresence(isOpen, EXIT_MS)
   useLockBodyScroll(isOpen)
@@ -75,7 +77,15 @@ export function CusRightSheet({ isOpen, onClose, title, width = 'half', children
           </button>
         </div>
         <div className="gline" />
-        <div className="overflow-y-auto px-4 py-3">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">{children}</div>
+        {footer && (
+          <>
+            <div className="gline" />
+            <div className="flex items-center gap-2 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              {footer}
+            </div>
+          </>
+        )}
       </div>
     </div>,
     document.body,

@@ -87,8 +87,12 @@ function mapProduct(dto: PublicProductDto): Product {
   }
 }
 
-// Mock: kategoriya YOKI subkategoriya bo'yicha
+// Mock: kategoriya YOKI subkategoriya bo'yicha, ustidan rang va nom (VA)
 function matchesFilter(product: PublicProductDto, filter: ProductFilter) {
+  const query = filter.search?.trim().toLowerCase()
+  if (query && !product.name.toLowerCase().includes(query)) return false
+  if (filter.colorIds?.length && (product.color === null || !filter.colorIds.includes(product.color))) return false
+
   if (filter.categoryIds.length === 0 && filter.subcategoryIds.length === 0) return true
   return (
     filter.categoryIds.includes(product.category) ||
@@ -104,6 +108,10 @@ function toFilters(filter?: ProductFilter) {
   const filters: Record<string, unknown> = { store: requireStoreId() }
   if (filter?.categoryIds.length) filters.category = filter.categoryIds
   if (filter?.subcategoryIds.length) filters.subcategory = filter.subcategoryIds
+  // Ro'yxat berilsa backend shu ranglardan birini oladi (tekshirilgan)
+  if (filter?.colorIds?.length) filters.color = filter.colorIds
+  const search = filter?.search?.trim()
+  if (search) filters.name = search
   return filters
 }
 
@@ -117,9 +125,10 @@ async function postGetAll(request: GetAllRequest): Promise<Paginated<PublicProdu
 // kategoriyaning subkategoriyalari subcategoryIds'ga tushmaydi (useSelectionDraft)
 const isMixed = (filter: ProductFilter) => filter.categoryIds.length > 0 && filter.subcategoryIds.length > 0
 
+// Rang va qidiruv ikkala qismga ham tushadi
 const splitFilter = (filter: ProductFilter): [ProductFilter, ProductFilter] => [
-  { categoryIds: filter.categoryIds, subcategoryIds: [] },
-  { categoryIds: [], subcategoryIds: filter.subcategoryIds },
+  { ...filter, subcategoryIds: [] },
+  { ...filter, categoryIds: [] },
 ]
 
 // Filtr bo'yicha eng yangi `limit` ta mahsulot (sahifa ko'pi bilan 100 ta bo'lgani uchun bir nechta so'rov bo'lishi mumkin)

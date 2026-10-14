@@ -35,7 +35,9 @@ export function CatalogResults({ selection, columns, onOpenPicker }: CatalogResu
     return (
       <div className="flex flex-col items-center gap-3 py-12 text-center">
         <LuSearchX aria-hidden className="size-10 text-muted" />
-        <p className="text-[15px] font-semibold text-text">Bu tanlov bo'yicha mahsulot topilmadi</p>
+        <p className="text-[15px] font-semibold text-text">
+          {selection.search ? `«${selection.search}» bo'yicha mahsulot topilmadi` : "Bu tanlov bo'yicha mahsulot topilmadi"}
+        </p>
         <CusButton variant="secondary" onClick={onOpenPicker}>
           Kategoriyalarni o'zgartirish
         </CusButton>

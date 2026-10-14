@@ -24,7 +24,10 @@ Sayt real backend'ga ulangan: `https://birid.silently.watch/api/v1` (hujjat: `/a
 - Backend shartnomasi: ildizdagi `api.yaml` (live `/api/v1/schema/` bilan bir xil bo'lishi kerak). Endpoint, so'rov va javob shakllari faqat shundan olinadi.
 - Har bir yangi so'rov uchun `<resurs>.mockdata.ts`da ham mock ma'lumot yoziladi. U backend javobi shaklida (`<resurs>.types.ts`dagi `*Dto` tiplariga to'liq mos) bo'ladi.
 - Mock rejimda api funksiyasi mock ma'lumotni real javob bilan bir xil mapper'dan o'tkazib qaytaradi. Mutatsiyalar (create / update / delete) xotiradagi mock massivni o'zgartiradi va natijani qaytaradi, sahifa yangilanganda ma'lumot asl holiga qaytadi.
-- Backend'da tekshirilgan xatti-harakatlar: get-all javoblari eng yangisidan (`created_at` kamayish tartibida); `filters` maydonlari VA bilan birlashadi (shuning uchun katalogdagi aralash tanlov `products.api`da ikki so'rovga bo'linadi); yaroqsiz token bilan public endpoint ham 401 qaytaradi; CORS hamma origin uchun ochiq.
+- Backend'da tekshirilgan xatti-harakatlar: get-all javoblari eng yangisidan (`created_at` kamayish tartibida); `filters` maydonlari VA bilan birlashadi (shuning uchun katalogdagi aralash tanlov `products.api`da ikki so'rovga bo'linadi); id maydonlari (`category`, `subcategory`, `color`) ro'yxat qabul qiladi (shulardan biri); `name` katta-kichik harfni farqlamay qism bo'yicha qidiradi; yaroqsiz token bilan public endpoint ham 401 qaytaradi; CORS hamma origin uchun ochiq.
+- Ranglar va materiallar uchun xaridor endpoint'i yo'q (faqat admin `/stores/colors/`, `/stores/product-materials/`). Katalog filtridagi ranglar vaqtincha `config/storeColors.ts`da do'kon id'si bo'yicha turadi (`colors.api` real rejimda shundan oladi), backend public endpoint qo'shganda fayl o'chiriladi.
+- Do'kon logosi va muqovasi uchun backend maydoni yo'q: ular `public/logo-banner/logo<id>.jpg` va `banner<id>.jpg` (do'kon id'si bo'yicha, `SITE.storeLogo` / `SITE.storeCover`). Fayl bo'lmasa `StoreHero` joy egasini ko'rsatadi.
+- "Sotuvchiga yozish" Telegram'ni tayyor xabar bilan ochadi: do'konning `social_links`idagi telegram, bo'lmasa Telegram'i bor birinchi kontakt, bo'lmasa `SITE.sellerTelegram`. Hech biri bo'lmasa tugma o'chiq.
 - Faqat sotuv narxi (`price_sale`) ishlatiladi, ijara va tikish yo'q. Chegirma mahsulotning `discounts` maydonidan hisoblanadi (`lib/productDisplay.productPrice`: eng arzon narx beradigan chegirma, qo'shilmaydi), ko'rinishi `shared/components/ProductPrice`.
 - api.yaml'da aniq bo'lmagan joylar (`product_snapshot` shakli, `in_customers_saved` ma'nosi) kodda "Taxminiy" izohi bilan belgilanadi.
 
@@ -69,7 +72,7 @@ src/
 │   ├── ui/                        # oddiy UI elementlar: Button, Input, Modal
 │   └── components/                # bir nechta feature ishlatadigan komponentlar
 ├── assets/                        # rasm, shrift, ikonkalar
-├── config/                        # app.ts (nom, tavsif, mavzu fon ranglari), env.ts, routes.ts, navigation.ts, site.ts, niche.ts, ui.ts (umumiy klass konstantalari), konstantalar
+├── config/                        # app.ts (nom, tavsif, mavzu fon ranglari), env.ts, routes.ts, navigation.ts, site.ts, niche.ts, ui.ts (umumiy klass konstantalari), storeColors.ts (vaqtincha), konstantalar
 ├── types/                         # API'dan tashqari umumiy tiplar
 ├── hooks/                         # hamma joyda ishlatiladigan hook'lar
 └── lib/                           # applyNiche.ts, yordamchi funksiyalar
@@ -87,7 +90,7 @@ src/
 
 ### Sahifalar
 - Sahifa `pages/<route>/<Nom>Page.tsx` faylida turadi. U faqat Feature komponentlarini yig'adi va URL parametrlarini (`useParams`) props orqali uzatadi. Sahifada API so'rovi va biznes-mantiq bo'lmaydi.
-- Istisno: holati URL query'da turadigan feature (masalan, katalogdagi tanlov va ko'rinish) uni o'zining `hooks/` ichida `useSearchParams` bilan o'qiydi va yozadi (`features/catalog/hooks/useCatalogParams`). Bunday sahifa feature'ga props bermaydi. Boshqa joyda shu formatdagi URL kerak bo'lsa, `ROUTES`ga yordamchi funksiya qo'shiladi (`ROUTES.catalogByCategory`).
+- Istisno: holati URL query'da turadigan feature (masalan, katalogdagi tanlov, ko'rinish, filtr oynasidagi ranglar `color` va qidiruv `q`) uni o'zining `hooks/` ichida `useSearchParams` bilan o'qiydi va yozadi (`features/catalog/hooks/useCatalogParams`). Bunday sahifa feature'ga props bermaydi. Boshqa joyda shu formatdagi URL kerak bo'lsa, `ROUTES`ga yordamchi funksiya qo'shiladi (`ROUTES.catalogByCategory`).
 - Yangi sahifa uchun URL `config/routes.ts`dagi `ROUTES`ga, route esa `router/index.tsx`ga qo'shiladi. Kodda URL qo'lda yozilmaydi, faqat `ROUTES` orqali olinadi.
 - Sahifa menyuda ko'rinishi kerak bo'lsa, `config/navigation.ts`dagi `NAV_LINKS`ga `label`, `to` va `icon` bilan qo'shiladi. Header (desktop) va pastki navbar havolalarni shu ro'yxatdan oladi.
 
@@ -104,9 +107,9 @@ src/
 - Header: chapda logo, o'ngda mavzu tugmasi va sevimlilar (❤). Mobilda menyu tugmasi yo'q, navigatsiya faqat BottomNav orqali. `md`dan kattada Header ichida `NAV_LINKS` ko'rinadi.
 - Mobilda sahifa tepasidan pastga tortilsa (Instagram kabi) `layouts/components/PullToRefresh` (`hooks/usePullToRefresh`) faol so'rovlarni `refetchQueries({ type: 'active' })` bilan qayta oladi, sahifa reload bo'lmaydi. Touch hodisalari `#root`ga ulanadi, shuning uchun portal'dagi modal oynalarga ta'sir qilmaydi.
 - Modal oynalar `shared/ui/CusBottomSheet` orqali: fon yoki Escape bosilganda yopiladi, ochiq paytda sahifa scroll'i bloklanadi (`hooks/useLockBodyScroll`).
-- Sahifaning o'z sticky toolbar'i bo'lsa, route'ga `handle: { hideHeaderOnMobile: true }` qo'shiladi (tip: `types/router.ts`), `MainLayout` mobilda Header'ni yashiradi. Toolbar mobilda `top-0`, `md`dan kattada Header ostida (`md:top-[65px]`) turadi.
+- Sahifaning o'z sticky toolbar'i bo'lsa, route'ga `handle: { hideHeaderOnMobile: true }` qo'shiladi (tip: `types/router.ts`), `MainLayout` mobilda Header'ni yashiradi. Toolbar mobilda `top-0`, `md`dan kattada Header ostida (`md:top-10`, ya'ni 40px) turadi.
 - Pastda qotib turadigan harakatlar paneli `shared/ui/CusStickyActionBar` orqali: mobilda BottomNav ustida (`bottom-(--bottom-nav-h)`), BottomNav yashirilgan sahifada ekran pastida turadi. Sahifa oxiridagi bo'sh joyni panel o'zi qo'yadi (balandligini o'lchab), sahifalarda qo'lda spacer yozilmaydi. O'lchangan balandlik `:root`dagi `--action-bar-h`da turadi: panelgacha cho'zilishi kerak bo'lgan blok (katalog tasmasi) balandligini `100dvh`dan shu va `--bottom-nav-h`ni ayirib hisoblaydi.
-- Mobilda (`md`dan kichik) ekran pastida `BottomNav` turadi: `NAV_LINKS`dagi har bir havola ikonka va nom bilan. Uning egallagan joyi `MainLayout`da `--bottom-nav-h` CSS o'zgaruvchisiga yoziladi (`calc(4rem+env(safe-area-inset-bottom))`, `md`dan kattada va yashirilganda `0px`), `pb-(--bottom-nav-h)` kontentni uning ostidan chiqaradi. Pastki navbar balandligi o'zgarsa, faqat shu qiymat o'zgartiriladi. Faol band: `aria-current`, qalinroq ikonka va oltin nuqta.
+- Mobilda (`md`dan kichik) ekran pastida `BottomNav` turadi: `NAV_LINKS`dagi har bir havola ikonka va nom bilan. Uning egallagan joyi `MainLayout`da `--bottom-nav-h` CSS o'zgaruvchisiga yoziladi (`calc(4rem+env(safe-area-inset-bottom))`, `md`dan kattada va yashirilganda `0px`), `pb-(--bottom-nav-h)` kontentni uning ostidan chiqaradi. Pastki navbar balandligi o'zgarsa, faqat shu qiymat o'zgartiriladi. Faol band: `aria-current`, qalinroq ikonka, tepada brand chiziq va undan pastga so'nadigan brand tusli fon.
 - Mobilda BottomNav kerak bo'lmagan sahifa (masalan, o'z harakatlar paneli bor mahsulot sahifasi) route'ga `handle: { hideBottomNavOnMobile: true }` oladi.
 - `MainLayout` ildizida `.app-bg` turadi: glass sirtlar ortidagi dog'lar har bir sahifada shu yerdan keladi, sahifalarga qayta qo'yilmaydi.
 - Ikonkalar `react-icons`dan kerakli faylning o'zida to'g'ridan-to'g'ri import qilinadi (`import { LuHeart } from 'react-icons/lu'`), oraliq `Icons` fayli yo'q. Avval Lucide (`react-icons/lu`), unda yo'q bo'lsa Tabler (`react-icons/tb`) ishlatiladi: ikkalasi chiziqli va `strokeWidth`ni qo'llab-quvvatlaydi. To'ldirilgan (fill) to'plamlar ishlatilmaydi. O'lcham `className` bilan (`size-5`, `size-6`) beriladi, bezak ikonkasiga `aria-hidden` qo'yiladi.

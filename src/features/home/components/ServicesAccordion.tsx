@@ -22,6 +22,8 @@ export function ServicesAccordion({ services }: ServicesAccordionProps) {
     return {
       id: service.id,
       title: service.title,
+      // kicker: qisqa izoh (narx, muddat), sarlavha ostida doim ko'rinadi; description ochilganda
+      subtitle: service.kicker,
       icon: <Icon aria-hidden className="size-5" />,
       content: <p className="text-sm text-muted">{service.description}</p>,
     }

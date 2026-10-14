@@ -23,7 +23,7 @@ export function ProductTopBar({ ref, title, isSolid, isFavorite, onBack, onToggl
   return (
     <div
       ref={ref}
-      className={`fixed inset-x-0 top-0 z-30 pt-[env(safe-area-inset-top)] transition-colors duration-200 md:top-[65px] ${
+      className={`fixed inset-x-0 top-0 z-30 pt-[env(safe-area-inset-top)] transition-colors duration-200 md:top-10 ${
         isSolid ? 'glass-bar' : ''
       }`}
     >

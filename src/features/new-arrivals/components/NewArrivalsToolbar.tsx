@@ -29,7 +29,7 @@ export function NewArrivalsToolbar({
   onBack,
 }: NewArrivalsToolbarProps) {
   return (
-    <div className="glass-bar sticky top-0 z-30 md:top-[65px]">
+    <div className="glass-bar sticky top-0 z-30 md:top-10">
       <div className="mx-auto flex h-14 max-w-2xl items-center gap-2 px-4">
         {view === 'calendar' ? (
           <>

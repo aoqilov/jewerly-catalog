@@ -16,7 +16,7 @@ type ProductHeroProps = {
 // sticky: sahifa scroll bo'lganda joyida qoladi, ma'lumotlar paneli uning ustidan o'tadi
 export function ProductHero({ name, photos, listRef, activeIndex, onScroll, onOpen }: ProductHeroProps) {
   return (
-    <div className="sticky top-0 md:top-[65px]">
+    <div className="sticky top-0 md:top-10">
       {photos.length > 0 ? (
         <ul
           ref={listRef}

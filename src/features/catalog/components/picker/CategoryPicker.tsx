@@ -16,19 +16,21 @@ const EMPTY_FILTER: ProductFilter = { categoryIds: [], subcategoryIds: [] }
 type CategoryPickerProps = {
   categories: Category[]
   initialSelection: ProductFilter
+  // Filtr oynasidagi ranglar va qidiruv: sonlar ularga ham mos bo'lishi uchun
+  narrowing: Pick<ProductFilter, 'colorIds' | 'search'>
   onApply: (selection: ProductFilter) => void
 }
 
-export function CategoryPicker({ categories, initialSelection, onApply }: CategoryPickerProps) {
+export function CategoryPicker({ categories, initialSelection, narrowing, onApply }: CategoryPickerProps) {
   const selection = useSelectionDraft(initialSelection)
   const [mode, setMode] = useState<PickerMode>({ type: 'categories' })
   // 1: A → B (ichkariga, o'ngdan kiradi), -1: B → A (orqaga, chapdan)
   const [direction, setDirection] = useState(1)
   // Sahifaga kirilganda animatsiya yo'q, faqat rejim almashganda
   const [hasSwitched, setHasSwitched] = useState(false)
-  const count = useGetProductsCount(selection.draft)
-  // Bo'sh filtr: barcha mahsulotlar soni ("Barcha mahsulotlar" plitkasi uchun)
-  const totalCount = useGetProductsCount(EMPTY_FILTER)
+  const count = useGetProductsCount({ ...selection.draft, ...narrowing })
+  // Bo'sh tanlov: barcha mahsulotlar soni ("Barcha mahsulotlar" plitkasi uchun)
+  const totalCount = useGetProductsCount({ ...EMPTY_FILTER, ...narrowing })
   const activeCategory =
     mode.type === 'subcategories' ? categories.find((item) => item.id === mode.categoryId) : undefined
 

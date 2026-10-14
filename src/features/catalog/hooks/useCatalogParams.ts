@@ -3,10 +3,11 @@ import type { ProductFilter } from '@/api/routes/products/products.types'
 import { appScrollElement } from '@/lib/appScroll'
 import type { CatalogStep, GridColumns } from '../types'
 
-// Katalog holati URL'da: ?step=results&cat=1,3&sub=102&cols=2
+// Katalog holati URL'da: ?step=results&cat=1,3&sub=102&cols=2&color=7,8&q=uzuk
 // Shunda "orqaga" tugmasi ishlaydi, sahifa yangilanganda tanlov saqlanadi, havolani ulashish mumkin.
 // active=1,2: natijalar tasmasidan tanlangan subkategoriyalar (tanlov doirasida torayadi, tanlovning o'zi o'zgarmaydi).
 // news=<id>: kategoriya tanlovi o'rniga yangilik/aksiyaga bog'langan mahsulotlar. Kategoriya tanlashga o'tilganda tushib qoladi.
+// color (filtr oynasidagi ranglar) va q (qidiruv) kategoriya tanlovi ustidan toraytiradi, bosqichlar orasida saqlanadi.
 // config/routes.ts'dagi ROUTES.catalogByCategory va ROUTES.catalogByNews ham shu formatda
 const COLUMNS_STORAGE_KEY = 'catalog-columns'
 const DEFAULT_COLUMNS: GridColumns = 3
@@ -48,6 +49,8 @@ type CatalogState = {
   newsId: number | null
   // Natijalar tasmasida tanlangan subkategoriyalar (bo'sh: hammasi)
   activeSubIds: number[]
+  colorIds: number[]
+  search: string
 }
 
 export function useCatalogParams() {
@@ -62,6 +65,8 @@ export function useCatalogParams() {
     columns: parseColumns(params.get('cols')) ?? readStoredColumns() ?? DEFAULT_COLUMNS,
     newsId: parseIds(params.get('news'))[0] ?? null,
     activeSubIds: parseIds(params.get('active')),
+    colorIds: parseIds(params.get('color')),
+    search: params.get('q') ?? '',
   }
 
   const write = (next: CatalogState, options: { replace?: boolean } = {}) => {
@@ -70,6 +75,8 @@ export function useCatalogParams() {
     if (next.selection.subcategoryIds.length) search.set('sub', next.selection.subcategoryIds.join(','))
     if (next.newsId !== null) search.set('news', String(next.newsId))
     if (next.activeSubIds.length) search.set('active', next.activeSubIds.join(','))
+    if (next.colorIds.length) search.set('color', next.colorIds.join(','))
+    if (next.search) search.set('q', next.search)
 
     setParams(search, { replace: options.replace })
     if (next.step !== state.step) appScrollElement().scrollTo({ top: 0 })
@@ -86,6 +93,15 @@ export function useCatalogParams() {
       write({ ...state, activeSubIds }, { replace: true })
       appScrollElement().scrollTo({ top: 0 })
     },
+    // Filtr oynasi: kategoriya tanlovi va ranglar birga qo'llanadi
+    applyFilters: (selection: ProductFilter, colorIds: number[]) =>
+      write({ ...state, step: 'results', selection, colorIds, newsId: null, activeSubIds: [] }),
+    // Qidiruv natijalarda ko'rinadi: tanlash bosqichida yozilsa natijalarga o'tiladi. Har bir harf tarixga yozilmaydi
+    setSearch: (search: string) =>
+      write(
+        search ? { ...state, search, step: 'results', newsId: null } : { ...state, search },
+        { replace: true },
+      ),
     setColumns: (columns: GridColumns) => {
       storeColumns(columns)
       write({ ...state, columns }, { replace: true })
