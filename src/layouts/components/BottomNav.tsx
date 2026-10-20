@@ -1,6 +1,13 @@
 import { NavLink } from 'react-router'
 import { NAV_LINKS } from '@/config/navigation'
 
+// Faol band qalinroq ikonka bilan. Chiziqli ikonkada (Lucide, Tabler) bu chiziq qalinligi. To'ldirilgan konturda (Remix)
+// strokeWidth shakl atrofiga chegara qo'shadi: odatda 0 (asl ko'rinishi), faolda chiziqlilardagi farqcha (2.3 − 1.6)
+function iconStrokeWidth(isActive: boolean, filledIcon = false) {
+  if (filledIcon) return isActive ? 0.7 : 0
+  return isActive ? 2.3 : 1.6
+}
+
 export function BottomNav() {
   return (
     <nav
@@ -9,7 +16,7 @@ export function BottomNav() {
     >
       <div className="gline" />
       <ul className="flex h-16">
-        {NAV_LINKS.map(({ label, to, icon: Icon }) => (
+        {NAV_LINKS.map(({ label, to, icon: Icon, filledIcon }) => (
           <li key={to} className="min-w-0 flex-1">
             {/* NavLink faol havolaga o'zi aria-current="page" qo'yadi */}
             <NavLink
@@ -35,7 +42,7 @@ export function BottomNav() {
                       isActive ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'
                     }`}
                   />
-                  <Icon aria-hidden className="size-6.5" strokeWidth={isActive ? 2.3 : 1.6} />
+                  <Icon aria-hidden className="size-6.5" strokeWidth={iconStrokeWidth(isActive, filledIcon)} />
                   <span className="max-w-full truncate px-1">{label}</span>
                 </>
               )}
