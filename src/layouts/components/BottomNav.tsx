@@ -1,11 +1,23 @@
 import { NavLink } from 'react-router'
 import { NAV_LINKS } from '@/config/navigation'
 
-// Faol band qalinroq ikonka bilan. Chiziqli ikonkada (Lucide, Tabler) bu chiziq qalinligi. To'ldirilgan konturda (Remix)
-// strokeWidth shakl atrofiga chegara qo'shadi: odatda 0 (asl ko'rinishi), faolda chiziqlilardagi farqcha (2.3 − 1.6)
-function iconStrokeWidth(isActive: boolean, filledIcon = false) {
-  if (filledIcon) return isActive ? 0.7 : 0
-  return isActive ? 2.3 : 1.6
+type NavIconProps = {
+  link: (typeof NAV_LINKS)[number]
+  isActive: boolean
+}
+
+// Faol band qalinroq ikonka bilan. Chiziqli ikonkada (Lucide, Tabler) bu chiziq qalinligi (1.6 → 2.3).
+// To'ldirilgan konturga (Phosphor) strokeWidth shakl atrofiga chegara qo'shardi: unga berilmaydi (0),
+// faolda shu ikonkaning qalinroq varianti (activeIcon) chiziladi
+function NavIcon({ link, isActive }: NavIconProps) {
+  const Icon = isActive && link.activeIcon ? link.activeIcon : link.icon
+  return (
+    <Icon
+      aria-hidden
+      className={`size-6.5 ${link.mirrored ? '-scale-x-100' : ''}`}
+      strokeWidth={link.activeIcon ? 0 : isActive ? 2.3 : 1.6}
+    />
+  )
 }
 
 export function BottomNav() {
@@ -16,11 +28,11 @@ export function BottomNav() {
     >
       <div className="gline" />
       <ul className="flex h-16">
-        {NAV_LINKS.map(({ label, to, icon: Icon, filledIcon }) => (
-          <li key={to} className="min-w-0 flex-1">
+        {NAV_LINKS.map((link) => (
+          <li key={link.to} className="min-w-0 flex-1">
             {/* NavLink faol havolaga o'zi aria-current="page" qo'yadi */}
             <NavLink
-              to={to}
+              to={link.to}
               className={({ isActive }) =>
                 `relative isolate flex h-full flex-col items-center justify-center gap-1 text-[11px] transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand ${
                   isActive ? 'font-semibold text-accent' : 'font-medium text-muted'
@@ -42,8 +54,8 @@ export function BottomNav() {
                       isActive ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'
                     }`}
                   />
-                  <Icon aria-hidden className="size-6.5" strokeWidth={iconStrokeWidth(isActive, filledIcon)} />
-                  <span className="max-w-full truncate px-1">{label}</span>
+                  <NavIcon link={link} isActive={isActive} />
+                  <span className="max-w-full truncate px-1">{link.label}</span>
                 </>
               )}
             </NavLink>
