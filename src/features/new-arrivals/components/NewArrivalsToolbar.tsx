@@ -39,18 +39,13 @@ export function NewArrivalsToolbar({
             <h2 className="text-[17px] font-bold text-text">Kalendar</h2>
           </>
         ) : (
-          <>
-            <CusMenuList
-              aria-label="Ko'rinish"
-              align="start"
-              options={COLUMN_OPTIONS}
-              value={columns}
-              onChange={onColumnsChange}
-            />
+          // Lentada tugmalar o'ngda: ko'rinish ro'yxati tugmaning o'ng chetiga tekislanadi (align: end)
+          <div className="ml-auto flex items-center gap-2">
+            <CusMenuList aria-label="Ko'rinish" options={COLUMN_OPTIONS} value={columns} onChange={onColumnsChange} />
             <button type="button" onClick={onOpenCalendar} aria-label="Kalendar" className={iconButtonClass}>
               <LuCalendarDays aria-hidden className="size-5" />
             </button>
-          </>
+          </div>
         )}
       </div>
       <div className="gline" />
