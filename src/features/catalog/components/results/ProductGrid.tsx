@@ -1,9 +1,9 @@
-import type { Product } from '@/api/routes/products/products.types'
+import type { ProductSummary } from '@/api/routes/products/products.types'
 import type { GridColumns } from '../../types'
 import { ProductCard, ProductCardWide, ProductTileCompact } from './ProductCards'
 
 type ProductGridProps = {
-  products: Product[]
+  products: ProductSummary[]
   columns: GridColumns
 }
 

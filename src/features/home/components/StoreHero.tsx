@@ -1,19 +1,22 @@
 import { useState } from 'react'
 import { TbBrandInstagram } from 'react-icons/tb'
+import type { CatalogFilters } from '@/api/routes/catalogFilters/catalogFilters.types'
 import type { Store } from '@/api/routes/store/store.types'
 import { SITE } from '@/config/site'
 import { StoreStats } from './StoreStats'
 
 type StoreHeroProps = {
   store: Store
+  // Katalog sonlari (catalog-filters), yuklanguncha undefined
+  stats?: CatalogFilters
 }
 
 // Instagram profili kabi: avatar (muqovaga chiqib turadi) va statistika bir qatorda, ostida nom va @instagram.
 // Muqova pastga qarab fonga singib ketadi (mask), matn rasm ustida emas, fon ustida turadi.
-// Logo va muqova SITE'dan, do'kon id'si bo'yicha: backend'da bunday maydon yo'q
-export function StoreHero({ store }: StoreHeroProps) {
+// Muqova: backend'dagi banner, u bo'lmasa SITE'dagi statik rasm. Logo faqat SITE'dan (backend'da maydoni yo'q)
+export function StoreHero({ store, stats }: StoreHeroProps) {
   const instagram = store.socials.find((social) => social.platform === 'instagram')
-  const coverSrc = SITE.storeCover(store.id)
+  const coverSrc = store.banner ?? SITE.storeCover(store.id)
   const logoSrc = SITE.storeLogo(store.id)
   // Yuklanmagan rasmlar (shu do'kon uchun fayl yo'q): o'rniga joy egasi chiqadi
   const [brokenSrcs, setBrokenSrcs] = useState<string[]>([])
@@ -46,7 +49,7 @@ export function StoreHero({ store }: StoreHeroProps) {
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <StoreStats store={store} />
+          <StoreStats stats={stats} />
         </div>
       </div>
 
@@ -60,7 +63,7 @@ export function StoreHero({ store }: StoreHeroProps) {
             className="inline-flex min-h-11 items-center gap-1.5 self-start text-sm font-semibold text-accent focus-visible:outline-2 focus-visible:outline-brand"
           >
             <TbBrandInstagram aria-hidden className="size-4" />
-            {instagram.nickname}
+            {instagram.username}
           </a>
         )}
       </div>

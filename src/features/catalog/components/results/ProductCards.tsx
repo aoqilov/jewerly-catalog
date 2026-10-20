@@ -1,11 +1,11 @@
 import { Link } from 'react-router'
-import type { Product } from '@/api/routes/products/products.types'
+import type { ProductSummary } from '@/api/routes/products/products.types'
 import { ROUTES } from '@/config/routes'
 import { ProductPrice } from '@/shared/components/ProductPrice'
 import { ProductImage } from './ProductImage'
 
 type ProductCardProps = {
-  product: Product
+  product: ProductSummary
 }
 
 const linkClass = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand'
@@ -46,7 +46,6 @@ export function ProductCardWide({ product }: ProductCardProps) {
         <div className="flex flex-col gap-1">
           <span className="text-[17px] font-bold text-text">{product.name}</span>
           <ProductPrice product={product} showBadge />
-          <p className="line-clamp-2 text-sm text-muted">{product.description}</p>
         </div>
       </Link>
       <div className="gline" />

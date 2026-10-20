@@ -1,7 +1,5 @@
-import { LuHeart } from 'react-icons/lu'
-import { Link, NavLink } from 'react-router'
+import { NavLink } from 'react-router'
 import { NAV_LINKS } from '@/config/navigation'
-import { ROUTES } from '@/config/routes'
 import { ThemeToggle } from '@/shared/components/ThemeToggle'
 import { Logo } from './Logo'
 
@@ -44,19 +42,7 @@ export function Header({ hideOnMobile = false }: HeaderProps) {
           ))}
         </nav>
 
-        {/* gap-3 = ikki tugmaning 6px'lik bosish kengaytmasi: maydonlar ustma-ust tushmaydi */}
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          {/* Blur'siz (shaffof + chegara): glass-bar ichida blur ustiga blur bo'lmaydi.
-              Ko'rinishi 32px, before: bosish maydonini 44px'gacha kengaytiradi */}
-          <Link
-            to={ROUTES.wardrobe}
-            aria-label="Sevimlilar"
-            className="relative flex size-8 items-center justify-center rounded-full border border-line text-text transition-colors before:absolute before:-inset-1.5 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-          >
-            <LuHeart aria-hidden className="size-4" />
-          </Link>
-        </div>
+        <ThemeToggle />
       </div>
       <div className="gline" />
     </header>

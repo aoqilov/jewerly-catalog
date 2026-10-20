@@ -42,6 +42,7 @@ export function NewArrivalsToolbar({
           <>
             <CusMenuList
               aria-label="Ko'rinish"
+              align="start"
               options={COLUMN_OPTIONS}
               value={columns}
               onChange={onColumnsChange}

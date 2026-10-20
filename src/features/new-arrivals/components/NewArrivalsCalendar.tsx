@@ -1,11 +1,11 @@
-import type { Product } from '@/api/routes/products/products.types'
+import type { ProductSummary } from '@/api/routes/products/products.types'
 import { dayKey } from '@/lib/dayKey'
 import { formatDate, formatMonth } from '@/lib/formatDate'
 import { productCoverImage } from '@/lib/productDisplay'
 
 type NewArrivalsCalendarProps = {
   // Eng yangisi birinchi tartiblangan (bo'sh emas)
-  products: Product[]
+  products: ProductSummary[]
   onSelectDay: (key: string) => void
 }
 
@@ -18,7 +18,7 @@ type DayEntry = {
 const WEEKDAYS = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya']
 
 // Kun bo'yicha: soni va muqova (kunning eng oxirgi qo'shilgan mahsuloti)
-function entriesByDay(products: Product[]) {
+function entriesByDay(products: ProductSummary[]) {
   const entries = new Map<string, DayEntry>()
   for (const product of products) {
     const key = dayKey(product.createdAt)

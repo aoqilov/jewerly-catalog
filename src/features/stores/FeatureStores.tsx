@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { ROUTES } from '@/config/routes'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useSelectStore } from '@/hooks/useSelectStore'
 import { useStoreId } from '@/hooks/useStoreId'
 import { LoadMoreTrigger } from '@/shared/components/LoadMoreTrigger'
 import { CusButton } from '@/shared/ui/CusButton'
 import { CusInput } from '@/shared/ui/CusInput'
 import { useSearchStores } from './api-hooks/useSearchStores'
 import { StoreRow } from './components/StoreRow'
-import { useSelectStore } from './hooks/useSelectStore'
 
 // Do'kon tanlash: birinchi kirishda (tanlov yo'q) yoki Profil'dan almashtirishda. Nom bo'yicha qidiruv backend'da
 export function FeatureStores() {

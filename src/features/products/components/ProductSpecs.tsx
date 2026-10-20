@@ -2,7 +2,7 @@ import type { IconType } from 'react-icons'
 import { LuLayers, LuMapPin, LuTag } from 'react-icons/lu'
 
 type ProductSpecsProps = {
-  manufacture: string
+  manufacturer: string
   brand: string
   materials: string[]
 }
@@ -27,8 +27,8 @@ function SpecItem({ icon: Icon, label, value, wide = false }: SpecItemProps) {
 }
 
 // Ma'lumot yo'q bo'lsa (hamma maydon bo'sh) sarlavha ham chiqmaydi
-export function ProductSpecs({ manufacture, brand, materials }: ProductSpecsProps) {
-  const hasSpecs = manufacture.trim() !== '' || brand.trim() !== '' || materials.length > 0
+export function ProductSpecs({ manufacturer, brand, materials }: ProductSpecsProps) {
+  const hasSpecs = manufacturer.trim() !== '' || brand.trim() !== '' || materials.length > 0
   if (!hasSpecs) return null
 
   return (
@@ -37,7 +37,7 @@ export function ProductSpecs({ manufacture, brand, materials }: ProductSpecsProp
         Xususiyatlari
       </h2>
       <dl className="grid grid-cols-2 gap-2">
-        {manufacture.trim() && <SpecItem icon={LuMapPin} label="Ishlab chiqarilgan" value={manufacture} />}
+        {manufacturer.trim() && <SpecItem icon={LuMapPin} label="Ishlab chiqarilgan" value={manufacturer} />}
         {brand.trim() && <SpecItem icon={LuTag} label="Brend" value={brand} />}
         {materials.length > 0 && <SpecItem icon={LuLayers} label="Material" value={materials.join(', ')} wide />}
       </dl>

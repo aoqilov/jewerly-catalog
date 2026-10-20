@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { useGetCatalogFilters } from './api-hooks/useGetCatalogFilters'
 import { useGetCategories } from './api-hooks/useGetCategories'
 import { useGetNews } from './api-hooks/useGetNews'
 import { useGetStore } from './api-hooks/useGetStore'
@@ -19,6 +20,7 @@ const zoomClass = 'zoom-[0.9]'
 
 export function FeatureHome() {
   const store = useGetStore()
+  const stats = useGetCatalogFilters()
   const categories = useGetCategories()
   const news = useGetNews()
   const [contactKind, setContactKind] = useState<ContactKind | null>(null)
@@ -37,16 +39,16 @@ export function FeatureHome() {
     return <p className={errorClass}>Do'kon ma'lumotlari yuklanmadi</p>
   }
 
-  // "Aksiyalar" bo'limi newsType === 'discount' bo'lgan yangiliklardan, qolganlari "Yangiliklar"da
-  const newsItems = news.data?.filter((item) => item.newsType !== 'discount') ?? []
-  const promotionItems = news.data?.filter((item) => item.newsType === 'discount') ?? []
+  // "Aksiyalar" bo'limi type === 'discount' bo'lgan yangiliklardan, qolganlari "Yangiliklar"da
+  const newsItems = news.data?.filter((item) => item.type !== 'discount') ?? []
+  const promotionItems = news.data?.filter((item) => item.type === 'discount') ?? []
   // Kategoriyalardan keyingi chiziq faqat ostida biror bo'lim (yoki yuklanayotgan yangiliklar) bo'lsa
   const hasLowerSections =
     store.data.services.length > 0 || !news.isSuccess || newsItems.length > 0 || promotionItems.length > 0
 
   return (
     <div className={`mx-auto flex max-w-2xl flex-col pb-8 ${zoomClass}`}>
-      <StoreHero store={store.data} />
+      <StoreHero store={store.data} stats={stats.data} />
 
       <div className="mt-4 flex flex-col gap-5 px-4">
         <div className="gline" />

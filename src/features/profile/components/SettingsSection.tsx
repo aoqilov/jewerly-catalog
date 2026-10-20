@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import { ROUTES } from '@/config/routes'
 import { useTheme } from '@/hooks/useTheme'
 import type { Theme } from '@/hooks/useTheme'
+import { IS_SINGLE_STORE } from '@/lib/selectedStore'
 import { CusSegment } from '@/shared/ui/CusSegment'
 import { NicheRow } from './NicheRow'
 import { ProfileRow } from './ProfileRow'
@@ -19,12 +20,14 @@ export function SettingsSection() {
 
   return (
     <ProfileSection label="Umumiy sozlamalar">
-      <ProfileRow
-        icon={<LuStore aria-hidden className="size-5" />}
-        label="Do'konni almashtirish"
-        trailing={<LuChevronRight aria-hidden className="size-5 shrink-0 text-muted" />}
-        onClick={() => navigate(ROUTES.stores)}
-      />
+      {!IS_SINGLE_STORE && (
+        <ProfileRow
+          icon={<LuStore aria-hidden className="size-5" />}
+          label="Do'konni almashtirish"
+          trailing={<LuChevronRight aria-hidden className="size-5 shrink-0 text-muted" />}
+          onClick={() => navigate(ROUTES.stores)}
+        />
+      )}
       {/* Ko'p tillilik hali kelishilmagan: til ko'rsatiladi, lekin almashtirilmaydi */}
       <ProfileRow
         icon={<LuLanguages aria-hidden className="size-5" />}

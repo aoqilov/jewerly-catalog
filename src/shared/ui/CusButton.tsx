@@ -1,7 +1,7 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
 type ButtonVariant = 'primary' | 'secondary' | 'icon' | 'onImage'
-type ButtonSize = 'md' | 'lg'
+type ButtonSize = 'sm' | 'md' | 'lg'
 
 type ButtonBaseProps = {
   variant?: ButtonVariant
@@ -26,7 +26,9 @@ const variantClass: Record<ButtonVariant, string> = {
   onImage: 'glass-on-image size-11 rounded-full',
 }
 
+// sm: yonma-yon ixcham tugmalar (profil). 44px — bosiladigan maydonning eng kichigi
 const sizeClass: Record<ButtonSize, string> = {
+  sm: 'h-11 text-sm',
   md: 'h-12 text-[15px]',
   lg: 'h-13 text-base',
 }

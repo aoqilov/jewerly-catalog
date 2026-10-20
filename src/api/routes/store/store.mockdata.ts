@@ -1,9 +1,6 @@
-import { categoriesMock } from '../categories/categories.mockdata'
-import { productsMock } from '../products/products.mockdata'
 import type { PublicStoreDetailDto } from './store.types'
 
 const MOCK_DATE = '2026-06-01T09:00:00Z'
-const dates = { created_at: MOCK_DATE, updated_at: MOCK_DATE }
 
 export const storeMock: PublicStoreDetailDto = {
   id: 1,
@@ -11,12 +8,14 @@ export const storeMock: PublicStoreDetailDto = {
   description: "Toshkentdagi nikoh liboslari saloni: ijara, sotuv va buyurtma asosida tikish.",
   phone: '+998 97 723 60 23',
   email: 'info@amirabridal.uz',
+  // Banner yo'q: StoreHero public/logo-banner'dagi statik rasmni ko'rsatadi
+  banner: null,
   social_links: [
-    { id: 1, platform: 'instagram', nickname: '@amira_bridal', url: 'https://www.instagram.com/', visible: true, ...dates },
-    { id: 2, platform: 'telegram', nickname: '@akiylov', url: 'https://t.me/akiylov', visible: true, ...dates },
-    { id: 3, platform: 'tiktok', nickname: '@amira.bridal', url: 'https://www.tiktok.com/', visible: true, ...dates },
-    { id: 4, platform: 'youtube', nickname: 'Amira Bridal', url: 'https://www.youtube.com/', visible: true, ...dates },
-    { id: 5, platform: 'facebook', nickname: 'Amira Bridal', url: 'https://www.facebook.com/', visible: true, ...dates },
+    { id: 1, platform: 'instagram', username: '@amira_bridal', url: 'https://www.instagram.com/' },
+    { id: 2, platform: 'telegram', username: '@akiylov', url: 'https://t.me/akiylov' },
+    { id: 3, platform: 'tiktok', username: '@amira.bridal', url: 'https://www.tiktok.com/' },
+    { id: 4, platform: 'youtube', username: 'Amira Bridal', url: 'https://www.youtube.com/' },
+    { id: 5, platform: 'facebook', username: 'Amira Bridal', url: 'https://www.facebook.com/' },
   ],
   addresses: [
     {
@@ -26,7 +25,6 @@ export const storeMock: PublicStoreDetailDto = {
       landmark: "Chilonzor metrosi yaqinida",
       working_hours: 'Har kuni 10:00–20:00',
       phone: '+998 90 123 45 67',
-      ...dates,
     },
     {
       id: 2,
@@ -35,7 +33,6 @@ export const storeMock: PublicStoreDetailDto = {
       landmark: "Minor savdo majmuasi yaqinida",
       working_hours: 'Du–Sha 10:00–19:00',
       phone: '+998 91 234 56 78',
-      ...dates,
     },
     {
       id: 3,
@@ -44,65 +41,52 @@ export const storeMock: PublicStoreDetailDto = {
       landmark: "Registon maydoni yaqinida",
       working_hours: 'Har kuni 09:00–18:00',
       phone: '+998 93 345 67 89',
-      ...dates,
     },
   ],
   contacts: [
-    { id: 1, name: 'Chilonzor salon', role: 'Administrator', phone: '+998 90 123 45 67', hours: '10:00–20:00', telegram: '@amira_chilonzor', has_telegram: true, ...dates },
-    { id: 2, name: 'Yunusobod salon', role: 'Administrator', phone: '+998 91 234 56 78', hours: '10:00–19:00', telegram: '@amira_yunusobod', has_telegram: true, ...dates },
-    { id: 3, name: 'Samarqand salon', role: 'Administrator', phone: '+998 93 345 67 89', hours: '09:00–18:00', telegram: '', has_telegram: false, ...dates },
+    { id: 1, name: 'Chilonzor salon', role: 'Administrator', phone: '+998 90 123 45 67', working_hours: '10:00–20:00', telegram_username: 'amira_chilonzor', has_telegram: true },
+    { id: 2, name: 'Yunusobod salon', role: 'Administrator', phone: '+998 91 234 56 78', working_hours: '10:00–19:00', telegram_username: 'amira_yunusobod', has_telegram: true },
+    { id: 3, name: 'Samarqand salon', role: 'Administrator', phone: '+998 93 345 67 89', working_hours: '09:00–18:00', telegram_username: '', has_telegram: false },
   ],
-  // icon: ServicesAccordion'dagi SERVICE_ICONS kalitlari
+  // icon.id: ServicesAccordion'dagi SERVICE_ICONS kalitlari
   services: [
     {
       id: 1,
-      icon: 1,
+      icon: { id: 1, name: 'Ijara' },
       title: 'Libos ijarasi',
-      kicker: '3 kungacha',
+      tagline: '3 kungacha',
       description:
         "Ijara muddati 3 kungacha. Garov sifatida pasport yoki libos narxining 30% qoldiriladi, kimyoviy tozalash narxga kiritilgan.",
-      visible: true,
-      ...dates,
     },
     {
       id: 2,
-      icon: 2,
+      icon: { id: 2, name: 'Sotuv' },
       title: 'Sotuv',
-      kicker: 'Yetkazib berish bilan',
+      tagline: 'Yetkazib berish bilan',
       description:
         "Barcha liboslarni sotib olish mumkin. O'lchamga moslash bepul, yetkazib berish Toshkent bo'ylab 1 kunda.",
-      visible: true,
-      ...dates,
     },
     {
       id: 3,
-      icon: 3,
+      icon: { id: 3, name: 'Tikish' },
       title: 'Buyurtma asosida tikish',
-      kicker: '3–6 hafta',
+      tagline: '3–6 hafta',
       description:
         "Eskiz va mato birga tanlanadi, tikish 3–6 hafta davom etadi. Jarayonda 2–3 marta kiyib ko'riladi.",
-      visible: true,
-      ...dates,
     },
     {
       id: 4,
-      icon: 4,
+      icon: { id: 4, name: "Kiyib ko'rish" },
       title: "Bepul kiyib ko'rish",
-      kicker: 'Oldindan yozilib',
+      tagline: 'Oldindan yozilib',
       description:
         "Salonda istalgan 5 ta libosni bepul kiyib ko'rish mumkin. Oldindan qo'ng'iroq qilib vaqt belgilang.",
-      visible: true,
-      ...dates,
     },
   ],
-  ...dates,
-  // Katalog mock'idan hisoblanadi, raqamlar bir-biriga mos bo'lishi uchun
-  total_products: productsMock.length,
-  total_categories: categoriesMock.filter((item) => item.parent === null).length,
-  total_subcategories: categoriesMock.filter((item) => item.parent !== null).length,
+  created_at: MOCK_DATE,
 }
 
-// Do'kon tanlash ro'yxati (POST /public/stores/get-all/); get(id) mock rejimda shu ro'yxatdan topadi
+// Do'kon tanlash ro'yxati (GET /public/stores); get(id) mock rejimda shu ro'yxatdan topadi
 export const storesMock: PublicStoreDetailDto[] = [
   storeMock,
   {

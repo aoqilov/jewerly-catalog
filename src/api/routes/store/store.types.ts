@@ -1,54 +1,48 @@
-// api.yaml: PublicStoreDetail (GET /public/stores/{id}/), id foydalanuvchi tanlovidan (lib/selectedStore) yoki .env'dagi VITE_STORE_ID.
-// social_links/addresses/contacts/services shu javob ichida keladi (mustaqil public endpoint'lari yo'q).
-// social_links va services faqat visible=true bo'lganlari keladi. Logo va muqova maydoni yo'q: ular config/site.ts'da
+// api.yaml: PublicStoreDetailResponseDto (GET /public/stores/{store_id}), id foydalanuvchi tanlovidan (lib/selectedStore)
+// yoki .env'dagi VITE_STORE_ID. Manzil, kontakt, ijtimoiy tarmoq va xizmatlar shu javob ichida keladi (faqat ko'rinadiganlari,
+// position bo'yicha). Katalog hisoblagichlari (mahsulot, kategoriya soni) catalog-filters'da.
+// Logo maydoni yo'q: u config/site.ts'da (public/logo-banner). Banner bor, u bo'lmasa o'sha yerdagi statik rasm
+
+import type { IdNameDto } from '../../api-config/backend'
+import type { ImageDto } from '../products/products.types'
 
 // --- Backend ---
 
 export type SocialPlatform = 'instagram' | 'telegram' | 'whatsapp' | 'vk' | 'tiktok' | 'youtube' | 'facebook' | 'other'
 
-export type StoreSocialLinkDto = {
+export type PublicSocialLinkDto = {
   id: number
   platform: SocialPlatform
-  nickname: string
+  username: string
   url: string
-  visible: boolean
-  created_at: string
-  updated_at: string
 }
 
-export type StoreAddressDto = {
+export type PublicAddressDto = {
   id: number
   name: string
   address: string
   landmark: string
   working_hours: string
   phone: string
-  created_at: string
-  updated_at: string
 }
 
-export type StoreContactDto = {
+export type PublicContactDto = {
   id: number
   name: string
   role: string
   phone: string
-  hours: string
-  telegram: string
+  working_hours: string
+  telegram_username: string
   has_telegram: boolean
-  created_at: string
-  updated_at: string
 }
 
-// icon: backend'dagi ikonkalar katalogining (stores/icons, faqat admin uchun) id'si
-export type StoreServiceDto = {
+// icon: do'kon ikonkalar katalogidagi yozuv (id va nomi)
+export type PublicServiceDto = {
   id: number
-  icon: number
+  icon: IdNameDto
   title: string
-  kicker: string
+  tagline: string
   description: string
-  visible: boolean
-  created_at: string
-  updated_at: string
 }
 
 export type PublicStoreDetailDto = {
@@ -58,19 +52,17 @@ export type PublicStoreDetailDto = {
   phone: string
   // Bo'sh satr bo'lishi mumkin
   email: string
-  social_links: StoreSocialLinkDto[]
-  addresses: StoreAddressDto[]
-  contacts: StoreContactDto[]
-  services: StoreServiceDto[]
+  // Faqat tayyor (status: ready) bo'lsa
+  banner: ImageDto | null
+  addresses: PublicAddressDto[]
+  contacts: PublicContactDto[]
+  social_links: PublicSocialLinkDto[]
+  services: PublicServiceDto[]
   created_at: string
-  updated_at: string
-  total_products: number
-  total_categories: number
-  total_subcategories: number
 }
 
-// POST /public/stores/get-all/ elementi (PublicStore): tafsilot javobidan total_* hisoblagichlarsiz
-export type PublicStoreDto = Omit<PublicStoreDetailDto, 'total_products' | 'total_categories' | 'total_subcategories'>
+// GET /public/stores elementi (PublicStoreCardResponseDto): faqat faol do'konlar
+export type PublicStoreCardDto = Pick<PublicStoreDetailDto, 'id' | 'name' | 'description' | 'banner' | 'created_at'>
 
 // --- Ilova ---
 
@@ -79,13 +71,12 @@ export type StoreSummary = {
   id: number
   name: string
   description: string
-  phone: string
 }
 
 export type StoreSocial = {
   id: number
   platform: SocialPlatform
-  nickname: string
+  username: string
   url: string
 }
 
@@ -103,7 +94,8 @@ export type StoreContact = {
   name: string
   role: string
   phone: string
-  hours: string
+  workingHours: string
+  // Telegram username (@siz yoki @ bilan)
   telegram: string
   hasTelegram: boolean
 }
@@ -112,7 +104,8 @@ export type StoreService = {
   id: number
   iconId: number
   title: string
-  kicker: string
+  // Qisqa izoh (narx, muddat): sarlavha ostida doim ko'rinadi
+  tagline: string
   description: string
 }
 
@@ -122,9 +115,8 @@ export type Store = {
   description: string
   phone: string
   email: string
-  totalProducts: number
-  totalCategories: number
-  totalSubcategories: number
+  // Banner URL'i (backend'da bo'lmasa null)
+  banner: string | null
   socials: StoreSocial[]
   addresses: StoreAddress[]
   contacts: StoreContact[]

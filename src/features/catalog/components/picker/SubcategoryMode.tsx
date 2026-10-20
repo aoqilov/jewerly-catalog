@@ -24,7 +24,7 @@ export function SubcategoryMode({
   onShowAll,
 }: SubcategoryModeProps) {
   const categoryState = selection.categoryState(activeCategory)
-  // Backend kategoriyadagi mahsulot sonini bermaydi: alohida so'rov bilan olinadi
+  // Kategoriyaning products_count'i backend'da hozircha doim 0: son alohida so'rov bilan olinadi
   const categoryCount = useGetProductsCount({ categoryIds: [activeCategory.id], subcategoryIds: [] })
 
   // fade-swap faqat shu rejim ichida kategoriya almashganda: B rejimga kirishda slide-switch yetarli

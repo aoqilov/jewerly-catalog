@@ -1,8 +1,20 @@
 import { mockPhoto } from '@/lib/mockImage'
+import type { IdNameDto } from '../../api-config/backend'
 import { toDecimal } from '../../api-config/backend'
 import { categoriesMock } from '../categories/categories.mockdata'
-import type { PublicStoreCategoryDto } from '../categories/categories.types'
-import type { ProductDiscountDto, ProductVariantDto, PublicProductDto, VariantPhotoDto } from './products.types'
+import type { CategoryNodeDto } from '../categories/categories.types'
+import type {
+  ActiveDiscountDto,
+  ColorRefDto,
+  PriceQuoteDto,
+  PriceType,
+  ProductCardDto,
+  ProductDto,
+  VariantDto,
+  VariantImageDto,
+} from './products.types'
+
+const MOCK_STORE: IdNameDto = { id: 1, name: 'Amira Bridal' }
 
 const NAMES = [
   'Chelsi', 'Shanel', 'Maryam', 'Amina', 'Laylo', 'Sabina', 'Dilnoza', 'Madina', 'Zarina', 'Nilufar',
@@ -10,7 +22,35 @@ const NAMES = [
 ]
 
 const BRANDS = ['Chelsi Bridal', 'Amira Couture', 'Zara', 'Oscar Fashion', 'Milano Style']
-const MANUFACTURES = ["O'zbekiston", 'Turkiya', 'Italiya', 'Xitoy']
+const MANUFACTURERS = ["O'zbekiston", 'Turkiya', 'Italiya', 'Xitoy']
+
+// Mahsulotlardagi ranglar (catalogFilters mock'i ham shundan hisoblanadi)
+export const colorsMock: ColorRefDto[] = [
+  { id: 1, name: 'Oq', hex_code: '#FFFFFF' },
+  { id: 2, name: 'Sut rang', hex_code: '#F6F0E2' },
+  { id: 3, name: 'Krem', hex_code: '#EADBC0' },
+  { id: 4, name: 'Shampan', hex_code: '#E4CFA6' },
+  { id: 5, name: 'Pushti', hex_code: '#EDBFC6' },
+  { id: 6, name: 'Moviy', hex_code: '#A9C4E2' },
+  { id: 7, name: 'Kumush', hex_code: '#C9CCD1' },
+  { id: 8, name: 'Qora', hex_code: '#1D1D1F' },
+]
+
+export const materialsMock: IdNameDto[] = [
+  { id: 1, name: 'Atlas' },
+  { id: 2, name: "To'r" },
+  { id: 3, name: 'Shifon' },
+  { id: 4, name: 'Organza' },
+  { id: 5, name: 'Ipak' },
+  { id: 6, name: 'Krep' },
+]
+
+const TAGS: IdNameDto[] = [
+  { id: 1, name: 'Yangi kolleksiya' },
+  { id: 2, name: 'Klassika' },
+  { id: 3, name: 'Hashamatli' },
+  { id: 4, name: 'Kundalik' },
+]
 
 // Har bir subkategoriyadagi mahsulotlar soni (DATED_PRODUCTS ham shu songa kiradi)
 const PRODUCTS_PER_SUBCATEGORY: Record<number, number> = {
@@ -55,40 +95,63 @@ const slugify = (name: string, id: number) =>
   `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${id}`
 
 // Har bir variant — alohida rasmlar to'plami (3–5 ta). Id'lar butun mock bo'ylab takrorlanmaydi
-function photosFor(id: number, variantIndex: number): VariantPhotoDto[] {
+function imagesFor(id: number, variantIndex: number): VariantImageDto[] {
   const count = 3 + ((id + variantIndex) % 3)
   return Array.from({ length: count }, (_, index) => ({
-    ...mockPhoto(id * 100 + variantIndex * 10 + index, `product-${id}-${variantIndex}-${index}`),
-    order: index,
+    position: index,
+    image: mockPhoto(id * 100 + variantIndex * 10 + index, `product-${id}-${variantIndex}-${index}`),
   }))
 }
 
 // 1–3 ta variant (id=2 da 3 ta)
-function variantsFor(id: number, createdAt: string): ProductVariantDto[] {
+function variantsFor(id: number, createdAt: string): VariantDto[] {
   const count = 1 + (id % 3)
   return Array.from({ length: count }, (_, variantIndex) => ({
     id: id * 10 + variantIndex,
-    photos: photosFor(id, variantIndex),
+    position: variantIndex,
+    images: imagesFor(id, variantIndex),
     created_at: createdAt,
     updated_at: createdAt,
   }))
 }
 
-function discountsFor(id: number): ProductDiscountDto[] {
+function discountsFor(id: number): ActiveDiscountDto[] {
   if (id % 6 !== 0) return []
   return [
     {
-      id,
-      discount: 1,
+      discount_id: 1,
       title: 'Mavsumiy chegirma',
       description: 'Kuzgi mavsum modellariga chegirma.',
       discount_type: 'percentage',
       value: toDecimal(10 + (id % 3) * 5),
+      price_types: ['sale', 'rental'],
       starts_at: '2026-09-01T00:00:00Z',
       ends_at: '2026-10-30T00:00:00Z',
       image: null,
     },
   ]
+}
+
+// Backend kabi: narx turiga tegishli chegirma qo'llanadi (mock'da ko'pi bilan bitta)
+function quoteFor(base: string | null, priceType: PriceType, discounts: ActiveDiscountDto[]): PriceQuoteDto | null {
+  if (base === null) return null
+  const discount = discounts.find((item) => item.price_types.includes(priceType))
+  if (!discount) return { base_price: base, final_price: base, discount: null }
+
+  const value = Number(discount.value)
+  const reduction =
+    discount.discount_type === 'percentage' ? roundPrice((Number(base) * value) / 100) : Math.min(value, Number(base))
+  return {
+    base_price: base,
+    final_price: toDecimal(Number(base) - reduction),
+    discount: {
+      discount_id: discount.discount_id,
+      title: discount.title,
+      discount_type: discount.discount_type,
+      value: discount.value,
+      reduction: toDecimal(reduction),
+    },
+  }
 }
 
 const DAY_MS = 86_400_000
@@ -103,40 +166,45 @@ function createdAtFor(id: number) {
   return new Date(today.getTime() - dayOffset * DAY_MS + (9 + (id % 9)) * HOUR_MS).toISOString()
 }
 
-function buildProduct(
-  id: number,
-  category: PublicStoreCategoryDto,
-  subcategory: PublicStoreCategoryDto,
-  createdAt: string,
-): PublicProductDto {
+const ref = ({ id, name }: CategoryNodeDto): IdNameDto => ({ id, name })
+
+function buildProduct(id: number, category: CategoryNodeDto, subcategory: CategoryNodeDto, createdAt: string): ProductDto {
   const base = BASE_PRICES[category.id] ?? { sale: 200_000 }
   const factor = 1 + (id % 5) * 0.1
   const name = NAMES[(id - 1) % NAMES.length]
+  const prices = {
+    sale: priceOrNull(base.sale, factor),
+    rental: priceOrNull(base.rent, factor),
+    tailoring: priceOrNull(base.tailoring, factor),
+  }
+  const discounts = discountsFor(id)
 
   return {
     id,
-    store: 1,
+    slug: slugify(name, id),
     name,
-    category: category.id,
-    subcategory: subcategory.id,
     description: `${subcategory.name}. Aniq tavsif va o'lchamlarni salonda aniqlashtiring.`,
     brand: BRANDS[id % BRANDS.length],
-    manufacture: MANUFACTURES[id % MANUFACTURES.length],
-    material_ids: [1 + (id % 6)],
-    slug: slugify(name, id),
-    tags: [1 + (id % 4)],
-    color: 1 + (id % 8),
-    size: sizesFor(category.id),
-    price_sale: priceOrNull(base.sale, factor),
-    price_rental: priceOrNull(base.rent, factor),
-    price_tailoring: priceOrNull(base.tailoring, factor),
-    is_sellable: true,
-    is_rentable: Boolean(base.rent),
-    blur_image_in_site: false,
-    views: (id * 37) % 500,
-    in_customers_saved: (id * 13) % 60,
+    manufacturer: MANUFACTURERS[id % MANUFACTURERS.length],
+    store: MOCK_STORE,
+    category: ref(category),
+    subcategory: ref(subcategory),
+    tags: [TAGS[id % TAGS.length]],
+    materials: [materialsMock[id % materialsMock.length]],
+    color: colorsMock[id % colorsMock.length],
+    sizes: sizesFor(category.id),
+    prices,
+    availability: { is_sellable: true, is_rentable: Boolean(base.rent), is_tailorable: Boolean(base.tailoring) },
+    pricing: {
+      sale: quoteFor(prices.sale, 'sale', discounts),
+      rental: quoteFor(prices.rental, 'rental', discounts),
+      tailoring: quoteFor(prices.tailoring, 'tailoring', discounts),
+    },
+    active_discounts: discounts,
+    blur_images: false,
+    views_count: (id * 37) % 500,
+    favorites_count: (id * 13) % 60,
     variants: variantsFor(id, createdAt),
-    discounts: discountsFor(id),
     created_at: createdAt,
     updated_at: createdAt,
   }
@@ -153,13 +221,10 @@ const DATED_PRODUCTS = [
 const datedCountIn = (subcategoryId: number) =>
   DATED_PRODUCTS.filter((item) => item.subcategoryId === subcategoryId).length
 
-const topCategories = categoriesMock.filter((item) => item.parent === null)
-const subcategoriesOf = (categoryId: number) => categoriesMock.filter((item) => item.parent === categoryId)
-
 let nextId = 1
 
-const generatedProducts = topCategories.flatMap((category) =>
-  subcategoriesOf(category.id).flatMap((subcategory) =>
+const generatedProducts = categoriesMock.flatMap((category) =>
+  category.children.flatMap((subcategory) =>
     Array.from({ length: (PRODUCTS_PER_SUBCATEGORY[subcategory.id] ?? 3) - datedCountIn(subcategory.id) }, () => {
       const id = nextId++
       return buildProduct(id, category, subcategory, createdAtFor(id))
@@ -168,11 +233,31 @@ const generatedProducts = topCategories.flatMap((category) =>
 )
 
 const datedProducts = DATED_PRODUCTS.map(({ subcategoryId, createdAt }) => {
-  const subcategory = categoriesMock.find((item) => item.id === subcategoryId)
-  const category = topCategories.find((item) => item.id === subcategory?.parent)
+  const category = categoriesMock.find((item) => item.children.some((child) => child.id === subcategoryId))
+  const subcategory = category?.children.find((child) => child.id === subcategoryId)
   if (!category || !subcategory) throw new Error(`Mock: ${subcategoryId} subkategoriyasi topilmadi`)
   // toISOString: barcha sanalar bir xil formatda (UTC, "Z"), aks holda satr bo'yicha tartiblash buziladi
   return buildProduct(nextId++, category, subcategory, new Date(createdAt).toISOString())
 })
 
-export const productsMock: PublicProductDto[] = [...generatedProducts, ...datedProducts]
+// To'liq mahsulotlar (GET /public/products/{product_id} javobi shaklida)
+export const productsMock: ProductDto[] = [...generatedProducts, ...datedProducts]
+
+// Ro'yxat elementi (ProductCardResponseDto) to'liq mahsulotdan: backend'dagidek muqova — birinchi variantning bosh rasmi
+export function toProductCardDto(product: ProductDto): ProductCardDto {
+  return {
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    brand: product.brand,
+    store: product.store,
+    cover_image: product.variants[0]?.images[0]?.image ?? null,
+    sizes: product.sizes,
+    availability: product.availability,
+    pricing: product.pricing,
+    blur_images: product.blur_images,
+    favorites_count: product.favorites_count,
+    is_available: true,
+    created_at: product.created_at,
+  }
+}

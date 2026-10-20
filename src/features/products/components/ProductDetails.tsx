@@ -2,8 +2,7 @@ import { useCallback, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import type { Product } from '@/api/routes/products/products.types'
 import { ROUTES } from '@/config/routes'
-import { SITE } from '@/config/site'
-import { useGetMaterials } from '../api-hooks/useGetMaterials'
+import { sellerTelegramHref } from '@/lib/sellerTelegram'
 import { useGetStore } from '../api-hooks/useGetStore'
 import { useFavoriteToggle } from '../hooks/useFavoriteToggle'
 import { useProductGallery } from '../hooks/useProductGallery'
@@ -20,47 +19,18 @@ type ProductDetailsProps = {
   product: Product
 }
 
-// t.me/<username>?text=... — chat ochilganda xabar yozish maydoniga tayyor matn tushadi
-function withTelegramText(url: string, text: string) {
-  return `${url}${url.includes('?') ? '&' : '?'}text=${encodeURIComponent(text)}`
-}
-
-// "@username" yoki "username" → t.me havolasi (bo'sh bo'lsa undefined)
-function telegramLink(username: string | undefined) {
-  const name = username?.trim().replace(/^@/, '')
-  return name ? `https://t.me/${name}` : undefined
-}
-
 export function ProductDetails({ product }: ProductDetailsProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const gallery = useProductGallery()
   const favorite = useFavoriteToggle(product.id)
-  const materials = useGetMaterials()
   const store = useGetStore()
   const [variantIndex, setVariantIndex] = useState(0)
   const [viewerIndex, setViewerIndex] = useState<number | null>(null)
   const closeViewer = useCallback(() => setViewerIndex(null), [])
 
   const photos = product.variants[variantIndex]?.photos ?? []
-  const materialNames = product.materialIds
-    .map((id) => materials.data?.find((material) => material.id === id)?.name)
-    .filter((name): name is string => Boolean(name))
-  // Do'konning Telegram'i: ijtimoiy tarmoq, bo'lmasa Telegram'i bor birinchi kontakt, bo'lmasa SITE'dagi zaxira.
-  // Do'kon yuklanguncha havola yo'q: zaxiraga yozib yuborilmasin
-  const telegramUrl =
-    store.data &&
-    (store.data.socials.find((social) => social.platform === 'telegram')?.url ??
-      telegramLink(store.data.contacts.find((contact) => contact.hasTelegram)?.telegram) ??
-      telegramLink(SITE.sellerTelegram))
-
-  // Havola sotuvchiga qaysi mahsulot ekanini bildiradi (backend og-teglarni bersa, rasmi ham chiqadi)
-  const productUrl = `${window.location.origin}${ROUTES.product(product.id)}`
-  const sellerMessage = [
-    `Men ${SITE.shortName}'dan${store.data ? `, ${store.data.name}` : ''}: shu tovaringiz menga yoqdi. Sotib olish qanday bo'ladi?`,
-    `${product.name} — ${productUrl}`,
-  ].join('\n')
-  const telegramHref = telegramUrl && withTelegramText(telegramUrl, sellerMessage)
+  const telegramHref = sellerTelegramHref(store.data, product)
 
   // To'g'ridan-to'g'ri havola orqali kirilgan bo'lsa, tarixda orqa sahifa yo'q — katalogga qaytadi
   const goBack = () => (location.key === 'default' ? navigate(ROUTES.catalog) : navigate(-1))
@@ -103,7 +73,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             <ProductDescription text={product.description} />
           </section>
 
-          <ProductSpecs manufacture={product.manufacture} brand={product.brand} materials={materialNames} />
+          <ProductSpecs manufacturer={product.manufacturer} brand={product.brand} materials={product.materials} />
         </div>
       </div>
 

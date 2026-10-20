@@ -1,18 +1,19 @@
-// api.yaml: PublicStoreCategory (POST /public/stores/{store_pk}/categories/get-all/).
-// Backend tekis ro'yxat beradi, subkategoriya — parent'i bor kategoriya. categories.api uni ikki darajali daraxtga yig'adi.
-// Mahsulot soni backend'da yo'q: kerak bo'lsa productsApi.count orqali olinadi
+// api.yaml: PublicCategoryNodeDto (GET /public/stores/{store_id}/categories): do'konning ko'rinadigan kategoriyalari
+// tayyor daraxt bo'lib keladi, children — subkategoriyalar (ularning children'i bo'sh). Sahifalanmaydi.
+// products_count backend'da hozircha doim 0 qaytadi (tekshirilgan), shuning uchun mahsulot soni productsApi.count orqali olinadi
+
+import type { ImageDto } from '../products/products.types'
 
 // --- Backend ---
 
-export type PublicStoreCategoryDto = {
+export type CategoryNodeDto = {
   id: number
-  store: number
   name: string
-  parent: number | null
-  // Muqovaning 1000x1000 nusxasi
-  cover_processed: string | null
-  created_at: string
-  updated_at: string
+  position: number
+  // Faqat kvadrat nusxa (square) bilan
+  cover: ImageDto | null
+  products_count: number
+  children: CategoryNodeDto[]
 }
 
 // --- Ilova ---

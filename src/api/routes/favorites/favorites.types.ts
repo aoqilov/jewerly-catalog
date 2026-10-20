@@ -1,51 +1,39 @@
-// api.yaml: customers-favorites — sevimli mahsulotlar va do'konlar (qo'shish, o'chirish, get-all).
-// Hammasi xaridor tokenini talab qiladi
+// api.yaml: buyer / favorites — sevimli mahsulotlar va do'konlar (ro'yxat, id'lar, qo'shish, o'chirish).
+// Hammasi xaridor tokenini talab qiladi. Yashirilgan mahsulot va o'chirilgan do'kon ro'yxatda is_available: false bilan qoladi
+
+import type { ProductCardDto, ProductSummary } from '../products/products.types'
 
 // --- Backend ---
 
-// FavoriteProduct: qisqa shakl, rasmsiz
-export type FavoriteProductDto = {
-  id: number
-  store: number
-  name: string
-  slug: string
-  category: number
-  price_sale: string | null
-  price_rental: string | null
-  is_sellable: boolean
-  is_rentable: boolean
+// Mahsulot kartasi (GET /public/products elementi) va qo'shilgan vaqti
+export type FavoriteProductDto = ProductCardDto & {
+  favorited_at: string
 }
 
-// Store: logo/rasm maydoni yo'q
-export type StoreDto = {
-  id: number
-  name: string
-  description: string
-  phone: string
-  email: string
-  active: boolean
-  created_at: string
-  updated_at: string
+export type FavoriteStoreDto = {
+  store: {
+    id: number
+    name: string
+    // false: do'kon o'chirilgan
+    is_available: boolean
+  }
+  favorited_at: string
+}
+
+// Ko'pi bilan 1000 ta: ro'yxatlardagi yurakchalar uchun
+export type FavoriteProductIdsDto = {
+  product_ids: number[]
 }
 
 // --- Ilova ---
 
-export type FavoriteProduct = {
-  id: number
-  storeId: number
-  name: string
-  slug: string
-  categoryId: number
-  priceSale: number | null
-  priceRental: number | null
-  isSellable: boolean
-  isRentable: boolean
+export type FavoriteProduct = ProductSummary & {
+  favoritedAt: string // ISO sana-vaqt
 }
 
 export type FavoriteStore = {
   id: number
   name: string
-  description: string
-  phone: string
-  email: string
+  isAvailable: boolean
+  favoritedAt: string // ISO sana-vaqt
 }

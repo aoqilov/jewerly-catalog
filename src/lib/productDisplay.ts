@@ -1,4 +1,4 @@
-import type { PhotoQuality, Product } from '@/api/routes/products/products.types'
+import type { PhotoQuality, ProductBase, ProductSummary } from '@/api/routes/products/products.types'
 
 export type ProductPriceInfo = {
   // To'lanadigan narx (chegirma bo'lsa chegirmadan keyingisi)
@@ -8,29 +8,18 @@ export type ProductPriceInfo = {
   percent: number | null
 }
 
-// Faqat sotuv narxi (price_sale). Chegirma: mahsulotga hozir amal qilayotgan chegirmalardan eng arzon narx beradigani
-// (chegirmalar bir-biriga qo'shilmaydi). Taxminiy: api.yaml qaysi biri qo'llanishini aniq aytmaydi
-export function productPrice(product: Product): ProductPriceInfo | null {
-  const base = product.priceSale
-  if (base == null) return null
+// Faqat sotuv narxi. Chegirmani backend o'zi tanlab qo'llaydi (pricing.sale.final_price)
+export function productPrice(product: Pick<ProductBase, 'salePrice'>): ProductPriceInfo | null {
+  const sale = product.salePrice
+  if (!sale) return null
+  if (sale.final >= sale.base) return { price: sale.final, oldPrice: null, percent: null }
 
-  const discounted = product.discounts.map((discount) =>
-    Math.max(0, discount.discountType === 'percentage' ? base * (1 - discount.value / 100) : base - discount.value),
-  )
-  const best = Math.min(base, ...discounted)
-  if (best >= base) return { price: base, oldPrice: null, percent: null }
-
-  return { price: best, oldPrice: base, percent: Math.round((1 - best / base) * 100) }
+  return { price: sale.final, oldPrice: sale.base, percent: Math.round((1 - sale.final / sale.base) * 100) }
 }
 
-// Barcha variantlardagi jami rasm soni
-export function productPhotoCount(product: Product) {
-  return product.variants.reduce((sum, variant) => sum + variant.photos.length, 0)
-}
-
-// Mahsulotning birinchi rasmi (birinchi variant, birinchi foto) kerakli o'lchamda
-export function productCoverImage(product: Product, quality: PhotoQuality = 'medium'): string | null {
-  return product.variants[0]?.photos[0]?.[quality] ?? null
+// Ro'yxatdagi mahsulotning muqovasi (birinchi variantning bosh rasmi) kerakli o'lchamda
+export function productCoverImage(product: ProductSummary, quality: PhotoQuality = 'medium'): string | null {
+  return product.cover?.[quality] ?? null
 }
 
 // "Yangi" — oxirgi 7 kunda (bugun ham kiradi) qo'shilgan mahsulot. Backendda alohida belgi yo'q
@@ -44,6 +33,6 @@ export function newSinceDate() {
   return date
 }
 
-export function isNewProduct(product: Product) {
+export function isNewProduct(product: Pick<ProductBase, 'createdAt'>) {
   return new Date(product.createdAt) >= newSinceDate()
 }

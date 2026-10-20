@@ -1,6 +1,7 @@
 import { LuImages } from 'react-icons/lu'
 import { useNavigate } from 'react-router'
 import { ROUTES } from '@/config/routes'
+import { useLastValue } from '@/hooks/useLastValue'
 import { CusBottomSheet } from '@/shared/ui/CusBottomSheet'
 import { CusButton } from '@/shared/ui/CusButton'
 
@@ -20,18 +21,20 @@ type PostSheetProps = {
 }
 
 // Yangilik yoki aksiyaning to'liq matni. Tugma bog'langan mahsulotlarni katalog natijalarida (3 ustun) ochadi
-export function PostSheet({ post, onClose }: PostSheetProps) {
+export function PostSheet({ post: currentPost, onClose }: PostSheetProps) {
+  // Yopilayotganda (post null) chiqish animatsiyasi tugaguncha oxirgi post ko'rinib turadi
+  const post = useLastValue(currentPost)
   const navigate = useNavigate()
 
   return (
-    <CusBottomSheet isOpen={post !== null} onClose={onClose} title={post?.title ?? ''}>
+    <CusBottomSheet isOpen={currentPost !== null} onClose={onClose} title={post?.title ?? ''}>
       {post && (
         <div className="flex flex-col gap-3">
           {post.cover && (
             <img src={post.cover} alt="" className="aspect-video w-full rounded-tile object-cover" />
           )}
           <p className="text-xs font-semibold text-accent">{post.meta}</p>
-          <p className="text-[15px] leading-relaxed text-text">{post.body}</p>
+          <p className="text-[15px] leading-relaxed whitespace-pre-line text-text">{post.body}</p>
           {post.productCount > 0 && (
             <CusButton
               fullWidth

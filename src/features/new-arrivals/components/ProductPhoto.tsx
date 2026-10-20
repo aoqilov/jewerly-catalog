@@ -1,16 +1,16 @@
 import { LuImage } from 'react-icons/lu'
-import type { Product } from '@/api/routes/products/products.types'
+import type { ProductSummary } from '@/api/routes/products/products.types'
 import { isNewProduct } from '@/lib/productDisplay'
 
 type ProductPhotoProps = {
-  product: Product
+  product: ProductSummary
   // O'lcham va nisbat (masalan, aspect-3/4) tashqaridan beriladi
   className?: string
 }
 
-// Mahsulotning birinchi variantidagi bosh rasm
+// Mahsulotning muqovasi (birinchi variantidagi bosh rasm)
 export function ProductPhoto({ product, className = '' }: ProductPhotoProps) {
-  const main = product.variants[0]?.photos[0]
+  const main = product.cover
 
   return (
     <div className={`relative overflow-hidden bg-fill ${className}`}>

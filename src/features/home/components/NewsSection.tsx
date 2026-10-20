@@ -24,7 +24,7 @@ export function NewsSection({ news }: NewsSectionProps) {
         getKey={(item) => item.id}
         renderItem={(item, index) => (
           <PostCard
-            cover={item.image?.medium ?? null}
+            cover={(item.poster ?? item.banner)?.medium ?? null}
             title={item.title}
             excerpt={item.description}
             label={formatDate(item.startsAt)}
@@ -42,8 +42,8 @@ export function NewsSection({ news }: NewsSectionProps) {
             title: selected.title,
             meta: formatDate(selected.startsAt),
             body: selected.description,
-            cover: selected.image?.large ?? null,
-            productCount: selected.productIds.length,
+            cover: (selected.banner ?? selected.poster)?.large ?? null,
+            productCount: selected.productsCount,
           }
         }
         onClose={close}

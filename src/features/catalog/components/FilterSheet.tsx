@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { LuArrowRight, LuCheck, LuImage } from 'react-icons/lu'
+import type { Color } from '@/api/routes/catalogFilters/catalogFilters.types'
 import type { Category } from '@/api/routes/categories/categories.types'
-import type { Color } from '@/api/routes/colors/colors.types'
 import type { ProductFilter } from '@/api/routes/products/products.types'
 import { SECTION_LABEL_CLASS } from '@/config/ui'
 import { CusButton } from '@/shared/ui/CusButton'
 import type { CheckState } from '@/shared/ui/CusCategoryTile'
 import { CusRightSheet } from '@/shared/ui/CusRightSheet'
-import { useGetColors } from '../api-hooks/useGetColors'
+import { useGetCatalogFilters } from '../api-hooks/useGetCatalogFilters'
 import { useGetProductsCount } from '../api-hooks/useGetProductsCount'
 import { useSelectionDraft } from '../hooks/useSelectionDraft'
 
@@ -27,7 +27,8 @@ type FilterSheetProps = {
 export function FilterSheet({ isOpen, onClose, categories, selection, colorIds, search, onApply }: FilterSheetProps) {
   const draft = useSelectionDraft(selection)
   const [colorDraft, setColorDraft] = useState(colorIds)
-  const colors = useGetColors()
+  const filters = useGetCatalogFilters()
+  const colors = filters.data?.colors ?? []
   const count = useGetProductsCount({ ...draft.draft, colorIds: colorDraft, search }, { enabled: isOpen })
   const isEmpty = draft.isEmpty && colorDraft.length === 0
 
@@ -82,12 +83,12 @@ export function FilterSheet({ isOpen, onClose, categories, selection, colorIds, 
           </div>
         </section>
 
-        {/* Do'kon uchun ranglar bo'lmasa bo'lim ko'rinmaydi (colors.api) */}
-        {colors.data && colors.data.length > 0 && (
+        {/* Do'kon mahsulotlarida rang bo'lmasa bo'lim ko'rinmaydi */}
+        {colors.length > 0 && (
           <section aria-label="Rang" className="flex flex-col gap-3">
             <h3 className={SECTION_LABEL_CLASS}>Rang</h3>
             <ul className="grid grid-cols-4 gap-x-2 gap-y-3">
-              {colors.data.map((color) => (
+              {colors.map((color) => (
                 <li key={color.id}>
                   <ColorSwatch
                     color={color}

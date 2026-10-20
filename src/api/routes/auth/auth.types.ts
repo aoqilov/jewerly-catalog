@@ -1,42 +1,54 @@
-// api.yaml: customers-auth — kirish (POST /customers/login), joriy xaridor (GET/PATCH /customers/me),
-// token yangilash (POST /customers/refresh, axios interceptor ichida). Ro'yxatdan o'tish endpoint'i yo'q
+// api.yaml: auth / buyer — kirish (POST /auth/buyer/login), token yangilash (POST /auth/buyer/refresh, axios interceptor
+// ichida), chiqish (POST /auth/buyer/logout); buyer / me — joriy xaridor (GET/PATCH /buyer/me) va avatar
+// (PUT/DELETE /buyer/me/avatar). Ro'yxatdan o'tish va parolni tiklash (SMS yoki Telegram kodi bilan) endpoint'lari bor,
+// UI'si hali yo'q
 
-import type { PhotoProcessingStatus } from '../products/products.types'
+import type { ImageDto } from '../products/products.types'
 
 export type Gender = 'male' | 'female'
 
+// login: xaridorda telefon raqami, istalgan formatda
 export type LoginRequest = {
   login: string
   password: string
 }
 
-export type TokenPair = {
-  accessToken: string
-  refreshToken: string
-}
-
 // --- Backend ---
 
-// BuyerMe. gender va avatar_processing_status bo'sh satr ham bo'lishi mumkin
+export type TokenAccountDto = {
+  id: number
+  role: 'admin' | 'seller' | 'buyer'
+  login: string
+  must_change_password: boolean
+}
+
+// access_token muddati token ichida (exp). refresh_token bir martalik: yangilangach eskisi ishlamaydi
+export type TokenPairDto = {
+  access_token: string
+  refresh_token: string
+  account: TokenAccountDto
+}
+
+// BuyerMeResponseDto. Telefonni o'zgartirib bo'lmaydi
 export type BuyerMeDto = {
   id: number
-  login: string
-  active: boolean
+  phone: string
   last_name: string
   first_name: string
   middle_name: string
   age: number | null
-  gender: Gender | '' | null
+  gender: Gender | null
   city: string
-  avatar_photo: string | null
-  // Ishlov berilgan nusxa, tayyor bo'lmaguncha null
-  avatar_photo_processed: string | null
-  avatar_processing_status: PhotoProcessingStatus | '' | null
+  telegram_username: string
+  // Kvadrat nusxa (square) bilan
+  avatar: ImageDto | null
+  must_change_password: boolean
+  last_login_at: string | null
   created_at: string
   updated_at: string
 }
 
-// PatchedBuyerUpdateRequest. avatar_photo — fayl, shuning uchun u bor bo'lsa so'rov multipart/form-data bilan
+// UpdateMeDto: faqat JSON, avatar alohida endpoint'da
 export type BuyerUpdateDto = Partial<{
   last_name: string
   first_name: string
@@ -44,23 +56,28 @@ export type BuyerUpdateDto = Partial<{
   age: number | null
   gender: Gender | null
   city: string
-  avatar_photo: File | null
 }>
 
 // --- Ilova ---
 
+// lib/authTokens'da shu shaklda saqlanadi
+export type TokenPair = {
+  accessToken: string
+  refreshToken: string
+}
+
 export type Buyer = {
   id: number
-  login: string
-  active: boolean
+  phone: string
   firstName: string
   lastName: string
   middleName: string
   age: number | null
   gender: Gender | null
   city: string
-  // Ishlov berilgan nusxa, u hali bo'lmasa asl rasm
-  avatarPhoto: string | null
+  telegramUsername: string
+  avatar: string | null
+  mustChangePassword: boolean
   createdAt: string // ISO sana-vaqt
   updatedAt: string // ISO sana-vaqt
 }
@@ -72,5 +89,4 @@ export type BuyerUpdateRequest = Partial<{
   age: number | null
   gender: Gender | null
   city: string
-  avatarPhoto: File | null
 }>

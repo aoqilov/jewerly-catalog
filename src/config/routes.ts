@@ -7,7 +7,7 @@ export const ROUTES = {
   catalogByNews: (newsId: string | number) => `/catalog?step=results&cols=3&news=${newsId}`,
   product: (id: string | number) => `/catalog/${id}`,
   newArrivals: '/new',
-  wardrobe: '/wardrobe',
+  reels: '/reels',
   profile: '/profile',
   // do'kon tanlash: birinchi kirishda MainLayout shu yerga yo'naltiradi, Profil'dan almashtirish ham
   stores: '/stores',

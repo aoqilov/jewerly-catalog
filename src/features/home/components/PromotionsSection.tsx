@@ -7,7 +7,7 @@ import { PostSheet } from './PostSheet'
 import { SectionHeader } from './SectionHeader'
 
 type PromotionsSectionProps = {
-  // newsType === 'discount' bo'lgan yangiliklar
+  // type === 'discount' bo'lgan yangiliklar
   promotions: News[]
 }
 
@@ -27,7 +27,7 @@ export function PromotionsSection({ promotions }: PromotionsSectionProps) {
         getKey={(item) => item.id}
         renderItem={(item) => (
           <PostCard
-            cover={item.image?.medium ?? null}
+            cover={(item.poster ?? item.banner)?.medium ?? null}
             title={item.title}
             excerpt={item.description}
             label={untilLabel(item.endsAt)}
@@ -44,8 +44,8 @@ export function PromotionsSection({ promotions }: PromotionsSectionProps) {
             title: selected.title,
             meta: `Aksiya ${untilLabel(selected.endsAt)} amal qiladi`,
             body: selected.description,
-            cover: selected.image?.large ?? null,
-            productCount: selected.productIds.length,
+            cover: (selected.banner ?? selected.poster)?.large ?? null,
+            productCount: selected.productsCount,
           }
         }
         onClose={close}

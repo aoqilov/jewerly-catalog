@@ -1,11 +1,12 @@
 import { env } from '@/config/env'
+import { htmlToText } from '@/lib/htmlToText'
 import { requireStoreId } from '@/lib/selectedStore'
 import { api } from '../../api-config/axios'
 import { fetchAllPages, MAX_PAGE_SIZE, paginate } from '../../api-config/backend'
-import type { Paginated } from '../../api-config/backend'
-import { mapPhoto } from '../products/products.api'
+import type { PaginatedDto } from '../../api-config/backend'
+import { mapPhoto, mapProductSummary } from '../products/products.api'
 import { newsMock } from './news.mockdata'
-import type { News, PublicStoreNewsDto } from './news.types'
+import type { News, NewsDetail, PublicNewsDto } from './news.types'
 
 export const newsKeys = {
   all: ['news'] as const,
@@ -13,28 +14,43 @@ export const newsKeys = {
   detail: (id: number) => [...newsKeys.all, id] as const,
 }
 
-function mapNews(dto: PublicStoreNewsDto): News {
+function mapNews(dto: PublicNewsDto): News {
   return {
     id: dto.id,
-    storeId: dto.store,
+    storeId: dto.store.id,
     title: dto.title,
-    newsType: dto.news_type,
+    type: dto.type,
     slug: dto.slug,
-    description: dto.description,
+    description: htmlToText(dto.description_html),
     startsAt: dto.starts_at,
     endsAt: dto.ends_at,
-    productIds: dto.products,
-    image: dto.image && mapPhoto(dto.image),
+    poster: dto.poster_image && mapPhoto(dto.poster_image),
+    banner: dto.banner_image && mapPhoto(dto.banner_image),
+    productsCount: dto.products_count ?? dto.products?.length ?? 0,
   }
 }
 
-async function fetchPage(page: number): Promise<Paginated<PublicStoreNewsDto>> {
-  if (env.useMock) return paginate(newsMock, { page, pageSize: MAX_PAGE_SIZE })
+function mapNewsDetail(dto: PublicNewsDto): NewsDetail {
+  return {
+    ...mapNews(dto),
+    images: [...(dto.images ?? [])]
+      .sort((a, b) => a.position - b.position)
+      .map(mapPhoto)
+      .filter((photo) => photo !== null),
+    products: (dto.products ?? []).map(mapProductSummary),
+  }
+}
 
-  const { data } = await api.post<Paginated<PublicStoreNewsDto>>('/public/news/get-all/', {
-    page,
-    pageSize: MAX_PAGE_SIZE,
-    filters: { store: requireStoreId() },
+// Mock: ro'yxat elementi backend'dagidek galereya va mahsulotlarsiz, ularning soni bilan
+function toListItemDto(dto: PublicNewsDto): PublicNewsDto {
+  return { ...dto, images: undefined, products: undefined, products_count: dto.products?.length ?? 0 }
+}
+
+async function fetchPage(page: number): Promise<PaginatedDto<PublicNewsDto>> {
+  if (env.useMock) return paginate(newsMock.map(toListItemDto), { page, pageSize: MAX_PAGE_SIZE })
+
+  const { data } = await api.get<PaginatedDto<PublicNewsDto>>('/public/news', {
+    params: { store_id: requireStoreId(), page, page_size: MAX_PAGE_SIZE },
   })
   return data
 }
@@ -42,13 +58,13 @@ async function fetchPage(page: number): Promise<Paginated<PublicStoreNewsDto>> {
 export const newsApi = {
   getAll: async (): Promise<News[]> => (await fetchAllPages(fetchPage)).map(mapNews),
 
-  // Muddati tugagan yoki faol bo'lmagan yangilik uchun backend 404 qaytaradi (public faqat hozir amaldagilarni beradi).
+  // Muddati tugagan yoki faol bo'lmagan yangilik uchun backend 404 (NEWS_NOT_FOUND) qaytaradi.
   // Boshqa do'konning yangiligi ham topilmadi hisoblanadi
-  getById: async (id: number): Promise<News> => {
+  getById: async (id: number): Promise<NewsDetail> => {
     const dto = env.useMock
       ? newsMock.find((item) => item.id === id)
-      : (await api.get<PublicStoreNewsDto>(`/public/news/${id}/`)).data
-    if (!dto || (!env.useMock && dto.store !== requireStoreId())) throw new Error('Yangilik topilmadi')
-    return mapNews(dto)
+      : (await api.get<PublicNewsDto>(`/public/news/${id}`)).data
+    if (!dto || (!env.useMock && dto.store.id !== requireStoreId())) throw new Error('Yangilik topilmadi')
+    return mapNewsDetail(dto)
   },
 }

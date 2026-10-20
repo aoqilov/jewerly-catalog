@@ -13,6 +13,9 @@ export type CusMenuListProps<T extends string | number> = {
   value: T
   onChange: (value: T) => void
   'aria-label': string
+  // Ro'yxat tugmaning qaysi chetiga tekislanadi: end — o'ng (tugma toolbar o'ngida), start — chap (tugma chapda,
+  // aks holda ro'yxat ekrandan chiqib ketadi)
+  align?: 'start' | 'end'
   className?: string
 }
 
@@ -22,6 +25,7 @@ export function CusMenuList<T extends string | number>({
   value,
   onChange,
   'aria-label': ariaLabel,
+  align = 'end',
   className = '',
 }: CusMenuListProps<T>) {
   const [isOpen, setOpen] = useState(false)
@@ -65,7 +69,9 @@ export function CusMenuList<T extends string | number>({
           id={listId}
           role="listbox"
           aria-label={ariaLabel}
-          className="animate-fade-in absolute top-full right-0 z-40 mt-2 flex min-w-40 flex-col gap-1 rounded-md border border-line bg-bg p-1 shadow-lg"
+          className={`animate-fade-in absolute top-full z-40 mt-2 flex min-w-40 flex-col gap-1 rounded-md border border-line bg-bg p-1 shadow-lg ${
+            align === 'start' ? 'left-0' : 'right-0'
+          }`}
         >
           {options.map((option) => {
             const isSelected = option.value === value

@@ -1,10 +1,11 @@
 import { env } from '@/config/env'
 import { requireStoreId } from '@/lib/selectedStore'
 import { api } from '../../api-config/axios'
-import { mapPage, paginate } from '../../api-config/backend'
-import type { Paginated } from '../../api-config/backend'
+import { mapPage, pageQuery, paginate } from '../../api-config/backend'
+import type { Paginated, PaginatedDto } from '../../api-config/backend'
+import { imageUrl } from '../products/products.api'
 import { storeMock, storesMock } from './store.mockdata'
-import type { PublicStoreDetailDto, PublicStoreDto, Store, StoreSummary } from './store.types'
+import type { PublicStoreCardDto, PublicStoreDetailDto, Store, StoreSummary } from './store.types'
 
 export const storeKeys = {
   all: ['store'] as const,
@@ -12,8 +13,8 @@ export const storeKeys = {
   search: (name: string) => [...storeKeys.all, 'search', name] as const,
 }
 
-function mapStoreSummary(dto: PublicStoreDto): StoreSummary {
-  return { id: dto.id, name: dto.name, description: dto.description, phone: dto.phone }
+function mapStoreSummary(dto: PublicStoreCardDto): StoreSummary {
+  return { id: dto.id, name: dto.name, description: dto.description }
 }
 
 function mapStore(dto: PublicStoreDetailDto): Store {
@@ -23,13 +24,11 @@ function mapStore(dto: PublicStoreDetailDto): Store {
     description: dto.description,
     phone: dto.phone,
     email: dto.email,
-    totalProducts: dto.total_products,
-    totalCategories: dto.total_categories,
-    totalSubcategories: dto.total_subcategories,
+    banner: imageUrl(dto.banner, 'large'),
     socials: dto.social_links.map((item) => ({
       id: item.id,
       platform: item.platform,
-      nickname: item.nickname,
+      username: item.username,
       url: item.url,
     })),
     addresses: dto.addresses.map((item) => ({
@@ -45,41 +44,40 @@ function mapStore(dto: PublicStoreDetailDto): Store {
       name: item.name,
       role: item.role,
       phone: item.phone,
-      hours: item.hours,
-      telegram: item.telegram,
+      workingHours: item.working_hours,
+      telegram: item.telegram_username,
       hasTelegram: item.has_telegram,
     })),
     services: dto.services.map((item) => ({
       id: item.id,
-      iconId: item.icon,
+      iconId: item.icon.id,
       title: item.title,
-      kicker: item.kicker,
+      tagline: item.tagline,
       description: item.description,
     })),
   }
 }
 
 export const storeApi = {
+  // Faol bo'lmagan do'kon uchun backend 404 (STORE_NOT_FOUND) qaytaradi
   get: async (): Promise<Store> => {
     if (env.useMock) return mapStore(storesMock.find((item) => item.id === requireStoreId()) ?? storeMock)
 
-    const { data } = await api.get<PublicStoreDetailDto>(`/public/stores/${requireStoreId()}/`)
+    const { data } = await api.get<PublicStoreDetailDto>(`/public/stores/${requireStoreId()}`)
     return mapStore(data)
   },
 
-  // Do'kon tanlash: faqat aktiv do'konlar, nom bo'yicha qidiruv (bo'sh bo'lsa hammasi)
+  // Do'kon tanlash: faqat faol do'konlar, nom bo'yicha qidiruv (bo'sh bo'lsa hammasi)
   search: async (request: { name: string; page: number; pageSize: number }): Promise<Paginated<StoreSummary>> => {
-    const { name, page, pageSize } = request
+    const search = request.name.trim()
     if (env.useMock) {
-      const query = name.trim().toLowerCase()
+      const query = search.toLowerCase()
       const found = storesMock.filter((item) => item.name.toLowerCase().includes(query))
-      return mapPage(paginate(found, { page, pageSize }), mapStoreSummary)
+      return mapPage(paginate(found, request), mapStoreSummary)
     }
 
-    const { data } = await api.post<Paginated<PublicStoreDto>>('/public/stores/get-all/', {
-      page,
-      pageSize,
-      filters: name.trim() ? { name: name.trim() } : {},
+    const { data } = await api.get<PaginatedDto<PublicStoreCardDto>>('/public/stores', {
+      params: { ...pageQuery(request), search: search || undefined },
     })
     return mapPage(data, mapStoreSummary)
   },

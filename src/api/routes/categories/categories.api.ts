@@ -1,40 +1,36 @@
 import { env } from '@/config/env'
 import { requireStoreId } from '@/lib/selectedStore'
 import { api } from '../../api-config/axios'
-import { fetchAllPages, MAX_PAGE_SIZE, paginate } from '../../api-config/backend'
-import type { Paginated } from '../../api-config/backend'
+import { imageUrl } from '../products/products.api'
 import { categoriesMock } from './categories.mockdata'
-import type { Category, PublicStoreCategoryDto } from './categories.types'
+import type { Category, CategoryNodeDto } from './categories.types'
 
 export const categoriesKeys = {
   all: ['categories'] as const,
   list: () => [...categoriesKeys.all, 'list'] as const,
 }
 
-// Tekis ro'yxatdan ikki darajali daraxt: parent'i yo'qlari kategoriya, qolganlari o'z parent'ining subkategoriyasi.
-// Tartib backend'dagidek qoladi
-function buildTree(items: PublicStoreCategoryDto[]): Category[] {
-  const categories: Category[] = items
-    .filter((item) => item.parent === null)
-    .map((item) => ({ id: item.id, name: item.name, image: item.cover_processed, subcategories: [] }))
+const byPosition = (a: CategoryNodeDto, b: CategoryNodeDto) => a.position - b.position
 
-  for (const item of items) {
-    const parent = categories.find((category) => category.id === item.parent)
-    parent?.subcategories.push({ id: item.id, categoryId: parent.id, name: item.name, image: item.cover_processed })
+function mapCategory(dto: CategoryNodeDto): Category {
+  return {
+    id: dto.id,
+    name: dto.name,
+    image: imageUrl(dto.cover, 'square'),
+    subcategories: [...dto.children].sort(byPosition).map((child) => ({
+      id: child.id,
+      categoryId: dto.id,
+      name: child.name,
+      image: imageUrl(child.cover, 'square'),
+    })),
   }
-  return categories
-}
-
-async function fetchPage(page: number): Promise<Paginated<PublicStoreCategoryDto>> {
-  if (env.useMock) return paginate(categoriesMock, { page, pageSize: MAX_PAGE_SIZE })
-
-  const { data } = await api.post<Paginated<PublicStoreCategoryDto>>(
-    `/public/stores/${requireStoreId()}/categories/get-all/`,
-    { page, pageSize: MAX_PAGE_SIZE },
-  )
-  return data
 }
 
 export const categoriesApi = {
-  getAll: async (): Promise<Category[]> => buildTree(await fetchAllPages(fetchPage)),
+  getAll: async (): Promise<Category[]> => {
+    const items = env.useMock
+      ? categoriesMock
+      : (await api.get<CategoryNodeDto[]>(`/public/stores/${requireStoreId()}/categories`)).data
+    return [...items].sort(byPosition).map(mapCategory)
+  },
 }

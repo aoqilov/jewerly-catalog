@@ -67,8 +67,14 @@ function ViewerContent({ photos, name, startIndex, onClose }: ViewerContentProps
     onLeft: () => go(index + 1),
     onRight: () => go(index - 1),
     onDown: onClose,
-    onDoubleTap: toggleZoom,
+    onDoubleTap: scheduleToggleZoom,
   })
+
+  // Ikki marta tegish pointerup'da aniqlanadi, kutubxona esa undan keyin keladigan touchend/mouseup'da
+  // rasmni chegaraga tekislab animatsiyani bekor qiladi: zoom shu hodisalardan keyinga qoldiriladi
+  function scheduleToggleZoom(clientX: number, clientY: number) {
+    setTimeout(() => toggleZoom(clientX, clientY))
+  }
 
   // Ikki marta tegish: kattalashtirilgan bo'lsa (qanchalik bo'lishidan qat'i nazar) asl holiga,
   // aks holda tegilgan nuqta joyida qolib DOUBLE_TAP_SCALE'gacha kattalashadi

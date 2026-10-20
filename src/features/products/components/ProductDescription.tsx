@@ -33,7 +33,7 @@ export function ProductDescription({ text }: ProductDescriptionProps) {
         <p
           ref={textRef}
           id={textId}
-          className={`text-[15px] leading-relaxed text-muted ${isExpanded ? '' : 'line-clamp-2'}`}
+          className={`text-[15px] leading-relaxed whitespace-pre-line text-muted ${isExpanded ? '' : 'line-clamp-2'}`}
         >
           {text}
         </p>

@@ -1,7 +1,5 @@
-import { mockImage } from '@/lib/mockImage'
-import type { PublicStoreCategoryDto } from './categories.types'
-
-const MOCK_DATE = '2026-06-01T09:00:00Z'
+import { mockSquarePhoto } from '@/lib/mockImage'
+import type { CategoryNodeDto } from './categories.types'
 
 const tree: { id: number; name: string; subcategories: [id: number, name: string][] }[] = [
   {
@@ -42,20 +40,25 @@ const tree: { id: number; name: string; subcategories: [id: number, name: string
   { id: 10, name: 'Aksessuarlar', subcategories: [[1001, 'Kamarlar'], [1002, 'Broshlar']] },
 ]
 
-function toDto(id: number, name: string, parent: number | null, seed: string): PublicStoreCategoryDto {
+function toDto(id: number, name: string, position: number, seed: string, children: CategoryNodeDto[]): CategoryNodeDto {
   return {
     id,
-    store: 1,
     name,
-    parent,
-    cover_processed: mockImage(seed, 400, 400),
-    created_at: MOCK_DATE,
-    updated_at: MOCK_DATE,
+    position,
+    cover: mockSquarePhoto(id, seed),
+    // Backend'dagidek 0 (hozircha hisoblanmaydi)
+    products_count: 0,
+    children,
   }
 }
 
-// Backend javobi kabi tekis ro'yxat: har bir kategoriyadan keyin uning subkategoriyalari
-export const categoriesMock: PublicStoreCategoryDto[] = tree.flatMap((category) => [
-  toDto(category.id, category.name, null, `category-${category.id}`),
-  ...category.subcategories.map(([id, name]) => toDto(id, name, category.id, `subcategory-${id}`)),
-])
+// Backend javobi kabi daraxt: kategoriyalar va ularning ichida subkategoriyalar
+export const categoriesMock: CategoryNodeDto[] = tree.map((category, position) =>
+  toDto(
+    category.id,
+    category.name,
+    position,
+    `category-${category.id}`,
+    category.subcategories.map(([id, name], index) => toDto(id, name, index, `subcategory-${id}`, [])),
+  ),
+)

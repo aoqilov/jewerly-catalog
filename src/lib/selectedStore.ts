@@ -1,8 +1,12 @@
 import { env } from '@/config/env'
 
-// Foydalanuvchi tanlagan do'kon id'si. Tanlov yo'q bo'lsa .env'dagi VITE_STORE_ID (bo'sh bo'lsa null: tanlash sahifasi chiqadi).
+// Do'kon id'si. Bitta do'kon rejimida (.env'da VITE_STORE_ID) doim shu, aks holda foydalanuvchi tanlovi
+// (yo'q bo'lsa null: tanlash sahifasi chiqadi).
 // O'qish/yozish faqat shu yerdan: api funksiyalari getStoreId, layout useSyncExternalStore orqali o'qiydi
 const STORAGE_KEY = 'store-id'
+
+// Bitta do'kon rejimi: tanlash sahifasi va do'kon almashtirish elementlari yo'q, localStorage'dagi tanlov hisobga olinmaydi
+export const IS_SINGLE_STORE = env.singleStoreId !== null
 
 // localStorage yopiq bo'lsa ham sessiya davomida ishlashi uchun xotiradagi nusxa
 let cached: number | null | undefined
@@ -17,8 +21,9 @@ function read(): number | null {
 }
 
 export function getStoreId(): number | null {
+  if (env.singleStoreId !== null) return env.singleStoreId
   if (cached === undefined) cached = read()
-  return cached ?? env.defaultStoreId
+  return cached
 }
 
 // So'rov yuboriladigan joylar uchun: do'kon tanlanmagan holatga layout yo'l qo'ymaydi

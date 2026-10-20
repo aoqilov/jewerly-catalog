@@ -1,22 +1,24 @@
 import { env } from '@/config/env'
 import { requireStoreId } from '@/lib/selectedStore'
 import { api } from '../../api-config/axios'
-import { fetchAllPages, mapPage, MAX_PAGE_SIZE, paginate, toNumberOrNull } from '../../api-config/backend'
-import type { GetAllRequest, Paginated } from '../../api-config/backend'
-import { productsMock } from './products.mockdata'
+import { fetchAllPages, mapPage, MAX_PAGE_SIZE, paginate } from '../../api-config/backend'
+import type { PaginatedDto } from '../../api-config/backend'
+import { productsMock, toProductCardDto } from './products.mockdata'
 import type {
-  PhotoDto,
+  ImageDto,
   PhotoQuality,
   Product,
-  ProductDiscountDto,
-  ProductDiscount,
+  ProductBase,
+  ProductCardDto,
+  ProductDto,
   ProductFilter,
   ProductListParams,
   ProductListResponse,
   ProductPhoto,
-  ProductVariantDto,
+  ProductSummary,
   ProductVariant,
-  PublicProductDto,
+  RenditionName,
+  VariantDto,
 } from './products.types'
 
 export const productsKeys = {
@@ -24,147 +26,168 @@ export const productsKeys = {
   list: (filter: ProductFilter) => [...productsKeys.all, 'list', filter] as const,
   count: (filter: ProductFilter) => [...productsKeys.all, 'count', filter] as const,
   detail: (id: string) => [...productsKeys.all, id] as const,
-  byIds: (ids: number[]) => [...productsKeys.all, 'by-ids', ids] as const,
   timeline: () => [...productsKeys.all, 'timeline'] as const,
   timelinePage: (pageSize: number) => [...productsKeys.all, 'timeline', 'page', pageSize] as const,
 }
 
-// Yangilik va chegirma rasmlari ham shu shaklda (StoreProductPhoto), shuning uchun eksport qilinadi
-export function mapPhoto(dto: PhotoDto): ProductPhoto {
-  const url = (quality: PhotoQuality) =>
-    dto.renditions.find((rendition) => rendition.quality === quality)?.image ?? dto.image
+// Ro'yxatlar doim eng yangisidan
+const NEWEST_FIRST = 'created_at:desc'
+
+// Rasmning kerakli nusxasi, u bo'lmasa asl rasm. Rasm hali tayyor bo'lmasa (status: pending/processing) null.
+// Kategoriya, do'kon va avatar rasmlari ham shu shaklda, shuning uchun eksport qilinadi
+export function imageUrl(dto: ImageDto | null, name: RenditionName): string | null {
+  return dto?.renditions[name]?.url ?? dto?.original?.url ?? null
+}
+
+// Yangilik va chegirma rasmlari ham shu shaklda, shuning uchun eksport qilinadi. Tayyor bo'lmagan rasm: null
+export function mapPhoto(dto: ImageDto): ProductPhoto | null {
+  const fallback = dto.renditions.large?.url ?? dto.original?.url
+  if (!fallback) return null
+  const url = (quality: PhotoQuality) => dto.renditions[quality]?.url ?? fallback
   return { id: dto.id, large: url('large'), medium: url('medium'), small: url('small') }
 }
 
-function mapVariant(dto: ProductVariantDto): ProductVariant {
+const byPosition = (a: { position: number }, b: { position: number }) => a.position - b.position
+
+function mapVariant(dto: VariantDto): ProductVariant {
   return {
     id: dto.id,
-    photos: [...dto.photos].sort((a, b) => a.order - b.order).map(mapPhoto),
+    photos: [...dto.images]
+      .sort(byPosition)
+      .map((item) => mapPhoto(item.image))
+      .filter((photo) => photo !== null),
   }
 }
 
-function mapDiscount(dto: ProductDiscountDto): ProductDiscount {
+function mapBase(dto: ProductCardDto | ProductDto): ProductBase {
+  const sale = dto.pricing.sale
   return {
     id: dto.id,
-    discountId: dto.discount,
-    title: dto.title,
-    description: dto.description,
-    discountType: dto.discount_type,
-    value: Number(dto.value),
-    startsAt: dto.starts_at,
-    endsAt: dto.ends_at,
-    image: dto.image && mapPhoto(dto.image),
-  }
-}
-
-function mapProduct(dto: PublicProductDto): Product {
-  return {
-    id: dto.id,
-    storeId: dto.store,
-    name: dto.name,
     slug: dto.slug,
-    description: dto.description,
-    categoryId: dto.category,
-    subcategoryId: dto.subcategory,
+    name: dto.name,
     brand: dto.brand,
-    manufacture: dto.manufacture,
-    materialIds: dto.material_ids,
-    tagIds: dto.tags,
-    colorId: dto.color,
-    sizes: dto.size,
-    variants: dto.variants.map(mapVariant),
-    discounts: dto.discounts.map(mapDiscount),
-    priceSale: toNumberOrNull(dto.price_sale),
-    priceRental: toNumberOrNull(dto.price_rental),
-    priceTailoring: toNumberOrNull(dto.price_tailoring),
-    isSellable: dto.is_sellable,
-    isRentable: dto.is_rentable,
-    blurImage: dto.blur_image_in_site,
-    views: dto.views,
-    favoritesCount: dto.in_customers_saved,
+    storeId: dto.store.id,
+    sizes: dto.sizes,
+    salePrice: sale && { base: Number(sale.base_price), final: Number(sale.final_price) },
+    blurImage: dto.blur_images,
+    favoritesCount: dto.favorites_count,
     createdAt: dto.created_at,
+  }
+}
+
+// Sevimlilar va yangilik mahsulotlari ham shu shaklda, shuning uchun eksport qilinadi
+export function mapProductSummary(dto: ProductCardDto): ProductSummary {
+  return {
+    ...mapBase(dto),
+    cover: dto.cover_image && mapPhoto(dto.cover_image),
+    isAvailable: dto.is_available,
+  }
+}
+
+function mapProduct(dto: ProductDto): Product {
+  return {
+    ...mapBase(dto),
+    description: dto.description,
+    manufacturer: dto.manufacturer,
+    categoryId: dto.category.id,
+    subcategoryId: dto.subcategory?.id ?? null,
+    materials: dto.materials.map((item) => item.name),
+    tags: dto.tags.map((item) => item.name),
+    color: dto.color && { id: dto.color.id, name: dto.color.name, hex: dto.color.hex_code },
+    variants: [...dto.variants].sort(byPosition).map(mapVariant),
+    views: dto.views_count,
     updatedAt: dto.updated_at,
   }
 }
 
-// Mock: kategoriya YOKI subkategoriya bo'yicha, ustidan rang va nom (VA)
-function matchesFilter(product: PublicProductDto, filter: ProductFilter) {
-  const query = filter.search?.trim().toLowerCase()
-  if (query && !product.name.toLowerCase().includes(query)) return false
-  if (filter.colorIds?.length && (product.color === null || !filter.colorIds.includes(product.color))) return false
+// Bitta so'rov: backend category_id va subcategory_id'ning faqat bittasini oladi (ro'yxat bersa 400, tekshirilgan)
+type ProductQuery = {
+  categoryId?: number
+  subcategoryId?: number
+  colorIds?: number[]
+  search?: string
+}
 
-  if (filter.categoryIds.length === 0 && filter.subcategoryIds.length === 0) return true
-  return (
-    filter.categoryIds.includes(product.category) ||
-    (product.subcategory !== null && filter.subcategoryIds.includes(product.subcategory))
-  )
+// Katalog tanlovi so'rovlarga bo'linadi: har bir to'liq kategoriya va har bir subkategoriya alohida.
+// Ular kesishmaydi: to'liq tanlangan kategoriyaning subkategoriyalari subcategoryIds'ga tushmaydi (useSelectionDraft).
+// Rang va qidiruv har bir qismga tushadi. Tanlov bo'sh bo'lsa bitta so'rov: barcha mahsulotlar
+function splitFilter(filter: ProductFilter): ProductQuery[] {
+  const narrowing = { colorIds: filter.colorIds, search: filter.search?.trim() }
+  const parts: ProductQuery[] = [
+    ...filter.categoryIds.map((categoryId) => ({ ...narrowing, categoryId })),
+    ...filter.subcategoryIds.map((subcategoryId) => ({ ...narrowing, subcategoryId })),
+  ]
+  return parts.length > 0 ? parts : [narrowing]
 }
 
 // Eng yangisi birinchi
-const byNewest = (a: PublicProductDto, b: PublicProductDto) => b.created_at.localeCompare(a.created_at)
+const byNewest = (a: { created_at: string }, b: { created_at: string }) => b.created_at.localeCompare(a.created_at)
 
-// Har bir so'rov faqat shu saytning do'koni bo'yicha
-function toFilters(filter?: ProductFilter) {
-  const filters: Record<string, unknown> = { store: requireStoreId() }
-  if (filter?.categoryIds.length) filters.category = filter.categoryIds
-  if (filter?.subcategoryIds.length) filters.subcategory = filter.subcategoryIds
-  // Ro'yxat berilsa backend shu ranglardan birini oladi (tekshirilgan)
-  if (filter?.colorIds?.length) filters.color = filter.colorIds
-  const search = filter?.search?.trim()
-  if (search) filters.name = search
-  return filters
+// Mock: backend kabi kategoriya, subkategoriya, rang (shulardan biri) va nom yoki brend bo'yicha
+function matchesQuery(product: ProductDto, query: ProductQuery) {
+  const search = query.search?.toLowerCase()
+  if (search && !`${product.name} ${product.brand}`.toLowerCase().includes(search)) return false
+  if (query.colorIds?.length && !query.colorIds.includes(product.color?.id ?? 0)) return false
+  if (query.categoryId !== undefined && product.category.id !== query.categoryId) return false
+  if (query.subcategoryId !== undefined && product.subcategory?.id !== query.subcategoryId) return false
+  return true
 }
 
-async function postGetAll(request: GetAllRequest): Promise<Paginated<PublicProductDto>> {
-  const { data } = await api.post<Paginated<PublicProductDto>>('/public/products/get-all/', request)
+// Har bir so'rov faqat shu saytning do'koni bo'yicha. Ro'yxat parametri vergul bilan (color_ids=3,5)
+async function fetchPage(query: ProductQuery, page: number, pageSize: number): Promise<PaginatedDto<ProductCardDto>> {
+  if (env.useMock) {
+    const items = productsMock.filter((product) => matchesQuery(product, query)).sort(byNewest)
+    return paginate(items.map(toProductCardDto), { page, pageSize })
+  }
+
+  const { data } = await api.get<PaginatedDto<ProductCardDto>>('/public/products', {
+    params: {
+      store_id: requireStoreId(),
+      page,
+      page_size: pageSize,
+      sort: NEWEST_FIRST,
+      category_id: query.categoryId,
+      subcategory_id: query.subcategoryId,
+      color_ids: query.colorIds?.length ? query.colorIds.join(',') : undefined,
+      search: query.search || undefined,
+    },
+  })
   return data
 }
 
-// Backend filtr maydonlarini VA bilan birlashtiradi: category va subcategory birga yuborilsa kesishmasi (bo'sh) qaytadi.
-// Bizda YOKI kerak, shuning uchun aralash tanlov ikki alohida so'rovga bo'linadi. Ular kesishmaydi: to'liq tanlangan
-// kategoriyaning subkategoriyalari subcategoryIds'ga tushmaydi (useSelectionDraft)
-const isMixed = (filter: ProductFilter) => filter.categoryIds.length > 0 && filter.subcategoryIds.length > 0
-
-// Rang va qidiruv ikkala qismga ham tushadi
-const splitFilter = (filter: ProductFilter): [ProductFilter, ProductFilter] => [
-  { ...filter, subcategoryIds: [] },
-  { ...filter, categoryIds: [] },
-]
-
-// Filtr bo'yicha eng yangi `limit` ta mahsulot (sahifa ko'pi bilan 100 ta bo'lgani uchun bir nechta so'rov bo'lishi mumkin)
-async function fetchNewest(filter: ProductFilter, limit: number) {
+// So'rov bo'yicha eng yangi `limit` ta mahsulot (sahifa ko'pi bilan 100 ta bo'lgani uchun bir nechta so'rov bo'lishi mumkin)
+async function fetchNewest(query: ProductQuery, limit: number) {
   const pageSize = Math.min(limit, MAX_PAGE_SIZE)
-  const first = await postGetAll({ page: 1, pageSize, filters: toFilters(filter) })
-  const pageCount = Math.min(Math.ceil(limit / pageSize), first.totalPages)
+  const first = await fetchPage(query, 1, pageSize)
+  const pageCount = Math.min(Math.ceil(limit / pageSize), first.total_pages)
   const rest = await Promise.all(
-    Array.from({ length: pageCount - 1 }, (_, index) =>
-      postGetAll({ page: index + 2, pageSize, filters: toFilters(filter) }),
-    ),
+    Array.from({ length: Math.max(0, pageCount - 1) }, (_, index) => fetchPage(query, index + 2, pageSize)),
   )
   return { items: [first, ...rest].flatMap((item) => item.items), total: first.total }
 }
 
-// Aralash tanlovning page-sahifasi: ikkala qismdan eng yangi page × pageSize tadan olinib, sana bo'yicha birlashtiriladi.
-// Backend eng yangisidan qaytargani uchun (tekshirilgan) birlashgan ro'yxatning boshi aniq chiqadi
-async function getMixedPage(filter: ProductFilter, page: number, pageSize: number): Promise<Paginated<PublicProductDto>> {
+// Bir nechta so'rovli tanlovning page-sahifasi: har bir qismdan eng yangi page × pageSize tadan olinib, sana bo'yicha
+// birlashtiriladi. Backend eng yangisidan qaytargani uchun birlashgan ro'yxatning boshi aniq chiqadi
+async function getMergedPage(
+  parts: ProductQuery[],
+  page: number,
+  pageSize: number,
+): Promise<PaginatedDto<ProductCardDto>> {
   const limit = page * pageSize
-  const parts = await Promise.all(splitFilter(filter).map((part) => fetchNewest(part, limit)))
-  const total = parts.reduce((sum, part) => sum + part.total, 0)
-  const merged = parts.flatMap((part) => part.items).sort(byNewest)
+  const results = await Promise.all(parts.map((part) => fetchNewest(part, limit)))
+  const total = results.reduce((sum, result) => sum + result.total, 0)
+  const merged = results.flatMap((result) => result.items).sort(byNewest)
   return {
     items: merged.slice((page - 1) * pageSize, limit),
     page,
-    totalPages: Math.max(1, Math.ceil(total / pageSize)),
+    page_size: pageSize,
     total,
+    total_pages: Math.ceil(total / pageSize),
   }
 }
 
-async function countByFilter(filter: ProductFilter) {
-  const data = await postGetAll({ page: 1, pageSize: 1, filters: toFilters(filter) })
-  return data.total
-}
-
 export const productsApi = {
+  // Xaridor tokeni bilan so'ralsa backend ko'rishlar sonini oshiradi
   getById: async (id: string): Promise<Product> => {
     if (env.useMock) {
       const product = productsMock.find((item) => String(item.id) === id)
@@ -172,67 +195,30 @@ export const productsApi = {
       return mapProduct(product)
     }
 
-    const { data } = await api.get<PublicProductDto>(`/public/products/${id}/`)
+    const { data } = await api.get<ProductDto>(`/public/products/${id}`)
     return mapProduct(data)
   },
 
-  // Yangilik yoki aksiyaga bog'langan mahsulotlar, ids tartibida. Backend filters'dagi id'ni e'tiborsiz qoldiradi
-  // (tekshirilgan), shuning uchun har biri alohida olinadi. Tokensiz so'rov views'ni oshirmaydi (tekshirilgan).
-  // O'chirilgan yoki yashirilgan mahsulot (404) ro'yxatdan tushib qoladi, hammasi xato bo'lsa xato qaytadi
-  getByIds: async (ids: number[]): Promise<Product[]> => {
-    if (env.useMock) {
-      return ids.flatMap((id) => {
-        const product = productsMock.find((item) => item.id === id)
-        return product ? [mapProduct(product)] : []
-      })
-    }
-
-    const results = await Promise.allSettled(ids.map((id) => api.get<PublicProductDto>(`/public/products/${id}/`)))
-    const products = results.flatMap((result) => (result.status === 'fulfilled' ? [mapProduct(result.value.data)] : []))
-    const firstError = results.find((result) => result.status === 'rejected')
-    if (products.length === 0 && firstError) throw firstError.reason
-    return products
-  },
-
   getList: async ({ page, pageSize, ...filter }: ProductListParams): Promise<ProductListResponse> => {
-    if (env.useMock) {
-      const items = productsMock.filter((product) => matchesFilter(product, filter))
-      return mapPage(paginate(items, { page, pageSize }), mapProduct)
-    }
-
-    const dto = isMixed(filter)
-      ? await getMixedPage(filter, page, pageSize)
-      : await postGetAll({ page, pageSize, filters: toFilters(filter) })
-    return mapPage(dto, mapProduct)
+    const parts = splitFilter(filter)
+    const dto = parts.length === 1 ? await fetchPage(parts[0], page, pageSize) : await getMergedPage(parts, page, pageSize)
+    return mapPage(dto, mapProductSummary)
   },
 
-  // Mos mahsulotlar soni: bitta elementli sahifaning total'i (aralash tanlovda ikki qism yig'indisi)
+  // Mos mahsulotlar soni: bitta elementli sahifaning total'i (bir nechta so'rovli tanlovda yig'indisi)
   count: async (filter: ProductFilter): Promise<number> => {
-    if (env.useMock) {
-      return productsMock.filter((product) => matchesFilter(product, filter)).length
-    }
-
-    if (!isMixed(filter)) return countByFilter(filter)
-    const totals = await Promise.all(splitFilter(filter).map(countByFilter))
+    const totals = await Promise.all(splitFilter(filter).map(async (part) => (await fetchPage(part, 1, 1)).total))
     return totals.reduce((sum, total) => sum + total, 0)
   },
 
   // Barcha mahsulotlar qo'shilgan sanasi bo'yicha, eng yangisi birinchi. Kalendar uchun (barcha kunlarni bilishi
   // kerak) va kalendardan aniq kunga o'tilganda ishlatiladi — lentaning odatiy holati getTimelinePage'dan foydalanadi
-  getTimeline: async (): Promise<Product[]> => {
-    const items = env.useMock
-      ? productsMock
-      : await fetchAllPages((page) => postGetAll({ page, pageSize: MAX_PAGE_SIZE, filters: toFilters() }))
-    // api.yaml'da tartiblash parametri yo'q, shuning uchun sana bo'yicha shu yerda tartiblanadi
-    return [...items].sort(byNewest).map(mapProduct)
+  getTimeline: async (): Promise<ProductSummary[]> => {
+    const items = await fetchAllPages((page) => fetchPage({}, page, MAX_PAGE_SIZE))
+    return items.map(mapProductSummary)
   },
 
-  // "Yangi" lentasi uchun sahifalab: page 1 — eng yangi pageSize ta, page 2 — undan oldingilar va h.k.
-  getTimelinePage: async ({ page, pageSize }: { page: number; pageSize: number }): Promise<ProductListResponse> => {
-    // api.yaml'da tartiblash parametri yo'q, lekin backend sukut bo'yicha eng yangisidan qaytaradi (tekshirilgan)
-    const dto = env.useMock
-      ? paginate([...productsMock].sort(byNewest), { page, pageSize })
-      : await postGetAll({ page, pageSize, filters: toFilters() })
-    return mapPage(dto, mapProduct)
-  },
+  // "Yangi" lentasi va Reels uchun sahifalab: page 1 — eng yangi pageSize ta, page 2 — undan oldingilar va h.k.
+  getTimelinePage: async ({ page, pageSize }: { page: number; pageSize: number }): Promise<ProductListResponse> =>
+    mapPage(await fetchPage({}, page, pageSize), mapProductSummary),
 }

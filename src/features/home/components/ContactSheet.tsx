@@ -11,6 +11,7 @@ import {
   TbBrandYoutube,
 } from 'react-icons/tb'
 import type { SocialPlatform, Store } from '@/api/routes/store/store.types'
+import { useLastValue } from '@/hooks/useLastValue'
 import { CusBottomSheet } from '@/shared/ui/CusBottomSheet'
 import type { ContactKind } from '../types'
 
@@ -174,10 +175,13 @@ function ContactPersonRow({ contact }: ContactPersonRowProps) {
 }
 
 export function ContactSheet({ kind, store, onClose }: ContactSheetProps) {
+  // Yopilayotganda (kind null) chiqish animatsiyasi tugaguncha oxirgi ro'yxat ko'rinib turadi
+  const shown = useLastValue(kind)
+
   return (
-    <CusBottomSheet isOpen={kind !== null} onClose={onClose} title={kind ? TITLES[kind] : ''}>
-      <ul className={`flex flex-col ${kind === 'addresses' ? 'gap-2' : 'gap-1'}`}>
-        {kind === 'socials' &&
+    <CusBottomSheet isOpen={kind !== null} onClose={onClose} title={shown ? TITLES[shown] : ''}>
+      <ul className={`flex flex-col ${shown === 'addresses' ? 'gap-2' : 'gap-1'}`}>
+        {shown === 'socials' &&
           store.socials.map((social) => {
             const Icon = SOCIAL_ICONS[social.platform]
             return (
@@ -187,20 +191,20 @@ export function ContactSheet({ kind, store, onClose }: ContactSheetProps) {
                   external
                   icon={<Icon aria-hidden className="size-5" />}
                   title={SOCIAL_NAMES[social.platform]}
-                  subtitle={social.nickname}
+                  subtitle={social.username}
                 />
               </li>
             )
           })}
 
-        {kind === 'addresses' &&
+        {shown === 'addresses' &&
           store.addresses.map((address) => (
             <li key={address.id}>
               <AddressRow address={address} />
             </li>
           ))}
 
-        {kind === 'phones' &&
+        {shown === 'phones' &&
           store.contacts.map((contact) => (
             <li key={contact.id}>
               <ContactPersonRow contact={contact} />

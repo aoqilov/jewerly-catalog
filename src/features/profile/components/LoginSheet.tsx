@@ -15,7 +15,8 @@ type FieldErrors = {
   password?: string
 }
 
-// Backend'da faqat login + parol bilan kirish bor (ro'yxatdan o'tish endpoint'i yo'q)
+// Xaridor telefon raqami (istalgan formatda) va parol bilan kiradi. Ro'yxatdan o'tish (SMS/Telegram kodi bilan)
+// backend'da bor, UI'si hali yo'q
 export function LoginSheet({ isOpen, onClose }: LoginSheetProps) {
   const login = useLogin()
   const [username, setUsername] = useState('')
@@ -26,7 +27,7 @@ export function LoginSheet({ isOpen, onClose }: LoginSheetProps) {
     event.preventDefault()
     const value = username.trim()
     const nextErrors: FieldErrors = {
-      login: value ? undefined : 'Loginni kiriting',
+      login: value ? undefined : 'Telefon raqamini kiriting',
       password: password ? undefined : 'Parolni kiriting',
     }
     setErrors(nextErrors)
@@ -47,11 +48,13 @@ export function LoginSheet({ isOpen, onClose }: LoginSheetProps) {
     <CusBottomSheet isOpen={isOpen} onClose={onClose} title="Hisobga kirish">
       <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-4 pb-2">
         <CusInput
-          label="Login"
+          label="Telefon raqami"
+          type="tel"
+          inputMode="tel"
+          placeholder="+998 90 123 45 67"
           value={username}
           onChange={(event) => setUsername(event.target.value)}
           autoComplete="username"
-          autoCapitalize="none"
           error={errors.login}
         />
         <CusInput
@@ -65,7 +68,7 @@ export function LoginSheet({ isOpen, onClose }: LoginSheetProps) {
 
         {login.isError && (
           <p role="alert" className="text-sm font-semibold text-accent">
-            Kirib bo'lmadi. Login va parolni tekshirib, qayta urinib ko'ring
+            Kirib bo'lmadi. Telefon raqami va parolni tekshirib, qayta urinib ko'ring
           </p>
         )}
 

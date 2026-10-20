@@ -8,7 +8,7 @@ type ServicesAccordionProps = {
   services: StoreService[]
 }
 
-// iconId: backendning "icons" katalogidagi id (1=ijara, 2=sotuv, 3=tikish, 4=kiyib ko'rish)
+// iconId: do'kon ikonkalar katalogidagi id (1=ijara, 2=sotuv, 3=tikish, 4=kiyib ko'rish). Boshqasi: teg ikonkasi
 const SERVICE_ICONS: Record<number, IconType> = {
   1: TbHanger,
   2: LuTag,
@@ -22,8 +22,8 @@ export function ServicesAccordion({ services }: ServicesAccordionProps) {
     return {
       id: service.id,
       title: service.title,
-      // kicker: qisqa izoh (narx, muddat), sarlavha ostida doim ko'rinadi; description ochilganda
-      subtitle: service.kicker,
+      // tagline: qisqa izoh (narx, muddat), sarlavha ostida doim ko'rinadi; description ochilganda
+      subtitle: service.tagline,
       icon: <Icon aria-hidden className="size-5" />,
       content: <p className="text-sm text-muted">{service.description}</p>,
     }

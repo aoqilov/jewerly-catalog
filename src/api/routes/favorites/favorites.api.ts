@@ -1,113 +1,115 @@
 import { env } from '@/config/env'
 import { api } from '../../api-config/axios'
-import { mapPage, paginate, toNumberOrNull } from '../../api-config/backend'
-import type { PageRequest, Paginated } from '../../api-config/backend'
-import { productsMock } from '../products/products.mockdata'
-import { storeMock } from '../store/store.mockdata'
-import { favoriteProductIdsMock, favoriteStoreIdsMock } from './favorites.mockdata'
-import type { FavoriteProduct, FavoriteProductDto, FavoriteStore, StoreDto } from './favorites.types'
+import { mapPage, pageQuery, paginate } from '../../api-config/backend'
+import type { PageRequest, Paginated, PaginatedDto } from '../../api-config/backend'
+import { mapProductSummary } from '../products/products.api'
+import { productsMock, toProductCardDto } from '../products/products.mockdata'
+import { storesMock } from '../store/store.mockdata'
+import { FAVORITED_AT_MOCK, favoriteProductIdsMock, favoriteStoreIdsMock } from './favorites.mockdata'
+import type {
+  FavoriteProduct,
+  FavoriteProductDto,
+  FavoriteProductIdsDto,
+  FavoriteStore,
+  FavoriteStoreDto,
+} from './favorites.types'
 
 export const favoritesKeys = {
   all: ['favorites'] as const,
   products: (page: number) => [...favoritesKeys.all, 'products', page] as const,
+  productIds: () => [...favoritesKeys.all, 'product-ids'] as const,
   stores: (page: number) => [...favoritesKeys.all, 'stores', page] as const,
 }
 
-// Mock rejimda mutatsiya qilinadigan xotiradagi nusxalar
-const favoriteProductIds = new Set(favoriteProductIdsMock)
-const favoriteStoreIds = new Set(favoriteStoreIdsMock)
+// Yangi qo'shilgani birinchi
+const NEWEST_FIRST = 'favorited_at:desc'
+
+// Mock rejimda mutatsiya qilinadigan xotiradagi nusxalar (yangi qo'shilgani boshida)
+let favoriteProductIds = [...favoriteProductIdsMock]
+let favoriteStoreIds = [...favoriteStoreIdsMock]
 
 function mapFavoriteProduct(dto: FavoriteProductDto): FavoriteProduct {
-  return {
-    id: dto.id,
-    storeId: dto.store,
-    name: dto.name,
-    slug: dto.slug,
-    categoryId: dto.category,
-    priceSale: toNumberOrNull(dto.price_sale),
-    priceRental: toNumberOrNull(dto.price_rental),
-    isSellable: dto.is_sellable,
-    isRentable: dto.is_rentable,
-  }
+  return { ...mapProductSummary(dto), favoritedAt: dto.favorited_at }
 }
 
-function mapFavoriteStore(dto: StoreDto): FavoriteStore {
-  return { id: dto.id, name: dto.name, description: dto.description, phone: dto.phone, email: dto.email }
+function mapFavoriteStore(dto: FavoriteStoreDto): FavoriteStore {
+  return { id: dto.store.id, name: dto.store.name, isAvailable: dto.store.is_available, favoritedAt: dto.favorited_at }
 }
 
-// Mock: mahsulot mock'idan backend'dagi qisqa shakl
+// Mock: mahsulot mock'idan backend'dagi karta shakli
 function toFavoriteProductDto(id: number): FavoriteProductDto | undefined {
   const product = productsMock.find((item) => item.id === id)
-  if (!product) return undefined
-  return {
-    id: product.id,
-    store: product.store,
-    name: product.name,
-    slug: product.slug,
-    category: product.category,
-    price_sale: product.price_sale,
-    price_rental: product.price_rental,
-    is_sellable: product.is_sellable,
-    is_rentable: product.is_rentable,
-  }
+  return product && { ...toProductCardDto(product), favorited_at: FAVORITED_AT_MOCK }
 }
 
-function toStoreDto(id: number): StoreDto | undefined {
-  if (id !== storeMock.id) return undefined
-  const { name, description, phone, email, created_at, updated_at } = storeMock
-  return { id, name, description, phone, email, active: true, created_at, updated_at }
+function toFavoriteStoreDto(id: number): FavoriteStoreDto | undefined {
+  const store = storesMock.find((item) => item.id === id)
+  return store && { store: { id, name: store.name, is_available: true }, favorited_at: FAVORITED_AT_MOCK }
 }
 
 export const favoritesApi = {
+  // Qayta qo'shish xato emas (idempotent)
   addProduct: async (productId: number): Promise<void> => {
     if (env.useMock) {
-      favoriteProductIds.add(productId)
+      favoriteProductIds = [productId, ...favoriteProductIds.filter((id) => id !== productId)]
       return
     }
-    await api.post(`/customers/favorites/products/${productId}`)
+    await api.put(`/buyer/favorites/products/${productId}`)
   },
 
   removeProduct: async (productId: number): Promise<void> => {
     if (env.useMock) {
-      favoriteProductIds.delete(productId)
+      favoriteProductIds = favoriteProductIds.filter((id) => id !== productId)
       return
     }
-    await api.delete(`/customers/favorites/products/${productId}`)
+    await api.delete(`/buyer/favorites/products/${productId}`)
   },
 
   getProducts: async (params: PageRequest): Promise<Paginated<FavoriteProduct>> => {
     if (env.useMock) {
-      const items = [...favoriteProductIds].map(toFavoriteProductDto).filter((item) => item !== undefined)
+      const items = favoriteProductIds.map(toFavoriteProductDto).filter((item) => item !== undefined)
       return mapPage(paginate(items, params), mapFavoriteProduct)
     }
 
-    const { data } = await api.post<Paginated<FavoriteProductDto>>('/customers/favorites/products/get-all', params)
+    const { data } = await api.get<PaginatedDto<FavoriteProductDto>>('/buyer/favorites/products', {
+      params: { ...pageQuery(params), sort: NEWEST_FIRST },
+    })
     return mapPage(data, mapFavoriteProduct)
+  },
+
+  // Sevimli mahsulotlar id'lari (ko'pi bilan 1000): mahsulot sahifasi va Reels'dagi yurakcha uchun
+  getProductIds: async (): Promise<number[]> => {
+    if (env.useMock) return [...favoriteProductIds]
+
+    const { data } = await api.get<FavoriteProductIdsDto>('/buyer/favorites/products/ids')
+    return data.product_ids
   },
 
   addStore: async (storeId: number): Promise<void> => {
     if (env.useMock) {
-      favoriteStoreIds.add(storeId)
+      favoriteStoreIds = [storeId, ...favoriteStoreIds.filter((id) => id !== storeId)]
       return
     }
-    await api.post(`/customers/favorites/stores/${storeId}`)
+    await api.put(`/buyer/favorites/stores/${storeId}`)
   },
 
   removeStore: async (storeId: number): Promise<void> => {
     if (env.useMock) {
-      favoriteStoreIds.delete(storeId)
+      favoriteStoreIds = favoriteStoreIds.filter((id) => id !== storeId)
       return
     }
-    await api.delete(`/customers/favorites/stores/${storeId}`)
+    await api.delete(`/buyer/favorites/stores/${storeId}`)
   },
 
   getStores: async (params: PageRequest): Promise<Paginated<FavoriteStore>> => {
     if (env.useMock) {
-      const items = [...favoriteStoreIds].map(toStoreDto).filter((item) => item !== undefined)
+      const items = favoriteStoreIds.map(toFavoriteStoreDto).filter((item) => item !== undefined)
       return mapPage(paginate(items, params), mapFavoriteStore)
     }
 
-    const { data } = await api.post<Paginated<StoreDto>>('/customers/favorites/stores/get-all', params)
+    const { data } = await api.get<PaginatedDto<FavoriteStoreDto>>('/buyer/favorites/stores', {
+      params: { ...pageQuery(params), sort: NEWEST_FIRST },
+    })
     return mapPage(data, mapFavoriteStore)
   },
 }

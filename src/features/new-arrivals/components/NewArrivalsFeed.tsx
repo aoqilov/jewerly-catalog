@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router'
-import type { Product } from '@/api/routes/products/products.types'
+import type { ProductSummary } from '@/api/routes/products/products.types'
 import { ROUTES } from '@/config/routes'
 import { appScrollElement } from '@/lib/appScroll'
 import { dayKey } from '@/lib/dayKey'
@@ -12,7 +12,7 @@ import { ProductPhoto } from './ProductPhoto'
 
 type NewArrivalsFeedProps = {
   // API tartibi: eng yangisi birinchi (lentada teskari ko'rsatiladi)
-  products: Product[]
+  products: ProductSummary[]
   columns: FeedColumns
   // Kalendardan tanlangan kun: lenta shu sanaga aylanadi
   focusDay: string | null
@@ -32,8 +32,8 @@ const gridClass: Record<Exclude<FeedColumns, 1>, string> = {
   2: '-mx-3.5 grid grid-cols-2 gap-3',
 }
 
-function groupByDay(products: Product[]) {
-  const groups = new Map<string, Product[]>()
+function groupByDay(products: ProductSummary[]) {
+  const groups = new Map<string, ProductSummary[]>()
   for (const product of products) {
     const key = dayKey(product.createdAt)
     const group = groups.get(key)
@@ -44,7 +44,7 @@ function groupByDay(products: Product[]) {
 }
 
 type ProductCardProps = {
-  product: Product
+  product: ProductSummary
 }
 
 // 2 ustun: katalog kartasi bilan bir xil — bosh rasm, ostida nom, taklif turi va narx.
@@ -65,10 +65,10 @@ function ProductCard({ product }: ProductCardProps) {
 }
 
 type ProductPostProps = {
-  product: Product
+  product: ProductSummary
 }
 
-// "Post" ko'rinishi: bosh rasm, ostida taklif turi va narx, nom, qisqa tavsif
+// "Post" ko'rinishi: bosh rasm, ostida nom va narx (ro'yxatda tavsif kelmaydi)
 function ProductPost({ product }: ProductPostProps) {
   return (
     <Link to={ROUTES.product(product.id)} className={`flex flex-col gap-3 ${linkClass}`}>
@@ -76,7 +76,6 @@ function ProductPost({ product }: ProductPostProps) {
       <div className="flex flex-col gap-1">
         <span className="text-[17px] font-bold text-text">{product.name}</span>
         <ProductPrice product={product} showBadge />
-        <p className="line-clamp-2 text-sm text-muted">{product.description}</p>
       </div>
     </Link>
   )
