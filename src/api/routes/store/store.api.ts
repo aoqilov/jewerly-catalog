@@ -1,16 +1,19 @@
 import { env } from '@/config/env'
 import { requireStoreId } from '@/lib/selectedStore'
+import { storeSlug } from '@/lib/storeSlug'
 import { api } from '../../api-config/axios'
-import { mapPage, pageQuery, paginate } from '../../api-config/backend'
+import { fetchAllPages, mapPage, pageQuery, paginate } from '../../api-config/backend'
 import type { Paginated, PaginatedDto } from '../../api-config/backend'
 import { imageUrl } from '../products/products.api'
-import { storeMock, storesMock } from './store.mockdata'
+import { storesMock, storeMock } from './store.mockdata'
 import type { PublicStoreCardDto, PublicStoreDetailDto, Store, StoreSummary } from './store.types'
 
 export const storeKeys = {
   all: ['store'] as const,
   // Do'kon tanlash ro'yxati (qidiruv bo'yicha)
   search: (name: string) => [...storeKeys.all, 'search', name] as const,
+  // Havola (/mercurycouz) bo'yicha do'kon
+  bySlug: (slug: string) => [...storeKeys.all, 'by-slug', slug] as const,
 }
 
 function mapStoreSummary(dto: PublicStoreCardDto): StoreSummary {
@@ -80,5 +83,22 @@ export const storeApi = {
       params: { ...pageQuery(request), search: search || undefined },
     })
     return mapPage(data, mapStoreSummary)
+  },
+
+  // Havola (/mercurycouz): do'kon nomidan yasalgan slug bo'yicha. Backend'da slug yo'q, shuning uchun faol do'konlar
+  // to'liq yuklanib, nomlari storeSlug bilan solishtiriladi. Nom unikal deb kafolatlanmagan: birinchisi olinadi
+  findBySlug: async (slug: string): Promise<StoreSummary | null> => {
+    if (env.useMock) {
+      const found = storesMock.find((item) => storeSlug(item.name) === slug)
+      return found ? mapStoreSummary(found) : null
+    }
+
+    const items = await fetchAllPages((page) =>
+      api
+        .get<PaginatedDto<PublicStoreCardDto>>('/public/stores', { params: pageQuery({ page, pageSize: 100 }) })
+        .then((response) => response.data),
+    )
+    const found = items.find((item) => storeSlug(item.name) === slug)
+    return found ? mapStoreSummary(found) : null
   },
 }

@@ -9,6 +9,7 @@ import { NewArrivalsPage } from '@/pages/new-arrivals/NewArrivalsPage'
 import { PlaygroundPage } from '@/pages/playground/PlaygroundPage'
 import { ProfilePage } from '@/pages/profile/ProfilePage'
 import { ReelsPage } from '@/pages/reels/ReelsPage'
+import { StoreLinkPage } from '@/pages/store-link/StoreLinkPage'
 import { StoresPage } from '@/pages/stores/StoresPage'
 import type { RouteHandle } from '@/types/router'
 
@@ -48,4 +49,6 @@ export const router = createBrowserRouter([
       { path: ROUTES.playground, element: <PlaygroundPage /> },
     ],
   },
+  // /<do'kon-nomi>[/sahifa]: yuqoridagi aniq route'lar mos kelmaganda. Do'konni tanlab, qolgan manzilga o'tkazadi
+  { path: '/:slug/*', element: <StoreLinkPage /> },
 ])

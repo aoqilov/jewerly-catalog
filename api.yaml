@@ -2,7 +2,7 @@ openapi: 3.0.0
 paths:
   /api/v1/auth/buyer/verifications/{verification_id}:
     get:
-      description: "Опрос фронтендом в сценарии Telegram: ждём, пока бот пришлёт код
+      description: "РћРїСЂРѕСЃ С„СЂРѕРЅС‚РµРЅРґРѕРј РІ СЃС†РµРЅР°СЂРёРё Telegram: Р¶РґС‘Рј, РїРѕРєР° Р±РѕС‚ РїСЂРёС€Р»С‘С‚ РєРѕРґ
         (status: code_sent)."
       operationId: VerificationsPublicController_status
       parameters:
@@ -20,12 +20,12 @@ paths:
                 $ref: "#/components/schemas/VerificationResponseDto"
         "404":
           description: VERIFICATION_NOT_FOUND
-      summary: Статус подтверждения
+      summary: РЎС‚Р°С‚СѓСЃ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ
       tags: &a1
         - auth / buyer verifications
   /api/v1/auth/buyer/verifications/{verification_id}/resend:
     post:
-      description: Пауза между отправками 60 секунд, не больше 3 повторов на сессию.
+      description: РџР°СѓР·Р° РјРµР¶РґСѓ РѕС‚РїСЂР°РІРєР°РјРё 60 СЃРµРєСѓРЅРґ, РЅРµ Р±РѕР»СЊС€Рµ 3 РїРѕРІС‚РѕСЂРѕРІ РЅР° СЃРµСЃСЃРёСЋ.
       operationId: VerificationsPublicController_resend
       parameters:
         - name: verification_id
@@ -48,12 +48,12 @@ paths:
           description: RESEND_TOO_EARLY, OTP_RATE_LIMITED (Retry-After)
         "503":
           description: SMS_DELIVERY_FAILED
-      summary: Отправить код ещё раз
+      summary: РћС‚РїСЂР°РІРёС‚СЊ РєРѕРґ РµС‰С‘ СЂР°Р·
       tags: *a1
   /api/v1/auth/buyer/verifications/{verification_id}/verify:
     post:
-      description: Верный код удаляет сессию и выдаёт одноразовый verification_token
-        на 15 минут для registration/complete или password-reset/complete.
+      description: Р’РµСЂРЅС‹Р№ РєРѕРґ СѓРґР°Р»СЏРµС‚ СЃРµСЃСЃРёСЋ Рё РІС‹РґР°С‘С‚ РѕРґРЅРѕСЂР°Р·РѕРІС‹Р№ verification_token
+        РЅР° 15 РјРёРЅСѓС‚ РґР»СЏ registration/complete РёР»Рё password-reset/complete.
       operationId: VerificationsPublicController_verify
       parameters:
         - name: verification_id
@@ -82,12 +82,12 @@ paths:
           description: OTP_ATTEMPTS_EXCEEDED
         "422":
           description: INVALID_OTP_CODE (details.attempts_left)
-      summary: Проверить код
+      summary: РџСЂРѕРІРµСЂРёС‚СЊ РєРѕРґ
       tags: *a1
   /api/v1/auth/buyer/login:
     post:
-      description: Не больше 5 неудач на пару (роль, логин, IP) и 30 на IP за 15
-        минут. Блокировка проверяется после пароля.
+      description: РќРµ Р±РѕР»СЊС€Рµ 5 РЅРµСѓРґР°С‡ РЅР° РїР°СЂСѓ (СЂРѕР»СЊ, Р»РѕРіРёРЅ, IP) Рё 30 РЅР° IP Р·Р° 15
+        РјРёРЅСѓС‚. Р‘Р»РѕРєРёСЂРѕРІРєР° РїСЂРѕРІРµСЂСЏРµС‚СЃСЏ РїРѕСЃР»Рµ РїР°СЂРѕР»СЏ.
       operationId: BuyerAuthController_login
       parameters: []
       requestBody:
@@ -111,12 +111,12 @@ paths:
           description: ACCOUNT_BLOCKED
         "429":
           description: TOO_MANY_LOGIN_ATTEMPTS (Retry-After)
-      summary: Вход (buyer)
+      summary: Р’С…РѕРґ (buyer)
       tags: &a2
         - auth / buyer
   /api/v1/auth/buyer/refresh:
     post:
-      description: Новая пара токенов; старый refresh-токен больше не действует.
+      description: РќРѕРІР°СЏ РїР°СЂР° С‚РѕРєРµРЅРѕРІ; СЃС‚Р°СЂС‹Р№ refresh-С‚РѕРєРµРЅ Р±РѕР»СЊС€Рµ РЅРµ РґРµР№СЃС‚РІСѓРµС‚.
       operationId: BuyerAuthController_refresh
       parameters: []
       requestBody:
@@ -136,11 +136,11 @@ paths:
           description: TOKEN_INVALID, TOKEN_EXPIRED, SESSION_NOT_ACTIVE
         "403":
           description: ACCOUNT_BLOCKED
-      summary: Обновление токенов (buyer)
+      summary: РћР±РЅРѕРІР»РµРЅРёРµ С‚РѕРєРµРЅРѕРІ (buyer)
       tags: *a2
   /api/v1/auth/buyer/logout:
     post:
-      description: "all_sessions: true завершает все сессии учётки, иначе только текущую."
+      description: "all_sessions: true Р·Р°РІРµСЂС€Р°РµС‚ РІСЃРµ СЃРµСЃСЃРёРё СѓС‡С‘С‚РєРё, РёРЅР°С‡Рµ С‚РѕР»СЊРєРѕ С‚РµРєСѓС‰СѓСЋ."
       operationId: BuyerAuthController_logout
       parameters: []
       requestBody:
@@ -151,17 +151,17 @@ paths:
               $ref: "#/components/schemas/LogoutDto"
       responses:
         "204":
-          description: Сессия завершена
+          description: РЎРµСЃСЃРёСЏ Р·Р°РІРµСЂС€РµРЅР°
         "401":
           description: TOKEN_MISSING, TOKEN_INVALID, TOKEN_EXPIRED, SESSION_NOT_ACTIVE
       security:
         - buyer_bearer: []
-      summary: Выход (buyer)
+      summary: Р’С‹С…РѕРґ (buyer)
       tags: *a2
   /api/v1/auth/buyer/change-password:
     post:
-      description: Сбрасывает must_change_password; после коммита завершаются все
-        сессии, кроме текущей.
+      description: РЎР±СЂР°СЃС‹РІР°РµС‚ must_change_password; РїРѕСЃР»Рµ РєРѕРјРјРёС‚Р° Р·Р°РІРµСЂС€Р°СЋС‚СЃСЏ РІСЃРµ
+        СЃРµСЃСЃРёРё, РєСЂРѕРјРµ С‚РµРєСѓС‰РµР№.
       operationId: BuyerAuthController_changePassword
       parameters: []
       requestBody:
@@ -172,7 +172,7 @@ paths:
               $ref: "#/components/schemas/ChangePasswordDto"
       responses:
         "204":
-          description: Пароль изменён
+          description: РџР°СЂРѕР»СЊ РёР·РјРµРЅС‘РЅ
         "400":
           description: VALIDATION_ERROR
         "401":
@@ -181,12 +181,12 @@ paths:
           description: INVALID_CURRENT_PASSWORD, PASSWORD_SAME_AS_CURRENT
       security:
         - buyer_bearer: []
-      summary: Смена пароля (buyer)
+      summary: РЎРјРµРЅР° РїР°СЂРѕР»СЏ (buyer)
       tags: *a2
   /api/v1/auth/buyer/password-reset/start:
     post:
-      description: Номер должен быть зарегистрирован и не заблокирован. Код приходит
-        по SMS или через Telegram-бот.
+      description: РќРѕРјРµСЂ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ Рё РЅРµ Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅ. РљРѕРґ РїСЂРёС…РѕРґРёС‚
+        РїРѕ SMS РёР»Рё С‡РµСЂРµР· Telegram-Р±РѕС‚.
       operationId: BuyerPasswordResetController_start
       parameters: []
       requestBody:
@@ -212,12 +212,12 @@ paths:
           description: OTP_RATE_LIMITED
         "503":
           description: SMS_DELIVERY_FAILED
-      summary: Начать восстановление пароля
+      summary: РќР°С‡Р°С‚СЊ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РїР°СЂРѕР»СЏ
       tags: &a3
         - auth / buyer password reset
   /api/v1/auth/buyer/password-reset/complete:
     post:
-      description: Все прежние сессии покупателя завершаются, выдаётся новая пара токенов.
+      description: Р’СЃРµ РїСЂРµР¶РЅРёРµ СЃРµСЃСЃРёРё РїРѕРєСѓРїР°С‚РµР»СЏ Р·Р°РІРµСЂС€Р°СЋС‚СЃСЏ, РІС‹РґР°С‘С‚СЃСЏ РЅРѕРІР°СЏ РїР°СЂР° С‚РѕРєРµРЅРѕРІ.
       operationId: BuyerPasswordResetController_complete
       parameters: []
       requestBody:
@@ -239,21 +239,21 @@ paths:
           description: PHONE_NOT_REGISTERED
         "422":
           description: VERIFICATION_TOKEN_INVALID
-      summary: Задать новый пароль по токену подтверждения
+      summary: Р—Р°РґР°С‚СЊ РЅРѕРІС‹Р№ РїР°СЂРѕР»СЊ РїРѕ С‚РѕРєРµРЅСѓ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ
       tags: *a3
   /api/v1/public/stores:
     get:
-      description: "Активные магазины для витрины: карточки с id, названием, описанием
-        и баннером. Отключённых магазинов в списке нет; Поиск search по
-        названию. Постранично: page и page_size. Сортировка: created_at, name.
-        Полные данные магазина (контакты, адреса) отдаёт GET
+      description: "РђРєС‚РёРІРЅС‹Рµ РјР°РіР°Р·РёРЅС‹ РґР»СЏ РІРёС‚СЂРёРЅС‹: РєР°СЂС‚РѕС‡РєРё СЃ id, РЅР°Р·РІР°РЅРёРµРј, РѕРїРёСЃР°РЅРёРµРј
+        Рё Р±Р°РЅРЅРµСЂРѕРј. РћС‚РєР»СЋС‡С‘РЅРЅС‹С… РјР°РіР°Р·РёРЅРѕРІ РІ СЃРїРёСЃРєРµ РЅРµС‚; РџРѕРёСЃРє search РїРѕ
+        РЅР°Р·РІР°РЅРёСЋ. РџРѕСЃС‚СЂР°РЅРёС‡РЅРѕ: page Рё page_size. РЎРѕСЂС‚РёСЂРѕРІРєР°: created_at, name.
+        РџРѕР»РЅС‹Рµ РґР°РЅРЅС‹Рµ РјР°РіР°Р·РёРЅР° (РєРѕРЅС‚Р°РєС‚С‹, Р°РґСЂРµСЃР°) РѕС‚РґР°С‘С‚ GET
         /public/stores/{store_id}."
       operationId: StoresPublicController_list
       parameters:
         - name: page
           required: false
           in: query
-          description: Номер страницы
+          description: РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           schema:
             default: 1
             example: 1
@@ -261,7 +261,7 @@ paths:
         - name: page_size
           required: false
           in: query
-          description: Размер страницы
+          description: Р Р°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           schema:
             minimum: 1
             maximum: 100
@@ -271,14 +271,14 @@ paths:
         - name: search
           required: false
           in: query
-          description: Поиск по названию
+          description: РџРѕРёСЃРє РїРѕ РЅР°Р·РІР°РЅРёСЋ
           schema:
             example: zara
             type: string
         - name: sort
           required: false
           in: query
-          description: "Сортировка: created_at, name"
+          description: "РЎРѕСЂС‚РёСЂРѕРІРєР°: created_at, name"
           schema:
             example: created_at:desc
             type: string
@@ -289,13 +289,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PublicStoreListResponseDto"
-      summary: Активные магазины
+      summary: РђРєС‚РёРІРЅС‹Рµ РјР°РіР°Р·РёРЅС‹
       tags: &a4
         - public / stores
   /api/v1/public/stores/{store_id}:
     get:
-      description: Только видимые соцсети и услуги, всё по position, затем id.
-        Счётчики каталога — в /public/stores/{id}/catalog-filters.
+      description: РўРѕР»СЊРєРѕ РІРёРґРёРјС‹Рµ СЃРѕС†СЃРµС‚Рё Рё СѓСЃР»СѓРіРё, РІСЃС‘ РїРѕ position, Р·Р°С‚РµРј id.
+        РЎС‡С‘С‚С‡РёРєРё РєР°С‚Р°Р»РѕРіР° вЂ” РІ /public/stores/{id}/catalog-filters.
       operationId: StoresPublicController_get
       parameters:
         - name: store_id
@@ -311,19 +311,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/PublicStoreDetailResponseDto"
         "404":
-          description: STORE_NOT_FOUND (и для неактивного)
-      summary: Магазин с адресами, контактами, соцсетями и услугами
+          description: STORE_NOT_FOUND (Рё РґР»СЏ РЅРµР°РєС‚РёРІРЅРѕРіРѕ)
+      summary: РњР°РіР°Р·РёРЅ СЃ Р°РґСЂРµСЃР°РјРё, РєРѕРЅС‚Р°РєС‚Р°РјРё, СЃРѕС†СЃРµС‚СЏРјРё Рё СѓСЃР»СѓРіР°РјРё
       tags: *a4
   /api/v1/public/products:
     get:
-      description: "Только видимые товары: active, магазин активен, категория и
-        подкатегория видны."
+      description: "РўРѕР»СЊРєРѕ РІРёРґРёРјС‹Рµ С‚РѕРІР°СЂС‹: active, РјР°РіР°Р·РёРЅ Р°РєС‚РёРІРµРЅ, РєР°С‚РµРіРѕСЂРёСЏ Рё
+        РїРѕРґРєР°С‚РµРіРѕСЂРёСЏ РІРёРґРЅС‹."
       operationId: ProductsPublicController_list
       parameters:
         - name: page
           required: false
           in: query
-          description: Номер страницы
+          description: РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           schema:
             default: 1
             example: 1
@@ -331,7 +331,7 @@ paths:
         - name: page_size
           required: false
           in: query
-          description: Размер страницы
+          description: Р Р°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           schema:
             minimum: 1
             maximum: 100
@@ -341,7 +341,7 @@ paths:
         - name: tag_ids
           required: false
           in: query
-          description: Теги через запятую
+          description: РўРµРіРё С‡РµСЂРµР· Р·Р°РїСЏС‚СѓСЋ
           schema:
             type: array
             items:
@@ -349,7 +349,7 @@ paths:
         - name: material_ids
           required: false
           in: query
-          description: Материалы через запятую
+          description: РњР°С‚РµСЂРёР°Р»С‹ С‡РµСЂРµР· Р·Р°РїСЏС‚СѓСЋ
           schema:
             type: array
             items:
@@ -357,7 +357,7 @@ paths:
         - name: color_ids
           required: false
           in: query
-          description: Цвета через запятую
+          description: Р¦РІРµС‚Р° С‡РµСЂРµР· Р·Р°РїСЏС‚СѓСЋ
           schema:
             type: array
             items:
@@ -365,7 +365,7 @@ paths:
         - name: sizes
           required: false
           in: query
-          description: Есть хотя бы один из размеров
+          description: Р•СЃС‚СЊ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ РёР· СЂР°Р·РјРµСЂРѕРІ
           schema:
             type: array
             items:
@@ -373,9 +373,9 @@ paths:
         - name: search
           required: false
           in: query
-          description: Поиск по названию и бренду
+          description: РџРѕРёСЃРє РїРѕ РЅР°Р·РІР°РЅРёСЋ Рё Р±СЂРµРЅРґСѓ
           schema:
-            example: платье
+            example: РїР»Р°С‚СЊРµ
             type: string
         - name: price_sale_min
           required: false
@@ -422,7 +422,7 @@ paths:
         - name: sort
           required: false
           in: query
-          description: "Сортировка: created_at, name, price_sale, price_rental,
+          description: "РЎРѕСЂС‚РёСЂРѕРІРєР°: created_at, name, price_sale, price_rental,
             views_count, favorites_count"
           schema:
             example: created_at:desc
@@ -430,28 +430,28 @@ paths:
         - name: store_id
           required: false
           in: query
-          description: Магазин
+          description: РњР°РіР°Р·РёРЅ
           schema:
             example: 7
             type: number
         - name: category_id
           required: false
           in: query
-          description: Категория
+          description: РљР°С‚РµРіРѕСЂРёСЏ
           schema:
             example: 3
             type: number
         - name: subcategory_id
           required: false
           in: query
-          description: Подкатегория
+          description: РџРѕРґРєР°С‚РµРіРѕСЂРёСЏ
           schema:
             example: 12
             type: number
         - name: has_discount
           required: false
           in: query
-          description: Есть активная скидка
+          description: Р•СЃС‚СЊ Р°РєС‚РёРІРЅР°СЏ СЃРєРёРґРєР°
           schema:
             example: true
             type: boolean
@@ -462,12 +462,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProductCardListResponseDto"
-      summary: Товары витрины
+      summary: РўРѕРІР°СЂС‹ РІРёС‚СЂРёРЅС‹
       tags: &a5
         - public / products
   /api/v1/public/products/slug/{slug}:
     get:
-      description: С токеном покупателя засчитывается просмотр.
+      description: РЎ С‚РѕРєРµРЅРѕРј РїРѕРєСѓРїР°С‚РµР»СЏ Р·Р°СЃС‡РёС‚С‹РІР°РµС‚СЃСЏ РїСЂРѕСЃРјРѕС‚СЂ.
       operationId: ProductsPublicController_bySlug
       parameters:
         - name: slug
@@ -486,11 +486,11 @@ paths:
           description: PRODUCT_NOT_FOUND
       security:
         - buyer_bearer: []
-      summary: Товар по slug
+      summary: РўРѕРІР°СЂ РїРѕ slug
       tags: *a5
   /api/v1/public/products/{product_id}:
     get:
-      description: С токеном покупателя засчитывается просмотр.
+      description: РЎ С‚РѕРєРµРЅРѕРј РїРѕРєСѓРїР°С‚РµР»СЏ Р·Р°СЃС‡РёС‚С‹РІР°РµС‚СЃСЏ РїСЂРѕСЃРјРѕС‚СЂ.
       operationId: ProductsPublicController_byId
       parameters:
         - name: product_id
@@ -509,11 +509,11 @@ paths:
           description: PRODUCT_NOT_FOUND
       security:
         - buyer_bearer: []
-      summary: Товар
+      summary: РўРѕРІР°СЂ
       tags: *a5
   /api/v1/public/stores/{store_id}/categories:
     get:
-      description: products_count — только видимые товары.
+      description: products_count вЂ” С‚РѕР»СЊРєРѕ РІРёРґРёРјС‹Рµ С‚РѕРІР°СЂС‹.
       operationId: StoreCatalogPublicController_categories
       parameters:
         - name: store_id
@@ -532,15 +532,15 @@ paths:
                   $ref: "#/components/schemas/PublicCategoryNodeDto"
         "404":
           description: STORE_NOT_FOUND
-      summary: Дерево видимых категорий магазина
+      summary: Р”РµСЂРµРІРѕ РІРёРґРёРјС‹С… РєР°С‚РµРіРѕСЂРёР№ РјР°РіР°Р·РёРЅР°
       tags: &a6
         - public / store catalog
   /api/v1/public/stores/{store_id}/categories/{category_id}:
     get:
-      description: Одна видимая категория магазина. Для категории верхнего уровня в
-        children приходят её видимые подкатегории, для подкатегории children
-        пустой. products_count считает только видимые товары. Скрытая или чужая
-        категория — 404 CATEGORY_NOT_FOUND, неактивный магазин — 404
+      description: РћРґРЅР° РІРёРґРёРјР°СЏ РєР°С‚РµРіРѕСЂРёСЏ РјР°РіР°Р·РёРЅР°. Р”Р»СЏ РєР°С‚РµРіРѕСЂРёРё РІРµСЂС…РЅРµРіРѕ СѓСЂРѕРІРЅСЏ РІ
+        children РїСЂРёС…РѕРґСЏС‚ РµС‘ РІРёРґРёРјС‹Рµ РїРѕРґРєР°С‚РµРіРѕСЂРёРё, РґР»СЏ РїРѕРґРєР°С‚РµРіРѕСЂРёРё children
+        РїСѓСЃС‚РѕР№. products_count СЃС‡РёС‚Р°РµС‚ С‚РѕР»СЊРєРѕ РІРёРґРёРјС‹Рµ С‚РѕРІР°СЂС‹. РЎРєСЂС‹С‚Р°СЏ РёР»Рё С‡СѓР¶Р°СЏ
+        РєР°С‚РµРіРѕСЂРёСЏ вЂ” 404 CATEGORY_NOT_FOUND, РЅРµР°РєС‚РёРІРЅС‹Р№ РјР°РіР°Р·РёРЅ вЂ” 404
         STORE_NOT_FOUND.
       operationId: StoreCatalogPublicController_category
       parameters:
@@ -563,12 +563,12 @@ paths:
                 $ref: "#/components/schemas/PublicCategoryNodeDto"
         "404":
           description: STORE_NOT_FOUND, CATEGORY_NOT_FOUND
-      summary: Видимая категория с подкатегориями
+      summary: Р’РёРґРёРјР°СЏ РєР°С‚РµРіРѕСЂРёСЏ СЃ РїРѕРґРєР°С‚РµРіРѕСЂРёСЏРјРё
       tags: *a6
   /api/v1/public/stores/{store_id}/catalog-filters:
     get:
-      description: Только значения видимых товаров. Кэш 5 минут, сбрасывается при
-        изменении каталога.
+      description: РўРѕР»СЊРєРѕ Р·РЅР°С‡РµРЅРёСЏ РІРёРґРёРјС‹С… С‚РѕРІР°СЂРѕРІ. РљСЌС€ 5 РјРёРЅСѓС‚, СЃР±СЂР°СЃС‹РІР°РµС‚СЃСЏ РїСЂРё
+        РёР·РјРµРЅРµРЅРёРё РєР°С‚Р°Р»РѕРіР°.
       operationId: StoreCatalogPublicController_filters
       parameters:
         - name: store_id
@@ -585,12 +585,12 @@ paths:
                 $ref: "#/components/schemas/CatalogFiltersResponseDto"
         "404":
           description: STORE_NOT_FOUND
-      summary: Фильтры и сводка каталога магазина
+      summary: Р¤РёР»СЊС‚СЂС‹ Рё СЃРІРѕРґРєР° РєР°С‚Р°Р»РѕРіР° РјР°РіР°Р·РёРЅР°
       tags: *a6
   /api/v1/auth/buyer/registration/start:
     post:
-      description: Код по SMS или ссылка на Telegram-бот. Зарегистрированный номер —
-        409 до отправки кода.
+      description: РљРѕРґ РїРѕ SMS РёР»Рё СЃСЃС‹Р»РєР° РЅР° Telegram-Р±РѕС‚. Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Р№ РЅРѕРјРµСЂ вЂ”
+        409 РґРѕ РѕС‚РїСЂР°РІРєРё РєРѕРґР°.
       operationId: RegistrationPublicController_start
       parameters: []
       requestBody:
@@ -614,12 +614,12 @@ paths:
           description: OTP_RATE_LIMITED
         "503":
           description: SMS_DELIVERY_FAILED
-      summary: Начать регистрацию покупателя
+      summary: РќР°С‡Р°С‚СЊ СЂРµРіРёСЃС‚СЂР°С†РёСЋ РїРѕРєСѓРїР°С‚РµР»СЏ
       tags: &a7
         - auth / buyer registration
   /api/v1/auth/buyer/registration/complete:
     post:
-      description: "Ответ как у входа: покупатель сразу авторизован."
+      description: "РћС‚РІРµС‚ РєР°Рє Сѓ РІС…РѕРґР°: РїРѕРєСѓРїР°С‚РµР»СЊ СЃСЂР°Р·Сѓ Р°РІС‚РѕСЂРёР·РѕРІР°РЅ."
       operationId: RegistrationPublicController_complete
       parameters: []
       requestBody:
@@ -639,12 +639,12 @@ paths:
           description: PHONE_ALREADY_REGISTERED
         "422":
           description: VERIFICATION_TOKEN_INVALID
-      summary: Создать покупателя по токену подтверждения
+      summary: РЎРѕР·РґР°С‚СЊ РїРѕРєСѓРїР°С‚РµР»СЏ РїРѕ С‚РѕРєРµРЅСѓ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ
       tags: *a7
   /api/v1/buyer/me:
     get:
-      description: "Профиль текущего покупателя: телефон, ФИО, пол, возраст, город,
-        Telegram, аватар. Телефон изменить нельзя."
+      description: "РџСЂРѕС„РёР»СЊ С‚РµРєСѓС‰РµРіРѕ РїРѕРєСѓРїР°С‚РµР»СЏ: С‚РµР»РµС„РѕРЅ, Р¤РРћ, РїРѕР», РІРѕР·СЂР°СЃС‚, РіРѕСЂРѕРґ,
+        Telegram, Р°РІР°С‚Р°СЂ. РўРµР»РµС„РѕРЅ РёР·РјРµРЅРёС‚СЊ РЅРµР»СЊР·СЏ."
       operationId: BuyerMeBuyerController_me
       parameters: []
       responses:
@@ -658,11 +658,11 @@ paths:
           description: TOKEN_MISSING, TOKEN_INVALID, TOKEN_EXPIRED, SESSION_NOT_ACTIVE
       security: &a9
         - buyer_bearer: []
-      summary: Профиль покупателя
+      summary: РџСЂРѕС„РёР»СЊ РїРѕРєСѓРїР°С‚РµР»СЏ
       tags: &a10
         - buyer / me
     patch:
-      description: Только JSON; аватар — отдельным ресурсом.
+      description: РўРѕР»СЊРєРѕ JSON; Р°РІР°С‚Р°СЂ вЂ” РѕС‚РґРµР»СЊРЅС‹Рј СЂРµСЃСѓСЂСЃРѕРј.
       operationId: BuyerMeBuyerController_update
       parameters: []
       requestBody:
@@ -680,11 +680,11 @@ paths:
                 $ref: "#/components/schemas/BuyerMeResponseDto"
         "401": *a8
       security: *a9
-      summary: Изменить профиль
+      summary: РР·РјРµРЅРёС‚СЊ РїСЂРѕС„РёР»СЊ
       tags: *a10
   /api/v1/buyer/me/avatar:
     put:
-      description: Квадратная копия 500×500.
+      description: РљРІР°РґСЂР°С‚РЅР°СЏ РєРѕРїРёСЏ 500Г—500.
       operationId: BuyerMeBuyerController_replaceAvatar
       parameters: []
       requestBody:
@@ -699,7 +699,7 @@ paths:
                 file:
                   type: string
                   format: binary
-                  description: JPEG, PNG, WebP или HEIC
+                  description: JPEG, PNG, WebP РёР»Рё HEIC
       responses:
         "200":
           description: ""
@@ -715,11 +715,11 @@ paths:
         "422":
           description: IMAGE_DIMENSIONS_OUT_OF_RANGE
       security: *a9
-      summary: Заменить аватар
+      summary: Р—Р°РјРµРЅРёС‚СЊ Р°РІР°С‚Р°СЂ
       tags: *a10
     delete:
-      description: Убирает аватар и возвращает обновлённый профиль. Если аватара не
-        было, ответ тот же.
+      description: РЈР±РёСЂР°РµС‚ Р°РІР°С‚Р°СЂ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РѕР±РЅРѕРІР»С‘РЅРЅС‹Р№ РїСЂРѕС„РёР»СЊ. Р•СЃР»Рё Р°РІР°С‚Р°СЂР° РЅРµ
+        Р±С‹Р»Рѕ, РѕС‚РІРµС‚ С‚РѕС‚ Р¶Рµ.
       operationId: BuyerMeBuyerController_removeAvatar
       parameters: []
       responses:
@@ -731,17 +731,17 @@ paths:
                 $ref: "#/components/schemas/BuyerMeResponseDto"
         "401": *a8
       security: *a9
-      summary: Удалить аватар
+      summary: РЈРґР°Р»РёС‚СЊ Р°РІР°С‚Р°СЂ
       tags: *a10
   /api/v1/buyer/favorites/products:
     get:
-      description: "Скрытые и снятые с публикации товары остаются с is_available: false."
+      description: "РЎРєСЂС‹С‚С‹Рµ Рё СЃРЅСЏС‚С‹Рµ СЃ РїСѓР±Р»РёРєР°С†РёРё С‚РѕРІР°СЂС‹ РѕСЃС‚Р°СЋС‚СЃСЏ СЃ is_available: false."
       operationId: FavoritesBuyerController_products
       parameters:
         - name: page
           required: false
           in: query
-          description: Номер страницы
+          description: РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           schema:
             default: 1
             example: 1
@@ -749,7 +749,7 @@ paths:
         - name: page_size
           required: false
           in: query
-          description: Размер страницы
+          description: Р Р°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           schema:
             minimum: 1
             maximum: 100
@@ -759,7 +759,7 @@ paths:
         - name: sort
           required: false
           in: query
-          description: "Сортировка: favorited_at"
+          description: "РЎРѕСЂС‚РёСЂРѕРІРєР°: favorited_at"
           schema:
             example: favorited_at:desc
             type: string
@@ -774,12 +774,12 @@ paths:
           description: TOKEN_MISSING, TOKEN_INVALID, TOKEN_EXPIRED, SESSION_NOT_ACTIVE
       security: &a12
         - buyer_bearer: []
-      summary: Избранные товары
+      summary: РР·Р±СЂР°РЅРЅС‹Рµ С‚РѕРІР°СЂС‹
       tags: &a13
         - buyer / favorites
   /api/v1/buyer/favorites/products/ids:
     get:
-      description: Для «сердечек» в списках витрины.
+      description: Р”Р»СЏ В«СЃРµСЂРґРµС‡РµРєВ» РІ СЃРїРёСЃРєР°С… РІРёС‚СЂРёРЅС‹.
       operationId: FavoritesBuyerController_productIds
       parameters: []
       responses:
@@ -791,11 +791,11 @@ paths:
                 $ref: "#/components/schemas/FavoriteProductIdsDto"
         "401": *a11
       security: *a12
-      summary: id избранных товаров (до 1000)
+      summary: id РёР·Р±СЂР°РЅРЅС‹С… С‚РѕРІР°СЂРѕРІ (РґРѕ 1000)
       tags: *a13
   /api/v1/buyer/favorites/products/{product_id}:
     put:
-      description: Идемпотентно.
+      description: РРґРµРјРїРѕС‚РµРЅС‚РЅРѕ.
       operationId: FavoritesBuyerController_addProduct
       parameters:
         - name: product_id
@@ -805,15 +805,15 @@ paths:
             type: number
       responses:
         "204":
-          description: В избранном
+          description: Р’ РёР·Р±СЂР°РЅРЅРѕРј
         "401": *a11
         "404":
           description: PRODUCT_NOT_FOUND
       security: *a12
-      summary: Добавить товар в избранное
+      summary: Р”РѕР±Р°РІРёС‚СЊ С‚РѕРІР°СЂ РІ РёР·Р±СЂР°РЅРЅРѕРµ
       tags: *a13
     delete:
-      description: 204, даже если товара там не было.
+      description: 204, РґР°Р¶Рµ РµСЃР»Рё С‚РѕРІР°СЂР° С‚Р°Рј РЅРµ Р±С‹Р»Рѕ.
       operationId: FavoritesBuyerController_removeProduct
       parameters:
         - name: product_id
@@ -823,23 +823,23 @@ paths:
             type: number
       responses:
         "204":
-          description: Убран
+          description: РЈР±СЂР°РЅ
         "401": *a11
       security: *a12
-      summary: Убрать товар из избранного
+      summary: РЈР±СЂР°С‚СЊ С‚РѕРІР°СЂ РёР· РёР·Р±СЂР°РЅРЅРѕРіРѕ
       tags: *a13
   /api/v1/buyer/favorites/stores:
     get:
-      description: "Избранные магазины покупателя, новые сверху. Постранично: page и
-        page_size. Сортировка: favorited_at. Магазин, который стал недоступен
-        (отключён), остаётся в списке с is_available=false, чтобы фронт показал
-        его неактивным."
+      description: "РР·Р±СЂР°РЅРЅС‹Рµ РјР°РіР°Р·РёРЅС‹ РїРѕРєСѓРїР°С‚РµР»СЏ, РЅРѕРІС‹Рµ СЃРІРµСЂС…Сѓ. РџРѕСЃС‚СЂР°РЅРёС‡РЅРѕ: page Рё
+        page_size. РЎРѕСЂС‚РёСЂРѕРІРєР°: favorited_at. РњР°РіР°Р·РёРЅ, РєРѕС‚РѕСЂС‹Р№ СЃС‚Р°Р» РЅРµРґРѕСЃС‚СѓРїРµРЅ
+        (РѕС‚РєР»СЋС‡С‘РЅ), РѕСЃС‚Р°С‘С‚СЃСЏ РІ СЃРїРёСЃРєРµ СЃ is_available=false, С‡С‚РѕР±С‹ С„СЂРѕРЅС‚ РїРѕРєР°Р·Р°Р»
+        РµРіРѕ РЅРµР°РєС‚РёРІРЅС‹Рј."
       operationId: FavoritesBuyerController_stores
       parameters:
         - name: page
           required: false
           in: query
-          description: Номер страницы
+          description: РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           schema:
             default: 1
             example: 1
@@ -847,7 +847,7 @@ paths:
         - name: page_size
           required: false
           in: query
-          description: Размер страницы
+          description: Р Р°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           schema:
             minimum: 1
             maximum: 100
@@ -857,7 +857,7 @@ paths:
         - name: sort
           required: false
           in: query
-          description: "Сортировка: favorited_at"
+          description: "РЎРѕСЂС‚РёСЂРѕРІРєР°: favorited_at"
           schema:
             example: favorited_at:desc
             type: string
@@ -870,12 +870,12 @@ paths:
                 $ref: "#/components/schemas/FavoriteStoreListResponseDto"
         "401": *a11
       security: *a12
-      summary: Избранные магазины
+      summary: РР·Р±СЂР°РЅРЅС‹Рµ РјР°РіР°Р·РёРЅС‹
       tags: *a13
   /api/v1/buyer/favorites/stores/ids:
     get:
-      description: Только id избранных магазинов (до 1000). Нужен, чтобы отметить
-        «сердечки» в списках магазинов без загрузки полных карточек.
+      description: РўРѕР»СЊРєРѕ id РёР·Р±СЂР°РЅРЅС‹С… РјР°РіР°Р·РёРЅРѕРІ (РґРѕ 1000). РќСѓР¶РµРЅ, С‡С‚РѕР±С‹ РѕС‚РјРµС‚РёС‚СЊ
+        В«СЃРµСЂРґРµС‡РєРёВ» РІ СЃРїРёСЃРєР°С… РјР°РіР°Р·РёРЅРѕРІ Р±РµР· Р·Р°РіСЂСѓР·РєРё РїРѕР»РЅС‹С… РєР°СЂС‚РѕС‡РµРє.
       operationId: FavoritesBuyerController_storeIds
       parameters: []
       responses:
@@ -887,12 +887,12 @@ paths:
                 $ref: "#/components/schemas/FavoriteStoreIdsDto"
         "401": *a11
       security: *a12
-      summary: id избранных магазинов
+      summary: id РёР·Р±СЂР°РЅРЅС‹С… РјР°РіР°Р·РёРЅРѕРІ
       tags: *a13
   /api/v1/buyer/favorites/stores/{store_id}:
     put:
-      description: "Добавляет магазин в избранное. Повторный вызов безопасен: магазин
-        не задваивается. Несуществующий магазин — 404 STORE_NOT_FOUND."
+      description: "Р”РѕР±Р°РІР»СЏРµС‚ РјР°РіР°Р·РёРЅ РІ РёР·Р±СЂР°РЅРЅРѕРµ. РџРѕРІС‚РѕСЂРЅС‹Р№ РІС‹Р·РѕРІ Р±РµР·РѕРїР°СЃРµРЅ: РјР°РіР°Р·РёРЅ
+        РЅРµ Р·Р°РґРІР°РёРІР°РµС‚СЃСЏ. РќРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ РјР°РіР°Р·РёРЅ вЂ” 404 STORE_NOT_FOUND."
       operationId: FavoritesBuyerController_addStore
       parameters:
         - name: store_id
@@ -902,15 +902,15 @@ paths:
             type: number
       responses:
         "204":
-          description: В избранном
+          description: Р’ РёР·Р±СЂР°РЅРЅРѕРј
         "401": *a11
         "404":
           description: STORE_NOT_FOUND
       security: *a12
-      summary: Добавить магазин в избранное
+      summary: Р”РѕР±Р°РІРёС‚СЊ РјР°РіР°Р·РёРЅ РІ РёР·Р±СЂР°РЅРЅРѕРµ
       tags: *a13
     delete:
-      description: Убирает магазин из избранного. Если его там не было, ответ тот же (204).
+      description: РЈР±РёСЂР°РµС‚ РјР°РіР°Р·РёРЅ РёР· РёР·Р±СЂР°РЅРЅРѕРіРѕ. Р•СЃР»Рё РµРіРѕ С‚Р°Рј РЅРµ Р±С‹Р»Рѕ, РѕС‚РІРµС‚ С‚РѕС‚ Р¶Рµ (204).
       operationId: FavoritesBuyerController_removeStore
       parameters:
         - name: store_id
@@ -920,23 +920,23 @@ paths:
             type: number
       responses:
         "204":
-          description: Убран
+          description: РЈР±СЂР°РЅ
         "401": *a11
       security: *a12
-      summary: Убрать магазин из избранного
+      summary: РЈР±СЂР°С‚СЊ РјР°РіР°Р·РёРЅ РёР· РёР·Р±СЂР°РЅРЅРѕРіРѕ
       tags: *a13
   /api/v1/public/news:
     get:
-      description: "Магазин активен, status = active, now внутри периода показа. В
-        списке products_count вместо products, а вместо галереи только постер
-        (poster_image) и баннер (banner_image): фото галереи приходят в карточке
-        новости."
+      description: "РњР°РіР°Р·РёРЅ Р°РєС‚РёРІРµРЅ, status = active, now РІРЅСѓС‚СЂРё РїРµСЂРёРѕРґР° РїРѕРєР°Р·Р°. Р’
+        СЃРїРёСЃРєРµ products_count РІРјРµСЃС‚Рѕ products, Р° РІРјРµСЃС‚Рѕ РіР°Р»РµСЂРµРё С‚РѕР»СЊРєРѕ РїРѕСЃС‚РµСЂ
+        (poster_image) Рё Р±Р°РЅРЅРµСЂ (banner_image): С„РѕС‚Рѕ РіР°Р»РµСЂРµРё РїСЂРёС…РѕРґСЏС‚ РІ РєР°СЂС‚РѕС‡РєРµ
+        РЅРѕРІРѕСЃС‚Рё."
       operationId: NewsPublicController_list
       parameters:
         - name: page
           required: false
           in: query
-          description: Номер страницы
+          description: РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           schema:
             default: 1
             example: 1
@@ -944,7 +944,7 @@ paths:
         - name: page_size
           required: false
           in: query
-          description: Размер страницы
+          description: Р Р°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           schema:
             minimum: 1
             maximum: 100
@@ -983,15 +983,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PublicNewsListResponseDto"
-      summary: Активные новости
+      summary: РђРєС‚РёРІРЅС‹Рµ РЅРѕРІРѕСЃС‚Рё
       tags: &a14
         - public / news
   /api/v1/public/news/{news_id}:
     get:
-      description: "Опубликованная новость: HTML очищен, у товаров показаны карточки
-        только видимых товаров. Кроме постера и баннера приходят фото галереи
-        (images) по возрастанию position, только готовые. Черновик, ещё не
-        начавшаяся или уже закончившаяся новость — 404 NEWS_NOT_FOUND."
+      description: "РћРїСѓР±Р»РёРєРѕРІР°РЅРЅР°СЏ РЅРѕРІРѕСЃС‚СЊ: HTML РѕС‡РёС‰РµРЅ, Сѓ С‚РѕРІР°СЂРѕРІ РїРѕРєР°Р·Р°РЅС‹ РєР°СЂС‚РѕС‡РєРё
+        С‚РѕР»СЊРєРѕ РІРёРґРёРјС‹С… С‚РѕРІР°СЂРѕРІ. РљСЂРѕРјРµ РїРѕСЃС‚РµСЂР° Рё Р±Р°РЅРЅРµСЂР° РїСЂРёС…РѕРґСЏС‚ С„РѕС‚Рѕ РіР°Р»РµСЂРµРё
+        (images) РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ position, С‚РѕР»СЊРєРѕ РіРѕС‚РѕРІС‹Рµ. Р§РµСЂРЅРѕРІРёРє, РµС‰С‘ РЅРµ
+        РЅР°С‡Р°РІС€Р°СЏСЃСЏ РёР»Рё СѓР¶Рµ Р·Р°РєРѕРЅС‡РёРІС€Р°СЏСЃСЏ РЅРѕРІРѕСЃС‚СЊ вЂ” 404 NEWS_NOT_FOUND."
       operationId: NewsPublicController_get
       parameters:
         - name: news_id
@@ -1007,13 +1007,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/PublicNewsResponseDto"
         "404":
-          description: NEWS_NOT_FOUND (и для неопубликованной)
-      summary: Новость с карточками видимых товаров
+          description: NEWS_NOT_FOUND (Рё РґР»СЏ РЅРµРѕРїСѓР±Р»РёРєРѕРІР°РЅРЅРѕР№)
+      summary: РќРѕРІРѕСЃС‚СЊ СЃ РєР°СЂС‚РѕС‡РєР°РјРё РІРёРґРёРјС‹С… С‚РѕРІР°СЂРѕРІ
       tags: *a14
   /api/v1/public/stores/{store_id}/news/slug/{slug}:
     get:
-      description: "Та же новость, но по slug внутри магазина: удобно для
-        человекочитаемых адресов страниц. Условия видимости те же, иначе 404
+      description: "РўР° Р¶Рµ РЅРѕРІРѕСЃС‚СЊ, РЅРѕ РїРѕ slug РІРЅСѓС‚СЂРё РјР°РіР°Р·РёРЅР°: СѓРґРѕР±РЅРѕ РґР»СЏ
+        С‡РµР»РѕРІРµРєРѕС‡РёС‚Р°РµРјС‹С… Р°РґСЂРµСЃРѕРІ СЃС‚СЂР°РЅРёС†. РЈСЃР»РѕРІРёСЏ РІРёРґРёРјРѕСЃС‚Рё С‚Рµ Р¶Рµ, РёРЅР°С‡Рµ 404
         NEWS_NOT_FOUND."
       operationId: NewsPublicController_bySlug
       parameters:
@@ -1036,101 +1036,101 @@ paths:
                 $ref: "#/components/schemas/PublicNewsResponseDto"
         "404":
           description: NEWS_NOT_FOUND
-      summary: Новость магазина по slug
+      summary: РќРѕРІРѕСЃС‚СЊ РјР°РіР°Р·РёРЅР° РїРѕ slug
       tags: *a14
   /api/v1/buyer/orders:
     post:
       description: >-
-        Создаёт заказ в одном магазине: все позиции `items` должны быть товарами
-        магазина `store_id`. Цены и данные товаров фиксируются снимком на момент
-        оформления. Новый заказ получает статус `pending_confirmation`.
+        РЎРѕР·РґР°С‘С‚ Р·Р°РєР°Р· РІ РѕРґРЅРѕРј РјР°РіР°Р·РёРЅРµ: РІСЃРµ РїРѕР·РёС†РёРё `items` РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ С‚РѕРІР°СЂР°РјРё
+        РјР°РіР°Р·РёРЅР° `store_id`. Р¦РµРЅС‹ Рё РґР°РЅРЅС‹Рµ С‚РѕРІР°СЂРѕРІ С„РёРєСЃРёСЂСѓСЋС‚СЃСЏ СЃРЅРёРјРєРѕРј РЅР° РјРѕРјРµРЅС‚
+        РѕС„РѕСЂРјР»РµРЅРёСЏ. РќРѕРІС‹Р№ Р·Р°РєР°Р· РїРѕР»СѓС‡Р°РµС‚ СЃС‚Р°С‚СѓСЃ `pending_confirmation`.
 
 
-        **Защита от двойного заказа.** Передавайте заголовок `Idempotency-Key`
-        (подробно — в описании параметра). Тогда повтор запроса после обрыва
-        сети или таймаута не создаст второй заказ: сервер вернёт уже созданный с
-        кодом **200** вместо **201**. Различайте 200 и 201, только если это
-        нужно для аналитики; для интерфейса оба ответа означают «заказ
-        оформлен».
+        **Р—Р°С‰РёС‚Р° РѕС‚ РґРІРѕР№РЅРѕРіРѕ Р·Р°РєР°Р·Р°.** РџРµСЂРµРґР°РІР°Р№С‚Рµ Р·Р°РіРѕР»РѕРІРѕРє `Idempotency-Key`
+        (РїРѕРґСЂРѕР±РЅРѕ вЂ” РІ РѕРїРёСЃР°РЅРёРё РїР°СЂР°РјРµС‚СЂР°). РўРѕРіРґР° РїРѕРІС‚РѕСЂ Р·Р°РїСЂРѕСЃР° РїРѕСЃР»Рµ РѕР±СЂС‹РІР°
+        СЃРµС‚Рё РёР»Рё С‚Р°Р№РјР°СѓС‚Р° РЅРµ СЃРѕР·РґР°СЃС‚ РІС‚РѕСЂРѕР№ Р·Р°РєР°Р·: СЃРµСЂРІРµСЂ РІРµСЂРЅС‘С‚ СѓР¶Рµ СЃРѕР·РґР°РЅРЅС‹Р№ СЃ
+        РєРѕРґРѕРј **200** РІРјРµСЃС‚Рѕ **201**. Р Р°Р·Р»РёС‡Р°Р№С‚Рµ 200 Рё 201, С‚РѕР»СЊРєРѕ РµСЃР»Рё СЌС‚Рѕ
+        РЅСѓР¶РЅРѕ РґР»СЏ Р°РЅР°Р»РёС‚РёРєРё; РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° РѕР±Р° РѕС‚РІРµС‚Р° РѕР·РЅР°С‡Р°СЋС‚ В«Р·Р°РєР°Р·
+        РѕС„РѕСЂРјР»РµРЅВ».
 
 
-        **Ошибки:**
+        **РћС€РёР±РєРё:**
 
 
-        - `400 VALIDATION_ERROR` — тело не прошло проверку или `Idempotency-Key`
-        не UUID (`details.errors`).
+        - `400 VALIDATION_ERROR` вЂ” С‚РµР»Рѕ РЅРµ РїСЂРѕС€Р»Рѕ РїСЂРѕРІРµСЂРєСѓ РёР»Рё `Idempotency-Key`
+        РЅРµ UUID (`details.errors`).
 
-        - `409 IDEMPOTENCY_KEY_CONFLICT` — ключ уже использован с другим телом
-        запроса.
+        - `409 IDEMPOTENCY_KEY_CONFLICT` вЂ” РєР»СЋС‡ СѓР¶Рµ РёСЃРїРѕР»СЊР·РѕРІР°РЅ СЃ РґСЂСѓРіРёРј С‚РµР»РѕРј
+        Р·Р°РїСЂРѕСЃР°.
 
-        - `409 RESOURCE_BUSY` — конфликт блокировок при параллельных операциях;
-        повторите запрос с тем же ключом.
+        - `409 RESOURCE_BUSY` вЂ” РєРѕРЅС„Р»РёРєС‚ Р±Р»РѕРєРёСЂРѕРІРѕРє РїСЂРё РїР°СЂР°Р»Р»РµР»СЊРЅС‹С… РѕРїРµСЂР°С†РёСЏС…;
+        РїРѕРІС‚РѕСЂРёС‚Рµ Р·Р°РїСЂРѕСЃ СЃ С‚РµРј Р¶Рµ РєР»СЋС‡РѕРј.
 
-        - `422 DUPLICATE_ORDER_ITEM` — одинаковые позиции (товар, размер, тип
-        цены) нужно объединить, `details.indexes` — их индексы в `items`.
+        - `422 DUPLICATE_ORDER_ITEM` вЂ” РѕРґРёРЅР°РєРѕРІС‹Рµ РїРѕР·РёС†РёРё (С‚РѕРІР°СЂ, СЂР°Р·РјРµСЂ, С‚РёРї
+        С†РµРЅС‹) РЅСѓР¶РЅРѕ РѕР±СЉРµРґРёРЅРёС‚СЊ, `details.indexes` вЂ” РёС… РёРЅРґРµРєСЃС‹ РІ `items`.
 
-        - `422 STORE_NOT_AVAILABLE` — магазин не найден или деактивирован.
+        - `422 STORE_NOT_AVAILABLE` вЂ” РјР°РіР°Р·РёРЅ РЅРµ РЅР°Р№РґРµРЅ РёР»Рё РґРµР°РєС‚РёРІРёСЂРѕРІР°РЅ.
 
-        - `422 PRODUCTS_NOT_AVAILABLE` — товары не найдены, сняты с витрины или
-        из другого магазина, `details.product_ids`.
+        - `422 PRODUCTS_NOT_AVAILABLE` вЂ” С‚РѕРІР°СЂС‹ РЅРµ РЅР°Р№РґРµРЅС‹, СЃРЅСЏС‚С‹ СЃ РІРёС‚СЂРёРЅС‹ РёР»Рё
+        РёР· РґСЂСѓРіРѕРіРѕ РјР°РіР°Р·РёРЅР°, `details.product_ids`.
 
-        - `422 PRICE_TYPE_NOT_AVAILABLE` — этот тип цены у товара выключен,
+        - `422 PRICE_TYPE_NOT_AVAILABLE` вЂ” СЌС‚РѕС‚ С‚РёРї С†РµРЅС‹ Сѓ С‚РѕРІР°СЂР° РІС‹РєР»СЋС‡РµРЅ,
         `details.product_id`, `details.price_type`.
 
-        - `422 SIZE_REQUIRED`, `SIZE_NOT_AVAILABLE` — размер не выбран или его
-        нет, `details.available_sizes`.
+        - `422 SIZE_REQUIRED`, `SIZE_NOT_AVAILABLE` вЂ” СЂР°Р·РјРµСЂ РЅРµ РІС‹Р±СЂР°РЅ РёР»Рё РµРіРѕ
+        РЅРµС‚, `details.available_sizes`.
 
-        - `422 SIZE_NOT_APPLICABLE` — у товара нет размеров, передайте `size:
+        - `422 SIZE_NOT_APPLICABLE` вЂ” Сѓ С‚РѕРІР°СЂР° РЅРµС‚ СЂР°Р·РјРµСЂРѕРІ, РїРµСЂРµРґР°Р№С‚Рµ `size:
         null`.
       operationId: OrdersBuyerController_create
       parameters:
         - name: Idempotency-Key
           in: header
           description: >-
-            Ключ идемпотентности: UUID, который фронтенд генерирует сам
-            (`crypto.randomUUID()`), по одному на каждое оформление заказа.
-            Необязателен, но без него повторный запрос создаст второй заказ.
+            РљР»СЋС‡ РёРґРµРјРїРѕС‚РµРЅС‚РЅРѕСЃС‚Рё: UUID, РєРѕС‚РѕСЂС‹Р№ С„СЂРѕРЅС‚РµРЅРґ РіРµРЅРµСЂРёСЂСѓРµС‚ СЃР°Рј
+            (`crypto.randomUUID()`), РїРѕ РѕРґРЅРѕРјСѓ РЅР° РєР°Р¶РґРѕРµ РѕС„РѕСЂРјР»РµРЅРёРµ Р·Р°РєР°Р·Р°.
+            РќРµРѕР±СЏР·Р°С‚РµР»РµРЅ, РЅРѕ Р±РµР· РЅРµРіРѕ РїРѕРІС‚РѕСЂРЅС‹Р№ Р·Р°РїСЂРѕСЃ СЃРѕР·РґР°СЃС‚ РІС‚РѕСЂРѕР№ Р·Р°РєР°Р·.
 
 
-            **Как пользоваться:**
+            **РљР°Рє РїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ:**
 
 
-            1. Сгенерируйте ключ, когда покупатель начинает оформление (открыл
-            экран подтверждения), и храните его, пока заказ не оформлен.
+            1. РЎРіРµРЅРµСЂРёСЂСѓР№С‚Рµ РєР»СЋС‡, РєРѕРіРґР° РїРѕРєСѓРїР°С‚РµР»СЊ РЅР°С‡РёРЅР°РµС‚ РѕС„РѕСЂРјР»РµРЅРёРµ (РѕС‚РєСЂС‹Р»
+            СЌРєСЂР°РЅ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ), Рё С…СЂР°РЅРёС‚Рµ РµРіРѕ, РїРѕРєР° Р·Р°РєР°Р· РЅРµ РѕС„РѕСЂРјР»РµРЅ.
 
-            2. Если ответа нет (обрыв сети, таймаут, 5xx, `409 RESOURCE_BUSY`),
-            повторите запрос **с тем же ключом и тем же телом**. Порядок
-            элементов `items` тоже должен совпадать.
+            2. Р•СЃР»Рё РѕС‚РІРµС‚Р° РЅРµС‚ (РѕР±СЂС‹РІ СЃРµС‚Рё, С‚Р°Р№РјР°СѓС‚, 5xx, `409 RESOURCE_BUSY`),
+            РїРѕРІС‚РѕСЂРёС‚Рµ Р·Р°РїСЂРѕСЃ **СЃ С‚РµРј Р¶Рµ РєР»СЋС‡РѕРј Рё С‚РµРј Р¶Рµ С‚РµР»РѕРј**. РџРѕСЂСЏРґРѕРє
+            СЌР»РµРјРµРЅС‚РѕРІ `items` С‚РѕР¶Рµ РґРѕР»Р¶РµРЅ СЃРѕРІРїР°РґР°С‚СЊ.
 
-            3. После успешного ответа (201 или 200) ключ больше не используйте.
-            Для следующего заказа, а также после изменения корзины, комментария
-            или магазина сгенерируйте новый ключ.
-
-
-            **Что ответит сервер:**
+            3. РџРѕСЃР»Рµ СѓСЃРїРµС€РЅРѕРіРѕ РѕС‚РІРµС‚Р° (201 РёР»Рё 200) РєР»СЋС‡ Р±РѕР»СЊС€Рµ РЅРµ РёСЃРїРѕР»СЊР·СѓР№С‚Рµ.
+            Р”Р»СЏ СЃР»РµРґСѓСЋС‰РµРіРѕ Р·Р°РєР°Р·Р°, Р° С‚Р°РєР¶Рµ РїРѕСЃР»Рµ РёР·РјРµРЅРµРЅРёСЏ РєРѕСЂР·РёРЅС‹, РєРѕРјРјРµРЅС‚Р°СЂРёСЏ
+            РёР»Рё РјР°РіР°Р·РёРЅР° СЃРіРµРЅРµСЂРёСЂСѓР№С‚Рµ РЅРѕРІС‹Р№ РєР»СЋС‡.
 
 
-            - Ключ новый — заказ создаётся, **201**.
-
-            - Заказ с этим ключом уже есть и тело совпадает — новый заказ не
-            создаётся, возвращается существующий, **200**. Заказ приходит в
-            текущем состоянии: его статус мог уже измениться.
-
-            - Заказ с этим ключом уже есть, а тело другое (`store_id`,
-            `buyer_comment`, позиции или их порядок) — **409
-            `IDEMPOTENCY_KEY_CONFLICT`**. Значит, ключ переиспользован для
-            другого заказа: сгенерируйте новый.
-
-            - Значение не UUID — **400 `VALIDATION_ERROR`**.
-
-            - Два одновременных запроса с одним ключом (двойное нажатие) создают
-            один заказ: оба получат его.
+            **Р§С‚Рѕ РѕС‚РІРµС‚РёС‚ СЃРµСЂРІРµСЂ:**
 
 
-            Ключ занимается только успешно созданным заказом. Если запрос
-            завершился ошибкой (400, 422), заказа нет и ключ свободен: после
-            исправления данных можно отправить запрос с тем же ключом. Ключи
-            разных покупателей не пересекаются и не имеют срока действия.
+            - РљР»СЋС‡ РЅРѕРІС‹Р№ вЂ” Р·Р°РєР°Р· СЃРѕР·РґР°С‘С‚СЃСЏ, **201**.
+
+            - Р—Р°РєР°Р· СЃ СЌС‚РёРј РєР»СЋС‡РѕРј СѓР¶Рµ РµСЃС‚СЊ Рё С‚РµР»Рѕ СЃРѕРІРїР°РґР°РµС‚ вЂ” РЅРѕРІС‹Р№ Р·Р°РєР°Р· РЅРµ
+            СЃРѕР·РґР°С‘С‚СЃСЏ, РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№, **200**. Р—Р°РєР°Р· РїСЂРёС…РѕРґРёС‚ РІ
+            С‚РµРєСѓС‰РµРј СЃРѕСЃС‚РѕСЏРЅРёРё: РµРіРѕ СЃС‚Р°С‚СѓСЃ РјРѕРі СѓР¶Рµ РёР·РјРµРЅРёС‚СЊСЃСЏ.
+
+            - Р—Р°РєР°Р· СЃ СЌС‚РёРј РєР»СЋС‡РѕРј СѓР¶Рµ РµСЃС‚СЊ, Р° С‚РµР»Рѕ РґСЂСѓРіРѕРµ (`store_id`,
+            `buyer_comment`, РїРѕР·РёС†РёРё РёР»Рё РёС… РїРѕСЂСЏРґРѕРє) вЂ” **409
+            `IDEMPOTENCY_KEY_CONFLICT`**. Р—РЅР°С‡РёС‚, РєР»СЋС‡ РїРµСЂРµРёСЃРїРѕР»СЊР·РѕРІР°РЅ РґР»СЏ
+            РґСЂСѓРіРѕРіРѕ Р·Р°РєР°Р·Р°: СЃРіРµРЅРµСЂРёСЂСѓР№С‚Рµ РЅРѕРІС‹Р№.
+
+            - Р—РЅР°С‡РµРЅРёРµ РЅРµ UUID вЂ” **400 `VALIDATION_ERROR`**.
+
+            - Р”РІР° РѕРґРЅРѕРІСЂРµРјРµРЅРЅС‹С… Р·Р°РїСЂРѕСЃР° СЃ РѕРґРЅРёРј РєР»СЋС‡РѕРј (РґРІРѕР№РЅРѕРµ РЅР°Р¶Р°С‚РёРµ) СЃРѕР·РґР°СЋС‚
+            РѕРґРёРЅ Р·Р°РєР°Р·: РѕР±Р° РїРѕР»СѓС‡Р°С‚ РµРіРѕ.
+
+
+            РљР»СЋС‡ Р·Р°РЅРёРјР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅРЅС‹Рј Р·Р°РєР°Р·РѕРј. Р•СЃР»Рё Р·Р°РїСЂРѕСЃ
+            Р·Р°РІРµСЂС€РёР»СЃСЏ РѕС€РёР±РєРѕР№ (400, 422), Р·Р°РєР°Р·Р° РЅРµС‚ Рё РєР»СЋС‡ СЃРІРѕР±РѕРґРµРЅ: РїРѕСЃР»Рµ
+            РёСЃРїСЂР°РІР»РµРЅРёСЏ РґР°РЅРЅС‹С… РјРѕР¶РЅРѕ РѕС‚РїСЂР°РІРёС‚СЊ Р·Р°РїСЂРѕСЃ СЃ С‚РµРј Р¶Рµ РєР»СЋС‡РѕРј. РљР»СЋС‡Рё
+            СЂР°Р·РЅС‹С… РїРѕРєСѓРїР°С‚РµР»РµР№ РЅРµ РїРµСЂРµСЃРµРєР°СЋС‚СЃСЏ Рё РЅРµ РёРјРµСЋС‚ СЃСЂРѕРєР° РґРµР№СЃС‚РІРёСЏ.
           required: false
           schema:
             type: string
@@ -1144,14 +1144,14 @@ paths:
               $ref: "#/components/schemas/CreateOrderDto"
       responses:
         "200":
-          description: "Повтор с тем же Idempotency-Key и тем же телом: возвращён ранее
-            созданный заказ, новый не создан"
+          description: "РџРѕРІС‚РѕСЂ СЃ С‚РµРј Р¶Рµ Idempotency-Key Рё С‚РµРј Р¶Рµ С‚РµР»РѕРј: РІРѕР·РІСЂР°С‰С‘РЅ СЂР°РЅРµРµ
+            СЃРѕР·РґР°РЅРЅС‹Р№ Р·Р°РєР°Р·, РЅРѕРІС‹Р№ РЅРµ СЃРѕР·РґР°РЅ"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/OrderResponseDto"
         "201":
-          description: Заказ создан
+          description: Р—Р°РєР°Р· СЃРѕР·РґР°РЅ
           content:
             application/json:
               schema:
@@ -1159,28 +1159,28 @@ paths:
         "401": &a15
           description: TOKEN_MISSING, TOKEN_INVALID, TOKEN_EXPIRED, SESSION_NOT_ACTIVE
         "409":
-          description: IDEMPOTENCY_KEY_CONFLICT — ключ уже использован с другим телом;
-            RESOURCE_BUSY — повторите с тем же ключом
+          description: IDEMPOTENCY_KEY_CONFLICT вЂ” РєР»СЋС‡ СѓР¶Рµ РёСЃРїРѕР»СЊР·РѕРІР°РЅ СЃ РґСЂСѓРіРёРј С‚РµР»РѕРј;
+            RESOURCE_BUSY вЂ” РїРѕРІС‚РѕСЂРёС‚Рµ СЃ С‚РµРј Р¶Рµ РєР»СЋС‡РѕРј
         "422":
           description: DUPLICATE_ORDER_ITEM, STORE_NOT_AVAILABLE, PRODUCTS_NOT_AVAILABLE,
             PRICE_TYPE_NOT_AVAILABLE, SIZE_REQUIRED, SIZE_NOT_AVAILABLE,
             SIZE_NOT_APPLICABLE
       security: &a16
         - buyer_bearer: []
-      summary: Оформить заказ
+      summary: РћС„РѕСЂРјРёС‚СЊ Р·Р°РєР°Р·
       tags: &a17
         - buyer / orders
     get:
-      description: "Заказы текущего покупателя. Фильтры: statuses, store_id, даты.
-        Постранично: page и page_size. В строке списка есть первая позиция
-        (first_item) и allowed_actions: список допустимых действий (для
-        покупателя это cancel, пока заказ ждёт подтверждения)."
+      description: "Р—Р°РєР°Р·С‹ С‚РµРєСѓС‰РµРіРѕ РїРѕРєСѓРїР°С‚РµР»СЏ. Р¤РёР»СЊС‚СЂС‹: statuses, store_id, РґР°С‚С‹.
+        РџРѕСЃС‚СЂР°РЅРёС‡РЅРѕ: page Рё page_size. Р’ СЃС‚СЂРѕРєРµ СЃРїРёСЃРєР° РµСЃС‚СЊ РїРµСЂРІР°СЏ РїРѕР·РёС†РёСЏ
+        (first_item) Рё allowed_actions: СЃРїРёСЃРѕРє РґРѕРїСѓСЃС‚РёРјС‹С… РґРµР№СЃС‚РІРёР№ (РґР»СЏ
+        РїРѕРєСѓРїР°С‚РµР»СЏ СЌС‚Рѕ cancel, РїРѕРєР° Р·Р°РєР°Р· Р¶РґС‘С‚ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ)."
       operationId: OrdersBuyerController_list
       parameters:
         - name: page
           required: false
           in: query
-          description: Номер страницы
+          description: РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           schema:
             default: 1
             example: 1
@@ -1188,7 +1188,7 @@ paths:
         - name: page_size
           required: false
           in: query
-          description: Размер страницы
+          description: Р Р°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           schema:
             minimum: 1
             maximum: 100
@@ -1235,13 +1235,13 @@ paths:
                 $ref: "#/components/schemas/OrderListResponseDto"
         "401": *a15
       security: *a16
-      summary: Мои заказы
+      summary: РњРѕРё Р·Р°РєР°Р·С‹
       tags: *a17
   /api/v1/buyer/orders/{order_id}:
     get:
-      description: Полный заказ покупателя с позициями и историей статусов. Позиции
-        хранят снимок товара и цены на момент оформления, поэтому не меняются
-        при правках каталога. Чужой заказ — 404 ORDER_NOT_FOUND.
+      description: РџРѕР»РЅС‹Р№ Р·Р°РєР°Р· РїРѕРєСѓРїР°С‚РµР»СЏ СЃ РїРѕР·РёС†РёСЏРјРё Рё РёСЃС‚РѕСЂРёРµР№ СЃС‚Р°С‚СѓСЃРѕРІ. РџРѕР·РёС†РёРё
+        С…СЂР°РЅСЏС‚ СЃРЅРёРјРѕРє С‚РѕРІР°СЂР° Рё С†РµРЅС‹ РЅР° РјРѕРјРµРЅС‚ РѕС„РѕСЂРјР»РµРЅРёСЏ, РїРѕСЌС‚РѕРјСѓ РЅРµ РјРµРЅСЏСЋС‚СЃСЏ
+        РїСЂРё РїСЂР°РІРєР°С… РєР°С‚Р°Р»РѕРіР°. Р§СѓР¶РѕР№ Р·Р°РєР°Р· вЂ” 404 ORDER_NOT_FOUND.
       operationId: OrdersBuyerController_get
       parameters:
         - name: order_id
@@ -1260,11 +1260,11 @@ paths:
         "404":
           description: ORDER_NOT_FOUND
       security: *a16
-      summary: Заказ
+      summary: Р—Р°РєР°Р·
       tags: *a17
   /api/v1/buyer/orders/{order_id}/cancel:
     post:
-      description: Только из pending_confirmation и только причины покупателя.
+      description: РўРѕР»СЊРєРѕ РёР· pending_confirmation Рё С‚РѕР»СЊРєРѕ РїСЂРёС‡РёРЅС‹ РїРѕРєСѓРїР°С‚РµР»СЏ.
       operationId: OrdersBuyerController_cancel
       parameters:
         - name: order_id
@@ -1294,11 +1294,11 @@ paths:
         "422":
           description: CANCELLATION_REASON_NOT_ALLOWED
       security: *a16
-      summary: Отменить заказ
+      summary: РћС‚РјРµРЅРёС‚СЊ Р·Р°РєР°Р·
       tags: *a17
 info:
-  title: Birid API — buyer
-  description: Бэкенд маркетплейса одежды Birid
+  title: Birid API вЂ” buyer
+  description: Р‘СЌРєРµРЅРґ РјР°СЂРєРµС‚РїР»РµР№СЃР° РѕРґРµР¶РґС‹ Birid
   version: 1.0.0
   contact: {}
 tags: []
@@ -1315,18 +1315,18 @@ components:
       properties:
         verification_id:
           type: string
-          description: Идентификатор подтверждения
+          description: РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ
           example: 1f0c6b2e-7a8d-4c1e-9b3f-5d2a6e8c4f10
         channel:
           type: string
-          description: Канал
+          description: РљР°РЅР°Р»
           enum:
             - sms
             - telegram
           example: telegram
         status:
           type: string
-          description: Статус
+          description: РЎС‚Р°С‚СѓСЃ
           enum:
             - awaiting_telegram
             - code_sent
@@ -1334,20 +1334,20 @@ components:
           example: awaiting_telegram
         phone:
           type: string
-          description: Номер в E.164
+          description: РќРѕРјРµСЂ РІ E.164
           example: "+998901234567"
         telegram_link:
           type: string
-          description: Ссылка на Telegram-бота (только канал telegram)
+          description: РЎСЃС‹Р»РєР° РЅР° Telegram-Р±РѕС‚Р° (С‚РѕР»СЊРєРѕ РєР°РЅР°Р» telegram)
           example: https://t.me/birid_bot?start=v_Qm9dX2...
           nullable: true
         expires_in:
           type: number
-          description: Сколько секунд осталось до истечения сессии
+          description: РЎРєРѕР»СЊРєРѕ СЃРµРєСѓРЅРґ РѕСЃС‚Р°Р»РѕСЃСЊ РґРѕ РёСЃС‚РµС‡РµРЅРёСЏ СЃРµСЃСЃРёРё
           example: 600
         resend_available_in:
           type: number
-          description: Через сколько секунд можно запросить код повторно
+          description: Р§РµСЂРµР· СЃРєРѕР»СЊРєРѕ СЃРµРєСѓРЅРґ РјРѕР¶РЅРѕ Р·Р°РїСЂРѕСЃРёС‚СЊ РєРѕРґ РїРѕРІС‚РѕСЂРЅРѕ
           example: 60
       required:
         - verification_id
@@ -1362,7 +1362,7 @@ components:
       properties:
         code:
           type: string
-          description: Код из SMS или от Telegram-бота
+          description: РљРѕРґ РёР· SMS РёР»Рё РѕС‚ Telegram-Р±РѕС‚Р°
           example: "123456"
       required:
         - code
@@ -1371,22 +1371,22 @@ components:
       properties:
         verification_token:
           type: string
-          description: Одноразовый токен для шага завершения
+          description: РћРґРЅРѕСЂР°Р·РѕРІС‹Р№ С‚РѕРєРµРЅ РґР»СЏ С€Р°РіР° Р·Р°РІРµСЂС€РµРЅРёСЏ
           example: vt_8Yh3...
         purpose:
           type: string
-          description: Цель подтверждения
+          description: Р¦РµР»СЊ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ
           enum:
             - buyer_registration
             - buyer_password_reset
           example: buyer_registration
         phone:
           type: string
-          description: Подтверждённый номер
+          description: РџРѕРґС‚РІРµСЂР¶РґС‘РЅРЅС‹Р№ РЅРѕРјРµСЂ
           example: "+998901234567"
         expires_in:
           type: number
-          description: Срок токена в секундах
+          description: РЎСЂРѕРє С‚РѕРєРµРЅР° РІ СЃРµРєСѓРЅРґР°С…
           example: 900
       required:
         - verification_token
@@ -1398,11 +1398,11 @@ components:
       properties:
         login:
           type: string
-          description: Логин (у покупателя — номер телефона в любом формате)
+          description: Р›РѕРіРёРЅ (Сѓ РїРѕРєСѓРїР°С‚РµР»СЏ вЂ” РЅРѕРјРµСЂ С‚РµР»РµС„РѕРЅР° РІ Р»СЋР±РѕРј С„РѕСЂРјР°С‚Рµ)
           example: zara_admin
         password:
           type: string
-          description: Пароль
+          description: РџР°СЂРѕР»СЊ
           example: S3cret-pass
       required:
         - login
@@ -1412,11 +1412,11 @@ components:
       properties:
         id:
           type: number
-          description: Идентификатор учётки
+          description: РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СѓС‡С‘С‚РєРё
           example: 42
         role:
           type: string
-          description: Роль
+          description: Р РѕР»СЊ
           enum:
             - admin
             - seller
@@ -1424,11 +1424,11 @@ components:
           example: seller
         login:
           type: string
-          description: Логин
+          description: Р›РѕРіРёРЅ
           example: zara_admin
         must_change_password:
           type: boolean
-          description: Нужно сменить пароль при входе
+          description: РќСѓР¶РЅРѕ СЃРјРµРЅРёС‚СЊ РїР°СЂРѕР»СЊ РїСЂРё РІС…РѕРґРµ
           example: false
       required:
         - id
@@ -1440,16 +1440,16 @@ components:
       properties:
         access_token:
           type: string
-          description: "Access-токен: передаётся в заголовке Authorization: Bearer
-            <токен>. Срок жизни зашит в токен (поле exp)"
+          description: "Access-С‚РѕРєРµРЅ: РїРµСЂРµРґР°С‘С‚СЃСЏ РІ Р·Р°РіРѕР»РѕРІРєРµ Authorization: Bearer
+            <С‚РѕРєРµРЅ>. РЎСЂРѕРє Р¶РёР·РЅРё Р·Р°С€РёС‚ РІ С‚РѕРєРµРЅ (РїРѕР»Рµ exp)"
           example: eyJhbGciOiJSUzI1NiIs...
         refresh_token:
           type: string
-          description: "Refresh-токен: меняется на новую пару через POST
-            /auth/{role}/refresh; одноразовый"
+          description: "Refresh-С‚РѕРєРµРЅ: РјРµРЅСЏРµС‚СЃСЏ РЅР° РЅРѕРІСѓСЋ РїР°СЂСѓ С‡РµСЂРµР· POST
+            /auth/{role}/refresh; РѕРґРЅРѕСЂР°Р·РѕРІС‹Р№"
           example: eyJhbGciOiJSUzI1NiIs...
         account:
-          description: Учётная запись, для которой выпущены токены
+          description: РЈС‡С‘С‚РЅР°СЏ Р·Р°РїРёСЃСЊ, РґР»СЏ РєРѕС‚РѕСЂРѕР№ РІС‹РїСѓС‰РµРЅС‹ С‚РѕРєРµРЅС‹
           allOf:
             - $ref: "#/components/schemas/TokenAccountDto"
       required:
@@ -1461,7 +1461,7 @@ components:
       properties:
         refresh_token:
           type: string
-          description: Refresh-токен из ответа входа
+          description: Refresh-С‚РѕРєРµРЅ РёР· РѕС‚РІРµС‚Р° РІС…РѕРґР°
           example: eyJhbGciOiJSUzI1NiIs...
       required:
         - refresh_token
@@ -1470,7 +1470,7 @@ components:
       properties:
         all_sessions:
           type: boolean
-          description: true — завершить все сессии учётки, иначе только текущую
+          description: true вЂ” Р·Р°РІРµСЂС€РёС‚СЊ РІСЃРµ СЃРµСЃСЃРёРё СѓС‡С‘С‚РєРё, РёРЅР°С‡Рµ С‚РѕР»СЊРєРѕ С‚РµРєСѓС‰СѓСЋ
           example: false
           default: false
     ChangePasswordDto:
@@ -1478,11 +1478,11 @@ components:
       properties:
         current_password:
           type: string
-          description: Текущий пароль
+          description: РўРµРєСѓС‰РёР№ РїР°СЂРѕР»СЊ
           example: S3cret-pass
         new_password:
           type: string
-          description: "Новый пароль: 8–128 символов, хотя бы одна буква и одна цифра"
+          description: "РќРѕРІС‹Р№ РїР°СЂРѕР»СЊ: 8вЂ“128 СЃРёРјРІРѕР»РѕРІ, С…РѕС‚СЏ Р±С‹ РѕРґРЅР° Р±СѓРєРІР° Рё РѕРґРЅР° С†РёС„СЂР°"
           example: N3w-secret-pass
       required:
         - current_password
@@ -1492,11 +1492,11 @@ components:
       properties:
         phone:
           type: string
-          description: Номер телефона в любом формате, который разбирает libphonenumber-js
+          description: РќРѕРјРµСЂ С‚РµР»РµС„РѕРЅР° РІ Р»СЋР±РѕРј С„РѕСЂРјР°С‚Рµ, РєРѕС‚РѕСЂС‹Р№ СЂР°Р·Р±РёСЂР°РµС‚ libphonenumber-js
           example: +998 90 123 45 67
         channel:
           type: string
-          description: Канал доставки кода
+          description: РљР°РЅР°Р» РґРѕСЃС‚Р°РІРєРё РєРѕРґР°
           enum:
             - sms
             - telegram
@@ -1509,11 +1509,11 @@ components:
       properties:
         verification_token:
           type: string
-          description: Токен из verify
+          description: РўРѕРєРµРЅ РёР· verify
           example: vt_8Yh3...
         new_password:
           type: string
-          description: "Новый пароль: 8–128 символов, хотя бы одна буква и одна цифра"
+          description: "РќРѕРІС‹Р№ РїР°СЂРѕР»СЊ: 8вЂ“128 СЃРёРјРІРѕР»РѕРІ, С…РѕС‚СЏ Р±С‹ РѕРґРЅР° Р±СѓРєРІР° Рё РѕРґРЅР° С†РёС„СЂР°"
           example: N3w-secret-pass
       required:
         - verification_token
@@ -1523,15 +1523,15 @@ components:
       properties:
         url:
           type: string
-          description: Публичный URL оригинала без метаданных (EXIF, GPS, XMP)
+          description: РџСѓР±Р»РёС‡РЅС‹Р№ URL РѕСЂРёРіРёРЅР°Р»Р° Р±РµР· РјРµС‚Р°РґР°РЅРЅС‹С… (EXIF, GPS, XMP)
           example: https://files.birid.uz/media-renditions/2b7d9f40-1c3e-4a58-9e6d-7f0a1b2c3d4e
         width:
           type: number
-          description: Ширина, px
+          description: РЁРёСЂРёРЅР°, px
           example: 3024
         height:
           type: number
-          description: Высота, px
+          description: Р’С‹СЃРѕС‚Р°, px
           example: 4032
       required:
         - url
@@ -1542,15 +1542,15 @@ components:
       properties:
         url:
           type: string
-          description: Публичный URL WebP-копии
+          description: РџСѓР±Р»РёС‡РЅС‹Р№ URL WebP-РєРѕРїРёРё
           example: https://files.birid.uz/media-renditions/6f1c4a2e-9d0b-4c47-8a11-2f6b7e0c91e2
         width:
           type: number
-          description: Ширина, px
+          description: РЁРёСЂРёРЅР°, px
           example: 810
         height:
           type: number
-          description: Высота, px
+          description: Р’С‹СЃРѕС‚Р°, px
           example: 1080
       required:
         - url
@@ -1566,7 +1566,7 @@ components:
         small:
           $ref: "#/components/schemas/RenditionResponseDto"
         square:
-          description: Обложка категории и аватар
+          description: РћР±Р»РѕР¶РєР° РєР°С‚РµРіРѕСЂРёРё Рё Р°РІР°С‚Р°СЂ
           allOf:
             - $ref: "#/components/schemas/RenditionResponseDto"
     ImageResponseDto:
@@ -1574,11 +1574,11 @@ components:
       properties:
         id:
           type: number
-          description: Идентификатор
+          description: РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
           example: 81
         status:
           type: string
-          description: Статус обработки; копии есть только у ready
+          description: РЎС‚Р°С‚СѓСЃ РѕР±СЂР°Р±РѕС‚РєРё; РєРѕРїРёРё РµСЃС‚СЊ С‚РѕР»СЊРєРѕ Сѓ ready
           enum: &a20
             - pending
             - processing
@@ -1587,32 +1587,32 @@ components:
           example: ready
         original_filename:
           type: string
-          description: Имя файла от клиента
+          description: РРјСЏ С„Р°Р№Р»Р° РѕС‚ РєР»РёРµРЅС‚Р°
           example: IMG_2041.HEIC
         width:
           type: number
-          description: Ширина оригинала с учётом поворота
+          description: РЁРёСЂРёРЅР° РѕСЂРёРіРёРЅР°Р»Р° СЃ СѓС‡С‘С‚РѕРј РїРѕРІРѕСЂРѕС‚Р°
           example: 3024
           nullable: true
         height:
           type: number
-          description: Высота оригинала с учётом поворота
+          description: Р’С‹СЃРѕС‚Р° РѕСЂРёРіРёРЅР°Р»Р° СЃ СѓС‡С‘С‚РѕРј РїРѕРІРѕСЂРѕС‚Р°
           example: 4032
           nullable: true
         original:
           nullable: true
-          description: Оригинал в исходном размере и формате (HEIC — в JPEG) без
-            метаданных; null, пока изображение не ready
+          description: РћСЂРёРіРёРЅР°Р» РІ РёСЃС…РѕРґРЅРѕРј СЂР°Р·РјРµСЂРµ Рё С„РѕСЂРјР°С‚Рµ (HEIC вЂ” РІ JPEG) Р±РµР·
+            РјРµС‚Р°РґР°РЅРЅС‹С…; null, РїРѕРєР° РёР·РѕР±СЂР°Р¶РµРЅРёРµ РЅРµ ready
           type: object
           allOf:
             - $ref: "#/components/schemas/OriginalResponseDto"
         renditions:
-          description: Пустой объект, пока изображение не ready
+          description: РџСѓСЃС‚РѕР№ РѕР±СЉРµРєС‚, РїРѕРєР° РёР·РѕР±СЂР°Р¶РµРЅРёРµ РЅРµ ready
           allOf:
             - $ref: "#/components/schemas/RenditionsResponseDto"
         created_at:
           type: string
-          description: Загружено
+          description: Р—Р°РіСЂСѓР¶РµРЅРѕ
           example: 2026-10-14T09:30:00.000Z
       required:
         - id
@@ -1628,12 +1628,12 @@ components:
       properties:
         id:
           type: number
-          description: Идентификатор
+          description: РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
           example: 3
         name:
           type: string
-          description: Название
-          example: Платья
+          description: РќР°Р·РІР°РЅРёРµ
+          example: РџР»Р°С‚СЊСЏ
       required:
         - id
         - name
@@ -1648,10 +1648,10 @@ components:
           example: Zara Tashkent
         description:
           type: string
-          example: Женская и мужская одежда
+          example: Р–РµРЅСЃРєР°СЏ Рё РјСѓР¶СЃРєР°СЏ РѕРґРµР¶РґР°
         banner:
           nullable: true
-          description: Только со статусом ready
+          description: РўРѕР»СЊРєРѕ СЃРѕ СЃС‚Р°С‚СѓСЃРѕРј ready
           type: object
           allOf:
             - $ref: "#/components/schemas/ImageResponseDto"
@@ -1669,19 +1669,19 @@ components:
       properties:
         page:
           type: number
-          description: Номер страницы
+          description: РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           example: 1
         page_size:
           type: number
-          description: Размер страницы
+          description: Р Р°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           example: 20
         total:
           type: number
-          description: Всего записей
+          description: Р’СЃРµРіРѕ Р·Р°РїРёСЃРµР№
           example: 42
         total_pages:
           type: number
-          description: Всего страниц
+          description: Р’СЃРµРіРѕ СЃС‚СЂР°РЅРёС†
           example: 3
         items:
           type: array
@@ -1701,16 +1701,16 @@ components:
           example: 3
         name:
           type: string
-          example: Главный салон
+          example: Р“Р»Р°РІРЅС‹Р№ СЃР°Р»РѕРЅ
         address:
           type: string
-          example: ул. Амира Темура, 15
+          example: СѓР». РђРјРёСЂР° РўРµРјСѓСЂР°, 15
         landmark:
           type: string
-          example: напротив ТЦ Next
+          example: РЅР°РїСЂРѕС‚РёРІ РўР¦ Next
         working_hours:
           type: string
-          example: 10:00–22:00
+          example: 10:00вЂ“22:00
         phone:
           type: string
           example: "+998712000001"
@@ -1729,16 +1729,16 @@ components:
           example: 5
         name:
           type: string
-          example: Дилноза
+          example: Р”РёР»РЅРѕР·Р°
         role:
           type: string
-          example: Менеджер
+          example: РњРµРЅРµРґР¶РµСЂ
         phone:
           type: string
           example: "+998901112233"
         working_hours:
           type: string
-          example: 10:00–19:00
+          example: 10:00вЂ“19:00
         telegram_username:
           type: string
           example: dilnoza_zara
@@ -1792,13 +1792,13 @@ components:
           $ref: "#/components/schemas/IdNameDto"
         title:
           type: string
-          example: Подгонка по фигуре
+          example: РџРѕРґРіРѕРЅРєР° РїРѕ С„РёРіСѓСЂРµ
         tagline:
           type: string
-          example: Бесплатно
+          example: Р‘РµСЃРїР»Р°С‚РЅРѕ
         description:
           type: string
-          example: При покупке от 1 000 000 сум
+          example: РџСЂРё РїРѕРєСѓРїРєРµ РѕС‚ 1 000 000 СЃСѓРј
       required:
         - id
         - icon
@@ -1816,7 +1816,7 @@ components:
           example: Zara Tashkent
         description:
           type: string
-          example: Женская и мужская одежда
+          example: Р–РµРЅСЃРєР°СЏ Рё РјСѓР¶СЃРєР°СЏ РѕРґРµР¶РґР°
         phone:
           type: string
           example: "+998712000000"
@@ -1867,7 +1867,7 @@ components:
           example: 6
         name:
           type: string
-          example: Красный
+          example: РљСЂР°СЃРЅС‹Р№
         hex_code:
           type: string
           example: "#D32F2F"
@@ -1918,7 +1918,7 @@ components:
           example: 9
         title:
           type: string
-          example: Осенняя скидка
+          example: РћСЃРµРЅРЅСЏСЏ СЃРєРёРґРєР°
         discount_type:
           type: string
           enum:
@@ -1960,7 +1960,7 @@ components:
       properties:
         sale:
           nullable: true
-          description: null, если тип цены недоступен
+          description: null, РµСЃР»Рё С‚РёРї С†РµРЅС‹ РЅРµРґРѕСЃС‚СѓРїРµРЅ
           type: object
           allOf:
             - $ref: "#/components/schemas/PriceQuoteDto"
@@ -1986,10 +1986,10 @@ components:
           example: 9
         title:
           type: string
-          example: Осенняя скидка
+          example: РћСЃРµРЅРЅСЏСЏ СЃРєРёРґРєР°
         description:
           type: string
-          example: На всю коллекцию платьев
+          example: РќР° РІСЃСЋ РєРѕР»Р»РµРєС†РёСЋ РїР»Р°С‚СЊРµРІ
         discount_type:
           type: string
           enum:
@@ -2035,7 +2035,7 @@ components:
         position:
           type: number
           example: 0
-          description: 0 — главное фото
+          description: 0 вЂ” РіР»Р°РІРЅРѕРµ С„РѕС‚Рѕ
         image:
           $ref: "#/components/schemas/ImageResponseDto"
       required:
@@ -2051,7 +2051,7 @@ components:
           type: number
           example: 0
         images:
-          description: По возрастанию position
+          description: РџРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ position
           type: array
           items:
             $ref: "#/components/schemas/VariantImageDto"
@@ -2078,7 +2078,7 @@ components:
           example: krasnoe-plate
         name:
           type: string
-          example: Красное платье
+          example: РљСЂР°СЃРЅРѕРµ РїР»Р°С‚СЊРµ
         status:
           type: string
           enum:
@@ -2086,21 +2086,21 @@ components:
             - active
             - archived
           example: active
-          description: Только у продавца
+          description: РўРѕР»СЊРєРѕ Сѓ РїСЂРѕРґР°РІС†Р°
         published_at:
           type: string
           example: 2026-10-05T12:00:00.000Z
           nullable: true
-          description: Только у продавца
+          description: РўРѕР»СЊРєРѕ Сѓ РїСЂРѕРґР°РІС†Р°
         description:
           type: string
-          example: Шёлковое платье в пол
+          example: РЁС‘Р»РєРѕРІРѕРµ РїР»Р°С‚СЊРµ РІ РїРѕР»
         brand:
           type: string
           example: Zara
         manufacturer:
           type: string
-          example: Турция
+          example: РўСѓСЂС†РёСЏ
         store:
           $ref: "#/components/schemas/IdNameDto"
         category:
@@ -2195,7 +2195,7 @@ components:
           example: krasnoe-plate
         name:
           type: string
-          example: Красное платье
+          example: РљСЂР°СЃРЅРѕРµ РїР»Р°С‚СЊРµ
         brand:
           type: string
           example: Zara
@@ -2226,7 +2226,7 @@ components:
         is_available:
           type: boolean
           example: true
-          description: false в избранном и новостях, если товар больше не виден
+          description: false РІ РёР·Р±СЂР°РЅРЅРѕРј Рё РЅРѕРІРѕСЃС‚СЏС…, РµСЃР»Рё С‚РѕРІР°СЂ Р±РѕР»СЊС€Рµ РЅРµ РІРёРґРµРЅ
         created_at:
           type: string
           example: 2026-10-05T11:00:00.000Z
@@ -2249,19 +2249,19 @@ components:
       properties:
         page:
           type: number
-          description: Номер страницы
+          description: РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           example: 1
         page_size:
           type: number
-          description: Размер страницы
+          description: Р Р°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           example: 20
         total:
           type: number
-          description: Всего записей
+          description: Р’СЃРµРіРѕ Р·Р°РїРёСЃРµР№
           example: 42
         total_pages:
           type: number
-          description: Всего страниц
+          description: Р’СЃРµРіРѕ СЃС‚СЂР°РЅРёС†
           example: 3
         items:
           type: array
@@ -2281,7 +2281,7 @@ components:
           example: 3
         name:
           type: string
-          example: Платья
+          example: РџР»Р°С‚СЊСЏ
         position:
           type: number
           example: 0
@@ -2293,7 +2293,7 @@ components:
         products_count:
           type: number
           example: 42
-          description: Только видимые товары
+          description: РўРѕР»СЊРєРѕ РІРёРґРёРјС‹Рµ С‚РѕРІР°СЂС‹
         children:
           type: array
           items:
@@ -2310,12 +2310,12 @@ components:
       properties:
         id:
           type: number
-          description: Идентификатор
+          description: РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
           example: 3
         name:
           type: string
-          description: Название
-          example: Платья
+          description: РќР°Р·РІР°РЅРёРµ
+          example: РџР»Р°С‚СЊСЏ
         products_count:
           type: number
           example: 12
@@ -2328,12 +2328,12 @@ components:
       properties:
         id:
           type: number
-          description: Идентификатор
+          description: РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
           example: 3
         name:
           type: string
-          description: Название
-          example: Платья
+          description: РќР°Р·РІР°РЅРёРµ
+          example: РџР»Р°С‚СЊСЏ
         materials:
           type: array
           items:
@@ -2347,12 +2347,12 @@ components:
       properties:
         id:
           type: number
-          description: Идентификатор
+          description: РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
           example: 3
         name:
           type: string
-          description: Название
-          example: Платья
+          description: РќР°Р·РІР°РЅРёРµ
+          example: РџР»Р°С‚СЊСЏ
         products_count:
           type: number
           example: 12
@@ -2453,19 +2453,19 @@ components:
       properties:
         last_name:
           type: string
-          description: Фамилия, 1–150
-          example: Каримова
+          description: Р¤Р°РјРёР»РёСЏ, 1вЂ“150
+          example: РљР°СЂРёРјРѕРІР°
         first_name:
           type: string
-          description: Имя, 1–150
-          example: Алия
+          description: РРјСЏ, 1вЂ“150
+          example: РђР»РёСЏ
         middle_name:
           type: string
-          description: Отчество
+          description: РћС‚С‡РµСЃС‚РІРѕ
           example: ""
         age:
           type: number
-          description: Возраст, 1–120
+          description: Р’РѕР·СЂР°СЃС‚, 1вЂ“120
           example: 27
           nullable: true
         gender:
@@ -2477,15 +2477,15 @@ components:
           nullable: true
         city:
           type: string
-          description: Город
-          example: Ташкент
+          description: Р“РѕСЂРѕРґ
+          example: РўР°С€РєРµРЅС‚
         verification_token:
           type: string
-          description: Токен из verify
+          description: РўРѕРєРµРЅ РёР· verify
           example: vt_8Yh3...
         password:
           type: string
-          description: "Пароль: 8–128 символов, буква и цифра"
+          description: "РџР°СЂРѕР»СЊ: 8вЂ“128 СЃРёРјРІРѕР»РѕРІ, Р±СѓРєРІР° Рё С†РёС„СЂР°"
           example: S3cret-pass
       required:
         - last_name
@@ -2503,10 +2503,10 @@ components:
           example: "+998901234567"
         last_name:
           type: string
-          example: Каримова
+          example: РљР°СЂРёРјРѕРІР°
         first_name:
           type: string
-          example: Алия
+          example: РђР»РёСЏ
         middle_name:
           type: string
           example: ""
@@ -2521,13 +2521,13 @@ components:
           example: female
         city:
           type: string
-          example: Ташкент
+          example: РўР°С€РєРµРЅС‚
         telegram_username:
           type: string
           example: aliya_k
         avatar:
           nullable: true
-          description: Копия square
+          description: РљРѕРїРёСЏ square
           type: object
           allOf:
             - $ref: "#/components/schemas/ImageResponseDto"
@@ -2564,19 +2564,19 @@ components:
       properties:
         last_name:
           type: string
-          description: Фамилия, 1–150
-          example: Каримова
+          description: Р¤Р°РјРёР»РёСЏ, 1вЂ“150
+          example: РљР°СЂРёРјРѕРІР°
         first_name:
           type: string
-          description: Имя, 1–150
-          example: Алия
+          description: РРјСЏ, 1вЂ“150
+          example: РђР»РёСЏ
         middle_name:
           type: string
-          description: Отчество
+          description: РћС‚С‡РµСЃС‚РІРѕ
           example: ""
         age:
           type: number
-          description: Возраст, 1–120
+          description: Р’РѕР·СЂР°СЃС‚, 1вЂ“120
           example: 27
           nullable: true
         gender:
@@ -2586,8 +2586,8 @@ components:
           nullable: true
         city:
           type: string
-          description: Город
-          example: Ташкент
+          description: Р“РѕСЂРѕРґ
+          example: РўР°С€РєРµРЅС‚
     FavoriteProductDto:
       type: object
       properties:
@@ -2599,7 +2599,7 @@ components:
           example: krasnoe-plate
         name:
           type: string
-          example: Красное платье
+          example: РљСЂР°СЃРЅРѕРµ РїР»Р°С‚СЊРµ
         brand:
           type: string
           example: Zara
@@ -2628,7 +2628,7 @@ components:
         is_available:
           type: boolean
           example: true
-          description: false в избранном и новостях, если товар больше не виден
+          description: false РІ РёР·Р±СЂР°РЅРЅРѕРј Рё РЅРѕРІРѕСЃС‚СЏС…, РµСЃР»Рё С‚РѕРІР°СЂ Р±РѕР»СЊС€Рµ РЅРµ РІРёРґРµРЅ
         created_at:
           type: string
           example: 2026-10-05T11:00:00.000Z
@@ -2655,19 +2655,19 @@ components:
       properties:
         page:
           type: number
-          description: Номер страницы
+          description: РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           example: 1
         page_size:
           type: number
-          description: Размер страницы
+          description: Р Р°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           example: 20
         total:
           type: number
-          description: Всего записей
+          description: Р’СЃРµРіРѕ Р·Р°РїРёСЃРµР№
           example: 42
         total_pages:
           type: number
-          description: Всего страниц
+          description: Р’СЃРµРіРѕ СЃС‚СЂР°РЅРёС†
           example: 3
         items:
           type: array
@@ -2703,7 +2703,7 @@ components:
         is_available:
           type: boolean
           example: true
-          description: false, если магазин деактивирован
+          description: false, РµСЃР»Рё РјР°РіР°Р·РёРЅ РґРµР°РєС‚РёРІРёСЂРѕРІР°РЅ
       required:
         - id
         - name
@@ -2724,19 +2724,19 @@ components:
       properties:
         page:
           type: number
-          description: Номер страницы
+          description: РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           example: 1
         page_size:
           type: number
-          description: Размер страницы
+          description: Р Р°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           example: 20
         total:
           type: number
-          description: Всего записей
+          description: Р’СЃРµРіРѕ Р·Р°РїРёСЃРµР№
           example: 42
         total_pages:
           type: number
-          description: Всего страниц
+          description: Р’СЃРµРіРѕ СЃС‚СЂР°РЅРёС†
           example: 3
         items:
           type: array
@@ -2764,46 +2764,46 @@ components:
       properties:
         id:
           type: number
-          description: Идентификатор
+          description: РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
           example: 81
         status:
           type: string
-          description: Статус обработки; копии есть только у ready
+          description: РЎС‚Р°С‚СѓСЃ РѕР±СЂР°Р±РѕС‚РєРё; РєРѕРїРёРё РµСЃС‚СЊ С‚РѕР»СЊРєРѕ Сѓ ready
           enum: *a20
           example: ready
         original_filename:
           type: string
-          description: Имя файла от клиента
+          description: РРјСЏ С„Р°Р№Р»Р° РѕС‚ РєР»РёРµРЅС‚Р°
           example: IMG_2041.HEIC
         width:
           type: number
-          description: Ширина оригинала с учётом поворота
+          description: РЁРёСЂРёРЅР° РѕСЂРёРіРёРЅР°Р»Р° СЃ СѓС‡С‘С‚РѕРј РїРѕРІРѕСЂРѕС‚Р°
           example: 3024
           nullable: true
         height:
           type: number
-          description: Высота оригинала с учётом поворота
+          description: Р’С‹СЃРѕС‚Р° РѕСЂРёРіРёРЅР°Р»Р° СЃ СѓС‡С‘С‚РѕРј РїРѕРІРѕСЂРѕС‚Р°
           example: 4032
           nullable: true
         original:
           nullable: true
-          description: Оригинал в исходном размере и формате (HEIC — в JPEG) без
-            метаданных; null, пока изображение не ready
+          description: РћСЂРёРіРёРЅР°Р» РІ РёСЃС…РѕРґРЅРѕРј СЂР°Р·РјРµСЂРµ Рё С„РѕСЂРјР°С‚Рµ (HEIC вЂ” РІ JPEG) Р±РµР·
+            РјРµС‚Р°РґР°РЅРЅС‹С…; null, РїРѕРєР° РёР·РѕР±СЂР°Р¶РµРЅРёРµ РЅРµ ready
           type: object
           allOf:
             - $ref: "#/components/schemas/OriginalResponseDto"
         renditions:
-          description: Пустой объект, пока изображение не ready
+          description: РџСѓСЃС‚РѕР№ РѕР±СЉРµРєС‚, РїРѕРєР° РёР·РѕР±СЂР°Р¶РµРЅРёРµ РЅРµ ready
           allOf:
             - $ref: "#/components/schemas/RenditionsResponseDto"
         created_at:
           type: string
-          description: Загружено
+          description: Р—Р°РіСЂСѓР¶РµРЅРѕ
           example: 2026-10-14T09:30:00.000Z
         position:
           type: number
-          description: "Место фото в галерее: 0, 1, 2… без пропусков. Фронт показывает
-            фото по возрастанию position"
+          description: "РњРµСЃС‚Рѕ С„РѕС‚Рѕ РІ РіР°Р»РµСЂРµРµ: 0, 1, 2вЂ¦ Р±РµР· РїСЂРѕРїСѓСЃРєРѕРІ. Р¤СЂРѕРЅС‚ РїРѕРєР°Р·С‹РІР°РµС‚
+            С„РѕС‚Рѕ РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ position"
           example: 0
       required:
         - id
@@ -2842,31 +2842,31 @@ components:
           type: string
         poster_image:
           nullable: true
-          description: Постер новости; null, если его нет или он ещё обрабатывается
+          description: РџРѕСЃС‚РµСЂ РЅРѕРІРѕСЃС‚Рё; null, РµСЃР»Рё РµРіРѕ РЅРµС‚ РёР»Рё РѕРЅ РµС‰С‘ РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚СЃСЏ
           type: object
           allOf:
             - $ref: "#/components/schemas/ImageResponseDto"
         banner_image:
           nullable: true
-          description: Баннер новости (необязателен); null, если его нет или он ещё
-            обрабатывается
+          description: Р‘Р°РЅРЅРµСЂ РЅРѕРІРѕСЃС‚Рё (РЅРµРѕР±СЏР·Р°С‚РµР»РµРЅ); null, РµСЃР»Рё РµРіРѕ РЅРµС‚ РёР»Рё РѕРЅ РµС‰С‘
+            РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚СЃСЏ
           type: object
           allOf:
             - $ref: "#/components/schemas/ImageResponseDto"
         images:
-          description: Фото галереи по возрастанию position, только готовые. Приходит
-            только в карточке новости, в списке поля нет
+          description: Р¤РѕС‚Рѕ РіР°Р»РµСЂРµРё РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ position, С‚РѕР»СЊРєРѕ РіРѕС‚РѕРІС‹Рµ. РџСЂРёС…РѕРґРёС‚
+            С‚РѕР»СЊРєРѕ РІ РєР°СЂС‚РѕС‡РєРµ РЅРѕРІРѕСЃС‚Рё, РІ СЃРїРёСЃРєРµ РїРѕР»СЏ РЅРµС‚
           type: array
           items:
             $ref: "#/components/schemas/NewsImageResponseDto"
         products:
-          description: Только в карточке новости, видимые товары
+          description: РўРѕР»СЊРєРѕ РІ РєР°СЂС‚РѕС‡РєРµ РЅРѕРІРѕСЃС‚Рё, РІРёРґРёРјС‹Рµ С‚РѕРІР°СЂС‹
           type: array
           items:
             $ref: "#/components/schemas/ProductCardResponseDto"
         products_count:
           type: number
-          description: Только в списке
+          description: РўРѕР»СЊРєРѕ РІ СЃРїРёСЃРєРµ
       required:
         - id
         - store
@@ -2883,19 +2883,19 @@ components:
       properties:
         page:
           type: number
-          description: Номер страницы
+          description: РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           example: 1
         page_size:
           type: number
-          description: Размер страницы
+          description: Р Р°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           example: 20
         total:
           type: number
-          description: Всего записей
+          description: Р’СЃРµРіРѕ Р·Р°РїРёСЃРµР№
           example: 42
         total_pages:
           type: number
-          description: Всего страниц
+          description: Р’СЃРµРіРѕ СЃС‚СЂР°РЅРёС†
           example: 3
         items:
           type: array
@@ -2922,7 +2922,7 @@ components:
           example: sale
         size:
           type: number
-          description: Размер; null, если у товара нет размеров
+          description: Р Р°Р·РјРµСЂ; null, РµСЃР»Рё Сѓ С‚РѕРІР°СЂР° РЅРµС‚ СЂР°Р·РјРµСЂРѕРІ
           example: 42
           nullable: true
         quantity:
@@ -2943,10 +2943,10 @@ components:
           example: 7
         buyer_comment:
           type: string
-          description: До 1000 символов
-          example: Позвоните перед доставкой
+          description: Р”Рѕ 1000 СЃРёРјРІРѕР»РѕРІ
+          example: РџРѕР·РІРѕРЅРёС‚Рµ РїРµСЂРµРґ РґРѕСЃС‚Р°РІРєРѕР№
         items:
-          description: 1–50 позиций
+          description: 1вЂ“50 РїРѕР·РёС†РёР№
           type: array
           items:
             $ref: "#/components/schemas/OrderItemInputDto"
@@ -2961,16 +2961,16 @@ components:
           example: 120
         last_name:
           type: string
-          example: Каримова
+          example: РљР°СЂРёРјРѕРІР°
         first_name:
           type: string
-          example: Алия
+          example: РђР»РёСЏ
         middle_name:
           type: string
           example: ""
         full_name:
           type: string
-          example: Каримова Алия
+          example: РљР°СЂРёРјРѕРІР° РђР»РёСЏ
         phone:
           type: string
           example: "+998901234567"
@@ -2979,7 +2979,7 @@ components:
           example: aliya_k
         city:
           type: string
-          example: Ташкент
+          example: РўР°С€РєРµРЅС‚
       required:
         - buyer_id
         - last_name
@@ -3098,7 +3098,7 @@ components:
           $ref: "#/components/schemas/BuyerContactDto"
         buyer_comment:
           type: string
-          example: Позвоните перед доставкой
+          example: РџРѕР·РІРѕРЅРёС‚Рµ РїРµСЂРµРґ РґРѕСЃС‚Р°РІРєРѕР№
         items_count:
           type: number
           example: 3
@@ -3161,7 +3161,7 @@ components:
           nullable: true
         name:
           type: string
-          example: Красное платье
+          example: РљСЂР°СЃРЅРѕРµ РїР»Р°С‚СЊРµ
         cover_image_urls:
           type: object
           example:
@@ -3186,7 +3186,7 @@ components:
           $ref: "#/components/schemas/BuyerContactDto"
         buyer_comment:
           type: string
-          example: Позвоните перед доставкой
+          example: РџРѕР·РІРѕРЅРёС‚Рµ РїРµСЂРµРґ РґРѕСЃС‚Р°РІРєРѕР№
         items_count:
           type: number
           example: 3
@@ -3239,19 +3239,19 @@ components:
       properties:
         page:
           type: number
-          description: Номер страницы
+          description: РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           example: 1
         page_size:
           type: number
-          description: Размер страницы
+          description: Р Р°Р·РјРµСЂ СЃС‚СЂР°РЅРёС†С‹
           example: 20
         total:
           type: number
-          description: Всего записей
+          description: Р’СЃРµРіРѕ Р·Р°РїРёСЃРµР№
           example: 42
         total_pages:
           type: number
-          description: Всего страниц
+          description: Р’СЃРµРіРѕ СЃС‚СЂР°РЅРёС†
           example: 3
         items:
           type: array
@@ -3268,7 +3268,7 @@ components:
       properties:
         expected_status:
           type: string
-          description: Если текущий статус другой — 409 ORDER_STATUS_CHANGED
+          description: Р•СЃР»Рё С‚РµРєСѓС‰РёР№ СЃС‚Р°С‚СѓСЃ РґСЂСѓРіРѕР№ вЂ” 409 ORDER_STATUS_CHANGED
           enum: *a22
         comment:
           type: string

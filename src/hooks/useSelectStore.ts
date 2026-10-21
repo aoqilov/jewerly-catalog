@@ -1,20 +1,14 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router'
 import { ROUTES } from '@/config/routes'
-import { useStoreId } from '@/hooks/useStoreId'
-import { setStoreId } from '@/lib/selectedStore'
+import { useSwitchStore } from './useSwitchStore'
 
-// Do'konni tanlaydi va bosh sahifaga o'tadi. Boshqa do'kon tanlansa eski do'konning keshi tozalanadi
+// Do'konni tanlaydi va bosh sahifaga o'tadi
 export function useSelectStore() {
-  const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const currentId = useStoreId()
+  const switchStore = useSwitchStore()
 
   return (id: number) => {
-    if (id !== currentId) {
-      queryClient.clear()
-      setStoreId(id)
-    }
+    switchStore(id)
     navigate(ROUTES.home, { replace: true })
   }
 }
